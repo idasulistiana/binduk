@@ -533,7 +533,7 @@ $config['proxy_ips'] = '';
 $db['default'] = array(
     'hostname' => 'localhost',
     'username' => 'binduk_user',
-    'password' => 'passwordku123',
+    'password' => 'PasswordKu123',
     'database' => 'binduk_db',
     'dbdriver' => 'mysqli',
 );
