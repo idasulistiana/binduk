@@ -13,7 +13,7 @@ class ControllerDataMaster extends CI_Controller
 		parent::__construct();
 		$this->load->model('DataMaster');	
 		$this->load->library('form_validation'); // ← ini wajib	
-		$this->load->library('tcpdf');
+		$this->load->library('pdf');
 	  	$this->load->library('session');
         $this->load->helper(['url', 'form']);
         // ✅ Proteksi agar tidak bisa akses tanpa login
