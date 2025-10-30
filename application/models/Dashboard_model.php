@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
+#[\AllowDynamicProperties]
 class Dashboard_model extends CI_Model
 {
     public function get_total_siswa()

@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+#[\AllowDynamicProperties]
 class Ekskul_model extends CI_Model {
 
     private $table = 'ekskul'; // ganti sesuai nama tabel di database

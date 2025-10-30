@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+#[\AllowDynamicProperties]
 class Mapel_model extends CI_Model {
 
     private $table = 'mata_pelajaran'; // ganti sesuai nama tabel di database

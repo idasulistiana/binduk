@@ -1,7 +1,7 @@
 <?php
 
 defined('BASEPATH') or exit('No direct script access allowed');
-
+#[\AllowDynamicProperties]
 class DataMaster extends CI_Model
 {
     //kelola user

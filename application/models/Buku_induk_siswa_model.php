@@ -1,7 +1,7 @@
 
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+#[\AllowDynamicProperties]
 class Buku_induk_siswa_model extends CI_Model {
 
     // Ambil data siswa berdasarkan no_induk

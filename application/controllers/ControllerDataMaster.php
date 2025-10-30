@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 // Autoload PhpSpreadsheet
 // require APPPATH.'../vendor/autoload.php'; // path ke autoload Composer
 // use PhpOffice\PhpSpreadsheet\IOFactory;
-
+#[\AllowDynamicProperties]
 class ControllerDataMaster extends CI_Controller
 {
 
