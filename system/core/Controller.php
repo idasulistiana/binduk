@@ -53,6 +53,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 #[\AllowDynamicProperties]
 class CI_Controller {
 	public $config;
+	public $benchmark;
+    public $hooks;
+    public $config;
+    public $log;
+    public $utf8;
+    public $uri;
+    public $exceptions;
+    public $router;
+    public $output;
+    public $security;
+    public $input;
+    public $lang;
+    public $db;
 	/**
 	 * Reference to the CI singleton
 	 *
