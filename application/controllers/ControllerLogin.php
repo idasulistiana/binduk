@@ -6,6 +6,7 @@ class ControllerLogin extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+		$this->load->database();
         $this->load->model('Login');
         $this->load->library(['session', 'form_validation']);
         // 🔒 Mencegah cache (agar tombol back tidak bisa ke halaman login)
