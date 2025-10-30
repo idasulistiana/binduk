@@ -57,6 +57,7 @@ class CI_URI {
 	 * @var	array
 	 */
 	public $keyval = array();
+	public $config; // ← tambahkan baris ini
 
 	/**
 	 * Current URI string
