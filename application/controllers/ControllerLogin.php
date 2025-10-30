@@ -26,7 +26,7 @@ class ControllerLogin extends CI_Controller
         $this->form_validation->set_rules('password', 'Password', 'required');
 
         if ($this->form_validation->run() == FALSE) {
-            $this->load->view('content/login');
+            $this->load->view('Content/login');
         } else {
             $username = $this->input->post('username', TRUE);
             $password = $this->input->post('password', TRUE);
