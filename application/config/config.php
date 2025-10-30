@@ -530,4 +530,11 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+$db['default'] = array(
+    'hostname' => 'localhost',
+    'username' => 'u796341745_buku_induk04',
+    'password' => 'BukuInduk04thebest#',
+    'database' => 'u796341745_buku_induk04',
+    'dbdriver' => 'mysqli',
+);
 
