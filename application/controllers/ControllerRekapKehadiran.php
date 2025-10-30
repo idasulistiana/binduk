@@ -9,7 +9,7 @@ class ControllerRekapKehadiran extends CI_Controller {
         $this->load->model('Kelas_model'); // Model Rekap Kehadiran
         $this->load->model('DataMaster');    
         $this->load->library('form_validation');
-        $this->load->library('tcpdf');
+        $this->load->library('Pdf');
         // ✅ Proteksi agar tidak bisa akses tanpa login
         if (!$this->session->userdata('logged_in')) {
 			   redirect('login');
