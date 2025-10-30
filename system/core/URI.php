@@ -50,14 +50,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link		https://codeigniter.com/userguide3/libraries/uri.html
  */
 class CI_URI {
-
+	Public $config; // ← tambahkan baris ini
 	/**
 	 * List of cached URI segments
 	 *
 	 * @var	array
 	 */
 	public $keyval = array();
-	public $config; // ← tambahkan baris ini
+
 
 	/**
 	 * Current URI string
