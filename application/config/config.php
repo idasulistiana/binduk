@@ -23,7 +23,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'https://sdntegalalur04.sch.id/binduk';
+$config['base_url'] = 'https://sdntegalalur04.site/';
 
 /*
 |--------------------------------------------------------------------------
@@ -532,8 +532,8 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 $db['default'] = array(
     'hostname' => 'localhost',
-    'username' => 'binduk_user',
-    'password' => 'PasswordKu123',
-    'database' => 'binduk_db',
+    'username' => 'u796341745_buku_induk04',
+    'password' => 'BukuInduk04thebest#',
+    'database' => 'u796341745_buku_induk04',
     'dbdriver' => 'mysqli',
 );
