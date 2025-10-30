@@ -52,6 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 #[\AllowDynamicProperties]
 class CI_Router {
+	public $uri;
 
 	/**
 	 * CI_Config class object
