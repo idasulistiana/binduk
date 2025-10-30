@@ -55,7 +55,6 @@ class CI_Controller {
 	public $config;
 	public $benchmark;
     public $hooks;
-    public $config;
     public $log;
     public $utf8;
     public $uri;
