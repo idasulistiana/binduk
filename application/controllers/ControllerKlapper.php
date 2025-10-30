@@ -8,7 +8,7 @@ class ControllerKlapper extends CI_Controller {
         $this->load->model('Klapper_model');
         $this->load->model('DataMaster');
         $this->load->library('form_validation');
-        $this->load->library('tcpdf');
+        $this->load->library('Pdf');
         // ✅ Proteksi agar tidak bisa akses tanpa login
         if (!$this->session->userdata('logged_in')) {
 			   redirect('login');
