@@ -30,15 +30,3 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.sublime-project
 /tests/tests/
 /tests/results/
-# Abaikan file konfigurasi lokal
-application/config/config.php
-application/config/database.php
-
-# Folder log dan cache
-application/logs/
-application/cache/
-
-# File sensitif lain
-.env
-.DS_Store
-thumbs.db
