@@ -6,7 +6,7 @@ class Nilai_model extends CI_Model {
     private $table = 'nilai'; // ganti dengan nama tabel nilai di database
 
     public function __construct() {
-        parent::__construct();
+     
     }
 
     // Ambil semua data nilai
