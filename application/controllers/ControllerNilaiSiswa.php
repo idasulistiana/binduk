@@ -141,79 +141,134 @@ class ControllerNilaiSiswa extends CI_Controller {
     }
 
     public function all_nilai_siswa($no_induk) {
-        $this->session->set_userdata('previous_url', $_SERVER['HTTP_REFERER']);
-        // Ambil data siswa
-        $data['siswa'] = $this->DataMaster->get_siswa_by_no_induk($no_induk);
+    $this->session->set_userdata('previous_url', $_SERVER['HTTP_REFERER']);
 
-        // Ambil semua kelas
-        $kelas_all = $this->Kelas_model->get_all();
+    // Ambil data siswa
+    $data['siswa'] = $this->DataMaster->get_siswa_by_no_induk($no_induk);
 
-        // Load model tambahan
-        $this->load->model('Rekap_kehadiran_model');
+    // Ambil semua kelas
+    $kelas_all = $this->Kelas_model->get_all();
 
-        $kelas_nilai = [];
+    // Load model tambahan
+    $this->load->model('Rekap_kehadiran_model');
 
-        foreach ($kelas_all as $k) {
-            $semester_data = [];
-            $kelas_memiliki_nilai = false;
+    $kelas_nilai = [];
 
-            // Loop untuk semester 1 dan 2
-            for ($sem = 1; $sem <= 2; $sem++) {
+    foreach ($kelas_all as $k) {
+        $semester_data = [];
+        $kelas_memiliki_nilai = false;
 
-                // Ambil nilai mapel
-                $nilai_mapel = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $k->id_kelas, $sem);
+        // Loop untuk semester 1 dan 2
+        for ($sem = 1; $sem <= 2; $sem++) {
 
-                // Ambil nilai ekskul
-                $nilai_ekskul = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $k->id_kelas, $sem);
+            // Ambil nilai mapel
+            $nilai_mapel = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $k->id_kelas, $sem);
 
-                // Ambil rekap kehadiran
-                $rekap_kehadiran = $this->Rekap_kehadiran_model->get_rekap_kehadiran($no_induk, $k->id_kelas, $sem);
-
-                // Simpan semua data semester
-                $semester_data[$sem] = [
-                    'mapel'      => $nilai_mapel,
-                    'ekskul'     => $nilai_ekskul,
-                    'kehadiran'  => $rekap_kehadiran
-                ];
-
-                // Cek apakah ada nilai
-                foreach ($nilai_mapel as $n) {
-                    if (!empty($n->nilai_akhir)) {
-                        $kelas_memiliki_nilai = true;
-                        break;
-                    }
-                }
-                foreach ($nilai_ekskul as $e) {
-                    if (!empty($e->nilai)) {
-                        $kelas_memiliki_nilai = true;
-                        break;
-                    }
-                }
-                // Tambahkan kondisi jika ada data kehadiran
-                if (!empty($rekap_kehadiran)) {
-                    $kelas_memiliki_nilai = true;
+            // Tambahkan deskripsi capaian pembelajaran (mapel)
+            foreach ($nilai_mapel as &$n) {
+                if (!empty($n->nilai_akhir)) {
+                    $n->deskripsi_capaian = $this->get_deskripsi_capaian($n->nilai_akhir);
+                } else {
+                    $n->deskripsi_capaian = "Belum ada data nilai.";
                 }
             }
 
-            // Simpan hanya kelas yang punya data
-            if ($kelas_memiliki_nilai) {
-                $kelas_nilai[$k->id_kelas] = [
-                    'nama_kelas' => $k->nama_kelas,
-                    'semester'   => $semester_data
-                ];
+            // Ambil nilai ekskul
+            $nilai_ekskul = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $k->id_kelas, $sem);
+
+            // Tambahkan deskripsi capaian pembelajaran (ekskul)
+            foreach ($nilai_ekskul as &$e) {
+                if (!empty($e->nilai)) {
+                    $e->deskripsi_ekskul = $this->get_deskripsi_ekskul($e->nilai);
+                } else {
+                    $e->deskripsi_ekskul = "Belum ada data nilai ekskul.";
+                }
+            }
+
+            // Ambil rekap kehadiran
+            $rekap_kehadiran = $this->Rekap_kehadiran_model->get_rekap_kehadiran($no_induk, $k->id_kelas, $sem);
+
+            // Simpan semua data semester
+            $semester_data[$sem] = [
+                'mapel'      => $nilai_mapel,
+                'ekskul'     => $nilai_ekskul,
+                'kehadiran'  => $rekap_kehadiran
+            ];
+
+            // Cek apakah ada nilai
+            foreach ($nilai_mapel as $n) {
+                if (!empty($n->nilai_akhir)) {
+                    $kelas_memiliki_nilai = true;
+                    break;
+                }
+            }
+            foreach ($nilai_ekskul as $e) {
+                if (!empty($e->nilai)) {
+                    $kelas_memiliki_nilai = true;
+                    break;
+                }
+            }
+            // Tambahkan kondisi jika ada data kehadiran
+            if (!empty($rekap_kehadiran)) {
+                $kelas_memiliki_nilai = true;
             }
         }
 
-        // Kirim ke view
-        $data['kelas_nilai'] = $kelas_nilai;
-
-        // Load view
-        $this->load->view('Layout/head', $data);
-        $this->load->view('Layout/navbar', $data);
-        $this->load->view('Layout/aside', $data);
-        $this->load->view('Content/nilai_siswa_detail', $data);
-        $this->load->view('Layout/footer', $data);
+        // Simpan hanya kelas yang punya data
+        if ($kelas_memiliki_nilai) {
+            $kelas_nilai[$k->id_kelas] = [
+                'nama_kelas' => $k->nama_kelas,
+                'semester'   => $semester_data
+            ];
+        }
     }
+
+    // Kirim ke view
+    $data['kelas_nilai'] = $kelas_nilai;
+
+    // Load view
+    $this->load->view('Layout/head', $data);
+    $this->load->view('Layout/navbar', $data);
+    $this->load->view('Layout/aside', $data);
+    $this->load->view('Content/nilai_siswa_detail', $data);
+    $this->load->view('Layout/footer', $data);
+}
+
+    /**
+     * Fungsi untuk menghasilkan deskripsi capaian pembelajaran berdasarkan nilai akhir
+     */
+    private function get_deskripsi_capaian($nilai) {
+        if ($nilai >= 91) {
+            return "<b> Sangat Baik (SB) </b> - Peserta didik sangat menguasai konsep, keterampilan, dan sikap dalam pembelajaran. Mampu menjelaskan, menerapkan, serta menyelesaikan masalah secara mandiri dan kreatif.";
+        } elseif ($nilai >= 81) {
+            return "<b> Baik (B) </b>  - Peserta didik menguasai sebagian besar materi dan keterampilan dengan baik. Dapat menerapkan pengetahuan dalam konteks sederhana serta menunjukkan kemandirian dan tanggung jawab dalam belajar.";
+        } elseif ($nilai >= 71) {
+            return "<b> Cukup (C) </b> - Peserta didik memahami sebagian konsep dasar namun masih perlu bimbingan dalam penerapan dan pengembangan kemampuan berpikir kritis atau kreatif.";
+        } else {
+            return "<b> Perlu Bimbingan (PB) </b>  - Peserta didik belum menunjukkan penguasaan yang memadai terhadap materi dan keterampilan. Perlu pendampingan intensif dan latihan tambahan untuk mencapai kompetensi yang diharapkan.";
+        }
+    }
+
+    /**
+ * Fungsi untuk menghasilkan deskripsi capaian pembelajaran EKSKUL
+ */
+    private function get_deskripsi_ekskul($nilai) {
+        $nilai = strtoupper(trim($nilai)); // ubah ke huruf besar agar aman
+
+        switch ($nilai) {
+            case 'A':
+                return "Peserta didik sangat aktif dan menunjukkan prestasi tinggi dalam kegiatan ekstrakurikuler. Ia memiliki semangat, disiplin, dan kerja sama yang luar biasa.";
+            case 'B':
+                return "Peserta didik aktif mengikuti kegiatan ekstrakurikuler dengan semangat dan tanggung jawab yang baik.";
+            case 'C':
+                return "Peserta didik cukup aktif dalam kegiatan ekstrakurikuler, namun masih perlu meningkatkan partisipasi dan kedisiplinan.";
+            case 'D':
+                return "Peserta didik kurang aktif dalam kegiatan ekstrakurikuler dan perlu bimbingan lebih lanjut untuk meningkatkan keterlibatan.";
+            default:
+                return "-";
+        }
+    }
+
 
     // update nilai ekskul
     public function update_nilai_ekskul($no_induk)

@@ -91,7 +91,7 @@
                                                                     echo "<tr>
                                                                         <td>{$n->nama_mapel}</td>
                                                                         <td class='text-center' >".($nilai ?? '-')."</td>
-                                                                        <td class='text-center'>".($n->capaian_pembelajaran ?? '-')."</td>
+                                                                        <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
                                                                     </tr>";
                                                                 }
                                                             }
@@ -102,7 +102,7 @@
                                                                     echo "<tr>
                                                                         <td>{$n->nama_mapel}</td>
                                                                         <td class='text-center'>{$n->nilai_akhir}</td>
-                                                                        <td class='text-center'>".($n->capaian_pembelajaran ?? '-')."</td>
+                                                                        <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
                                                                     </tr>";
                                                                 }
                                                             }
@@ -125,7 +125,7 @@
                                                                 <tr>
                                                                     <td><?= $e->nama_ekskul ?></td>
                                                                     <td class='text-center'><?= $e->nilai ?? '-' ?></td>
-                                                                    <td class='text-center'><?= $e->keterangan ?? '-' ?></td>
+                                                                    <td class='text-left'><?= $e->deskripsi_ekskul ?? '-' ?></td>
                                                                 </tr>
                                                             <?php endforeach; ?>
                                                         <?php else: ?>
