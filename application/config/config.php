@@ -23,7 +23,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'https://sdntegalalur04.site/';
+//$config['base_url'] = 'https://sdntegalalur04.site/';
+if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
+    // Jika di localhost
+    $config['base_url'] = 'http://localhost/binduk/';
+} else {
+    // Jika di hosting (production)
+    $config['base_url'] = 'https://sdntegalalur04.site/';
+}
+
 
 /*
 |--------------------------------------------------------------------------

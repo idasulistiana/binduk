@@ -53,7 +53,13 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+	//define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+	// Detect environment automatically
+	if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
+		define('ENVIRONMENT', 'development');
+	} else {
+		define('ENVIRONMENT', 'production');
+	}
 
 /*
  *---------------------------------------------------------------
