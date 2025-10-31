@@ -6,7 +6,7 @@ class Mapel_model extends CI_Model {
     private $table = 'mata_pelajaran'; // ganti sesuai nama tabel di database
 
     public function __construct() {
-        parent::__construct();
+        
     }
 
     // Ambil semua data mapel
