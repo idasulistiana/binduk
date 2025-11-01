@@ -16,6 +16,7 @@
             background-color: #f5f5f5;
             color: #333;
         }
+      
 
         /* Tabel dataTables */
         table.dataTable th {
@@ -41,7 +42,9 @@
             background-color: #000 !important;
             color: #fff !important;
         }
-
+         .brand-link {
+            display: none; /* sembunyikan sampai CSS siap */
+        }
         /* Gambar responsif */
         img {
             max-width: 100%;
@@ -77,9 +80,5 @@
     </noscript>
 
     <!-- ================= Tampilkan body setelah load selesai ================= -->
-    <script>
-        window.addEventListener("load", function() {
-            document.body.style.display = 'block';
-        });
-    </script>
+    
 </head>

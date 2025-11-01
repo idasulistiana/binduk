@@ -2,7 +2,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-        <img src="<?= base_url('asset/AdminLTE/') ?>dist/img/logo_sekolah.png" alt="sekolah Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img id="logo-sekolah" src="<?= base_url('asset/AdminLTE/') ?>dist/img/logo_sekolah.png" alt="sekolah Logo" class="brand-image img-circle elevation-3" style="opacity: 0; transition: opacity 0.5s ease-in-out;">
         <span class="brand-text font-weight-light">SDN Tegal Alur 04</span>
     </a>
 
