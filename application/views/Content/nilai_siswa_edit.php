@@ -167,7 +167,8 @@
                                                                                 name="nilai" 
                                                                                 placeholder="Masukkan nilai (contoh: A, B, C)" 
                                                                                 maxlength="1"
-                                                                                required>
+                                                                                required
+																				oninput="this.value = this.value.toUpperCase().replace(/[^ABC]/g, '');">
                                                                             </div>
                                                                         </div>
 
