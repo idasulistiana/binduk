@@ -107,7 +107,8 @@ $route['nilai/update_nilai/(:num)'] = 'ControllerNilaiSiswa/update_nilai/$1';
 $route['nilai/update_nilai_mulok/(:num)'] = 'ControllerNilaiSiswa/update_nilai_mulok/$1';
 $route['nilai/update_nilai_ekskul/(:num)'] = 'ControllerNilaiSiswa/update_nilai_ekskul/$1';
 $route['nilai/delete_nilai/(:any)'] = 'ControllerNilaiSiswa/delete_nilai/$1';
-$route['nilai/store_nilai'] = 'ControllerNilaiSiswa/store_nilai';
+$route['nilai/store_nilai/(:any)'] = 'ControllerNilaiSiswa/store_nilai/$1';
+$route['nilai/store_nilai_ekskul/(:any)'] = 'ControllerNilaiSiswa/store_nilai_ekskul/$1';
 $route['nilai/import_nilai'] = 'ControllerNilaiSiswa/import_nilai';
 
 // 🔹 Kehadiran

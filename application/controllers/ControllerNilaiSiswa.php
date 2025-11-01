@@ -113,7 +113,6 @@ class ControllerNilaiSiswa extends CI_Controller {
             $id_kelas = $this->input->post('id_kelas');
             $semester = $this->input->post('semester');
             $mapel    = $this->input->post('mapel');    // array [id_mapel => nilai]
-            $capaian  = $this->input->post('capaian');  // array [id_mapel => capaian]
 
             foreach ($mapel as $id_mapel => $nilai_akhir) {
                 if ($nilai_akhir !== "") {
@@ -127,8 +126,7 @@ class ControllerNilaiSiswa extends CI_Controller {
                             'id_kelas' => $id_kelas,
                             'id_mapel' => $id_mapel,
                             'semester' => $semester,
-                            'nilai_akhir' => $nilai_akhir,
-                            'capaian_pembelajaran' => $capaian[$id_mapel] ?? null
+                            'nilai_akhir' => $nilai_akhir
                         ];
                         $this->Nilai_model->insert_nilai($data_insert);
                     }
@@ -169,7 +167,7 @@ class ControllerNilaiSiswa extends CI_Controller {
                 if (!empty($n->nilai_akhir)) {
                     $n->deskripsi_capaian = $this->get_deskripsi_capaian($n->nilai_akhir);
                 } else {
-                    $n->deskripsi_capaian = "Belum ada data nilai.";
+                    $n->deskripsi_capaian = "-";
                 }
             }
 
@@ -181,7 +179,7 @@ class ControllerNilaiSiswa extends CI_Controller {
                 if (!empty($e->nilai)) {
                     $e->deskripsi_ekskul = $this->get_deskripsi_ekskul($e->nilai);
                 } else {
-                    $e->deskripsi_ekskul = "Belum ada data nilai ekskul.";
+                    $e->deskripsi_ekskul = "-";
                 }
             }
 
@@ -269,40 +267,43 @@ class ControllerNilaiSiswa extends CI_Controller {
         }
     }
 
-
     // update nilai ekskul
     public function update_nilai_ekskul($no_induk)
-    {
-        $id_nilai_ekskul = $this->input->post('id_nilai_ekskul');
-        $id_ekskul       = $this->input->post('id_ekskul');
-        $id_kelas        = $this->input->post('id_kelas');
-        $semester        = $this->input->post('semester');
-        $nilai           = $this->input->post('nilai');
-        $keterangan      = $this->input->post('keterangan');
+{
+    $id_nilai_ekskul = $this->input->post('id_nilai_ekskul');
+    $id_ekskul       = $this->input->post('id_ekskul');
+    $id_kelas        = $this->input->post('id_kelas'); // pastikan konsisten dgn form
+    $semester        = $this->input->post('semester');
+    $nilai           = $this->input->post('nilai');
 
-        if (!empty($id_nilai_ekskul)) {
-            // UPDATE
-            $this->db->where('id_nilai_ekskul', $id_nilai_ekskul);
-            $this->db->update('nilai_ekskul', [
-                'nilai'      => $nilai,
-                'keterangan' => $keterangan
-            ]);
-            $this->session->set_flashdata('success', 'Nilai ekskul berhasil diperbarui!');
-        } else {
-            // INSERT BARU (jika belum ada)
-            $this->db->insert('nilai_ekskul', [
-                'no_induk'   => $no_induk,
-                'id_ekskul'  => $id_ekskul,
-                'id_kelas'   => $id_kelas,
-                'semester'   => $semester,
-                'nilai'      => $nilai,
-                'keterangan' => $keterangan
-            ]);
-            $this->session->set_flashdata('success', 'Nilai ekskul baru berhasil ditambahkan!');
-        }
+    //  echo '<pre>';
+    // print_r($_POST);
+    // echo '</pre>';
+    // exit;
 
-         redirect('nilai/edit_siswa/'.$no_induk.'?id_kelas='.$id_kelas.'&semester='.$semester);
+    if (!empty($id_nilai_ekskul)) {
+        // === UPDATE ===
+        $this->db->where('id_nilai_ekskul', $id_nilai_ekskul);
+        $this->db->update('nilai_ekskul', [
+            'nilai' => $nilai
+        ]);
+        $this->session->set_flashdata('success', 'Nilai ekstrakurikuler berhasil diperbarui!');
+    } else {
+        // === INSERT BARU ===
+        $data = [
+            'no_induk'  => $no_induk,
+            'id_ekskul' => $id_ekskul,
+            'id_kelas'  => $id_kelas,
+            'semester'  => $semester,
+            'nilai'     => $nilai
+        ];
+        $this->db->insert('nilai_ekskul', $data);
+        $this->session->set_flashdata('success', 'Nilai ekstrakurikuler baru berhasil ditambahkan!');
     }
+echo $this->db->last_query();
+    redirect('nilai/edit_siswa/' . $no_induk . '?id_kelas=' . $id_kelas . '&semester=' . $semester);
+}
+
 
     // Tambah nilai (dari modal)
     public function store_nilai($no_induk) {
@@ -313,8 +314,7 @@ class ControllerNilaiSiswa extends CI_Controller {
             'id_mapel'              => $this->input->post('id_mapel'),
             'id_kelas'              => $this->input->post('id_kelas'),
             'semester'              => $this->input->post('semester'),
-            'nilai_akhir'           => $this->input->post('nilai_akhir'),
-            'capaian_pembelajaran'  => $this->input->post('capaian_pembelajaran'),
+            'nilai_akhir'           => $this->input->post('nilai_akhir')
         ];
 
         if ($this->Nilai_model->insert_nilai($data)) {
@@ -325,6 +325,36 @@ class ControllerNilaiSiswa extends CI_Controller {
 
             redirect('nilai/edit_siswa/'.$no_induk.'?id_kelas='.$id_kelas.'&semester='.$semester);
     }
+    public function store_nilai_ekskul($no_induk)
+    {
+        $id_ekskul  = $this->input->post('id_ekskul');
+        $id_kelas   = $this->input->post('id_kelas');
+        $semester   = $this->input->post('semester');
+        $nilai = strtoupper($this->input->post('nilai'));
+            if (!in_array($nilai, ['A', 'B', 'C'])) {
+                echo "Nilai tidak valid, hanya boleh A, B, atau C.";
+                return;
+            }
+
+        $data = [
+            'no_induk'  => $no_induk,
+            'id_ekskul' => $id_ekskul,
+            'id_kelas'  => $id_kelas,
+            'semester'  => $semester,
+            'nilai'     => $nilai
+        ];
+     
+          
+    $result = $this->Nilai_model->insert_nilai_ekskul($data);
+
+    if ($result) {
+        $this->session->set_flashdata('success', 'Nilai ekstrakurikuler berhasil ditambahkan.');
+    } else {
+        $this->session->set_flashdata('error', 'Gagal menambahkan nilai ekstrakurikuler: ' . $this->db->error()['message']);
+    }
+
+        redirect('nilai/edit_siswa/' . $no_induk . '?id_kelas=' . $id_kelas . '&semester=' . $semester);
+    }
 
     // Update nilai
     public function update_nilai($no_induk) {
@@ -333,8 +363,7 @@ class ControllerNilaiSiswa extends CI_Controller {
         $semester = $this->input->post('semester');
 
         $data = [
-            'nilai_akhir'           => $this->input->post('nilai_akhir'),
-            'capaian_pembelajaran'  => $this->input->post('capaian_pembelajaran'),
+            'nilai_akhir'           => $this->input->post('nilai_akhir')
         ];
 
         if ($this->Nilai_model->update($id_nilai, $data)) {
@@ -346,20 +375,31 @@ class ControllerNilaiSiswa extends CI_Controller {
         redirect('nilai/edit_siswa/'.$no_induk.'?id_kelas='.$id_kelas.'&semester='.$semester);
     }
 
-    // Hapus nilai
+    // Hapus nilai ekskul dan mapel
     public function delete_nilai($no_induk) {
-        $id_nilai = $this->input->post('id_nilai');
-        $id_kelas = $this->input->post('id_kelas');
+        $id_nilai = $this->input->post('id_nilai') ?: $this->input->post('id_nilai_ekskul');
+        $id_kelas = $this->input->post('id_kelas') ?: $this->input->post('id_kelas_ekskul');
         $semester = $this->input->post('semester');
+        $jenis    = $this->input->post('jenis'); // "mapel" atau "ekskul"
 
-        if ($this->Nilai_model->delete($id_nilai)) {
-            $this->session->set_flashdata('success', 'Nilai berhasil dihapus.');
+        if ($this->Nilai_model->delete($id_nilai, $jenis)) {
+            $pesan = ($jenis == 'ekskul')
+                ? 'Nilai ekstrakurikuler berhasil dihapus.'
+                : 'Nilai berhasil dihapus.';
+            $this->session->set_flashdata('success', $pesan);
         } else {
-            $this->session->set_flashdata('error', 'Gagal menghapus nilai.');
+            $pesan = ($jenis == 'ekskul')
+                ? 'Gagal menghapus nilai ekstrakurikuler.'
+                : 'Gagal menghapus nilai.';
+            $this->session->set_flashdata('error', $pesan);
         }
 
-        redirect('nilai/edit_siswa/'.$no_induk.'?id_kelas='.$id_kelas.'&semester='.$semester);
+        // Arahkan kembali ke bagian tabel sesuai jenis
+        $anchor = ($jenis == 'ekskul') ? '#tabel-ekskul' : '';
+        redirect('nilai/edit_siswa/' . $no_induk . '?id_kelas=' . $id_kelas . '&semester=' . $semester . $anchor);
     }
+
+
     //update nilai mulok
     public function update_nilai_mulok($no_induk)
     {
@@ -533,5 +573,7 @@ class ControllerNilaiSiswa extends CI_Controller {
             redirect($this->session->userdata('previous_url'));
         }
     }
+
+    
 
 }

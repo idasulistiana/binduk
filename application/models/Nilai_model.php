@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Nilai_model extends CI_Model {
 
     private $table = 'nilai'; // ganti dengan nama tabel nilai di database
+    private $table_ekskul = 'nilai_ekskul'; // ganti dengan nama tabel nilai di database
 
     public function __construct() {
      
@@ -60,6 +61,19 @@ class Nilai_model extends CI_Model {
         ])->row();
     }
 
+public function insert_nilai_ekskul($data)
+{
+    $this->db->insert('nilai_ekskul', $data);
+    if ($this->db->affected_rows() > 0) {
+        return true;
+    } else {
+        // debug untuk melihat error jika gagal
+        log_message('error', 'Gagal insert nilai ekskul: ' . print_r($this->db->error(), true));
+        return false;
+    }
+}
+
+
 
     // application/models/Nilai_model.php
     public function get_existing_nilai_by_no_induk_kelas_semester($no_induk, $id_kelas, $semester) {
@@ -74,7 +88,7 @@ class Nilai_model extends CI_Model {
     } 
 
     public function get_all_mapel_with_nilai($no_induk, $id_kelas, $semester) {
-        $this->db->select('m.id_mapel, m.nama_mapel,  m.kode_mapel, n.id_nilai, n.nilai_akhir, n.capaian_pembelajaran');
+        $this->db->select('m.id_mapel, m.nama_mapel,  m.kode_mapel, n.id_nilai, n.nilai_akhir');
         $this->db->from('mata_pelajaran m');
         $this->db->join(
             'nilai n',
@@ -87,7 +101,7 @@ class Nilai_model extends CI_Model {
     }
         public function get_nilai_by_no_induk_kelas_semester($no_induk, $id_kelas, $semester) {
             $this->db->select('m.id_mapel, m.nama_mapel, k.nama_kelas, 
-                            n.id_nilai, n.no_induk, n.nilai_akhir, n.capaian_pembelajaran, n.semester');
+                            n.id_nilai, n.no_induk, n.nilai_akhir, n.semester');
             $this->db->from('mata_pelajaran m');
             $this->db->join('nilai n', 'm.id_mapel = n.id_mapel 
                                     AND n.no_induk = '.$this->db->escape($no_induk).' 
@@ -135,11 +149,16 @@ class Nilai_model extends CI_Model {
             $this->db->where('id_nilai', $id_nilai);
             return $this->db->update('nilai', $data);
         }
-
-        // Hapus nilai berdasarkan id_nilai
-        public function delete($id_nilai) {
-            $this->db->where('id_nilai', $id_nilai);
-            return $this->db->delete('nilai');
+        
+          // Hapus nilai (mapel atau ekskul)
+        public function delete($id_nilai, $jenis = 'mapel') {
+            if ($jenis == 'ekskul') {
+                $this->db->where('id_nilai_ekskul', $id_nilai);
+                return $this->db->delete('nilai_ekskul');
+            } else {
+                $this->db->where('id_nilai', $id_nilai);
+                return $this->db->delete('nilai');
+            }
         }
 
         public function get_mapel_by_kode($kode_mapel)

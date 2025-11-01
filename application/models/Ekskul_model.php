@@ -47,7 +47,7 @@ class Ekskul_model extends CI_Model {
     
     // show nilai ekskul
     public function get_nilai_ekskul_siswa($no_induk, $id_kelas, $semester){
-        $this->db->select('e.nama_ekskul, ne.nilai, ne.keterangan');
+        $this->db->select('e.nama_ekskul, ne.nilai');
         $this->db->from('nilai_ekskul ne');
         $this->db->join('ekskul e', 'e.id_ekskul = ne.id_ekskul', 'left');
         $this->db->where('ne.no_induk', $no_induk);
@@ -85,7 +85,7 @@ class Ekskul_model extends CI_Model {
 
 
     public function get_all_ekskul_with_nilai($no_induk, $id_kelas, $semester) {
-        $this->db->select('e.id_ekskul, e.nama_ekskul, ne.id_nilai_ekskul, ne.nilai, ne.keterangan');
+        $this->db->select('e.id_ekskul, e.nama_ekskul, ne.id_nilai_ekskul, ne.nilai');
         $this->db->from('ekskul e');
         $this->db->join('nilai_ekskul ne', 'ne.id_ekskul = e.id_ekskul AND ne.no_induk = "'.$no_induk.'" AND ne.id_kelas = "'.$id_kelas.'" AND ne.semester = "'.$semester.'"', 'left');
         $this->db->order_by('e.nama_ekskul', 'ASC');
