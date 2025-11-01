@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="icon" href="<?= base_url('asset/AdminLTE/dist/img/logo_sekolah.png') ?>" type="image/png">
+    <link rel="icon" type="image/png" href="<?= base_url('asset/AdminLTE/dist/img/logo_sekolah.png') ?>">
+
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>idasulistiana</title>
