@@ -64,12 +64,14 @@ class Nilai_model extends CI_Model {
 public function insert_nilai_ekskul($data)
 {
     $this->db->insert('nilai_ekskul', $data);
-    if ($this->db->affected_rows() > 0) {
-        return true;
-    } else {
-        log_message('error', 'Gagal insert nilai ekskul: ' . $this->db->error()['message']);
-        return false;
+    $error = $this->db->error(); // ambil error DB setelah insert
+
+    if ($error['code'] != 0) {
+        log_message('error', 'Gagal insert nilai ekskul: ' . print_r($error, true));
+        return $error; // return error ke controller
     }
+
+    return true;
 }
 
 
