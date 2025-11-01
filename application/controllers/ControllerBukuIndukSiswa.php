@@ -72,6 +72,22 @@ class ControllerBukuIndukSiswa extends CI_Controller {
                 if (!empty($nilai_mapel)) {
                     $kelas_punya_nilai_mapel = true;
                 }
+                 // Tambahkan deskripsi capaian pembelajaran (mapel)
+                foreach ($nilai_mapel as &$n) {
+                    if (!empty($n->nilai_akhir)) {
+                        $n->deskripsi_capaian = $this->get_deskripsi_capaian($n->nilai_akhir);
+                    } else {
+                        $n->deskripsi_capaian = "-";
+                    }
+                }
+                   // Tambahkan deskripsi capaian pembelajaran (ekskul)
+                foreach ($nilai_ekskul as &$e) {
+                    if (!empty($e->nilai)) {
+                        $e->deskripsi_ekskul = $this->get_deskripsi_ekskul($e->nilai);
+                    } else {
+                        $e->deskripsi_ekskul = "-";
+                    }
+                }
             }
 
             // Hanya tambahkan kelas jika punya nilai mapel minimal di 1 semester
@@ -91,6 +107,41 @@ class ControllerBukuIndukSiswa extends CI_Controller {
         $this->load->view('Layout/aside');
         $this->load->view('Content/buku_induk_siswa_detail', $data);
         $this->load->view('Layout/footer');
+    }
+
+     /**
+     * Fungsi untuk menghasilkan deskripsi capaian pembelajaran berdasarkan nilai akhir
+     */
+    private function get_deskripsi_capaian($nilai) {
+        if ($nilai >= 91) {
+            return "<b> Sangat Baik (SB) </b> - Peserta didik sangat menguasai konsep, keterampilan, dan sikap dalam pembelajaran. Mampu menjelaskan, menerapkan, serta menyelesaikan masalah secara mandiri dan kreatif.";
+        } elseif ($nilai >= 81) {
+            return "<b> Baik (B) </b>  - Peserta didik menguasai sebagian besar materi dan keterampilan dengan baik. Dapat menerapkan pengetahuan dalam konteks sederhana serta menunjukkan kemandirian dan tanggung jawab dalam belajar.";
+        } elseif ($nilai >= 71) {
+            return "<b> Cukup (C) </b> - Peserta didik memahami sebagian konsep dasar namun masih perlu bimbingan dalam penerapan dan pengembangan kemampuan berpikir kritis atau kreatif.";
+        } else {
+            return "<b> Perlu Bimbingan (PB) </b>  - Peserta didik belum menunjukkan penguasaan yang memadai terhadap materi dan keterampilan. Perlu pendampingan intensif dan latihan tambahan untuk mencapai kompetensi yang diharapkan.";
+        }
+    }
+
+    /**
+ * Fungsi untuk menghasilkan deskripsi capaian pembelajaran EKSKUL
+ */
+    private function get_deskripsi_ekskul($nilai) {
+        $nilai = strtoupper(trim($nilai)); // ubah ke huruf besar agar aman
+
+        switch ($nilai) {
+            case 'A':
+                return "Peserta didik sangat aktif dan menunjukkan prestasi tinggi dalam kegiatan ekstrakurikuler. Ia memiliki semangat, disiplin, dan kerja sama yang luar biasa.";
+            case 'B':
+                return "Peserta didik aktif mengikuti kegiatan ekstrakurikuler dengan semangat dan tanggung jawab yang baik.";
+            case 'C':
+                return "Peserta didik cukup aktif dalam kegiatan ekstrakurikuler, namun masih perlu meningkatkan partisipasi dan kedisiplinan.";
+            case 'D':
+                return "Peserta didik kurang aktif dalam kegiatan ekstrakurikuler dan perlu bimbingan lebih lanjut untuk meningkatkan keterlibatan.";
+            default:
+                return "-";
+        }
     }
 
 // ====================== PRINT BUKU INDUK ======================

@@ -35,122 +35,145 @@
 
             <!-- ================== NILAI SISWA ================== -->
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Nilai Rapot</h3>
-                </div>
-                <div class="card-body">
-                    <div class="mt-4">
-                        <?php
-                        function mapel_memiliki_nilai($mapel_list) {
-                            if (empty($mapel_list)) return false;
-                            foreach ($mapel_list as $m) {
-                                $cols = ['nilai', 'nilai_akhir', 'nilai_final', 'nilai_rata'];
-                                foreach ($cols as $col) {
-                                    if (isset($m->$col) && $m->$col !== null && $m->$col !== '') return true;
-                                }
-                            }
-                            return false;
-                        }
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">Nilai Rapot</h3>
+    </div>
+    <div class="card-body">
+        <div class="mt-4">
+            <?php
+            // Fungsi cek apakah mapel memiliki nilai
+            function mapel_memiliki_nilai($mapel_list) {
+                if (empty($mapel_list)) return false;
+                foreach ($mapel_list as $m) {
+                    $cols = ['nilai', 'nilai_akhir', 'nilai_final', 'nilai_rata'];
+                    foreach ($cols as $col) {
+                        if (isset($m->$col) && $m->$col !== null && $m->$col !== '') return true;
+                    }
+                }
+                return false;
+            }
 
-                        if (!empty($kelas_nilai)):
-                            $kelas_ada_nilai = [];
-                            foreach ($kelas_nilai as $id_kelas => $k) {
-                                $ada = false;
-                                for ($sem = 1; $sem <= 2; $sem++) {
-                                    $mapel = $k['semester'][$sem]['mapel'] ?? [];
-                                    if (mapel_memiliki_nilai($mapel)) { $ada = true; break; }
-                                }
-                                if ($ada) $kelas_ada_nilai[$id_kelas] = $k;
-                            }
-                        ?>
+            if (!empty($kelas_nilai)):
+                $kelas_ada_nilai = [];
+                foreach ($kelas_nilai as $id_kelas => $k) {
+                    $ada = false;
+                    for ($sem = 1; $sem <= 2; $sem++) {
+                        $mapel = $k['semester'][$sem]['mapel'] ?? [];
+                        if (mapel_memiliki_nilai($mapel)) { $ada = true; break; }
+                    }
+                    if ($ada) $kelas_ada_nilai[$id_kelas] = $k;
+                }
+            ?>
 
-                        <?php if (!empty($kelas_ada_nilai)): ?>
-                            <ul class="nav nav-tabs flex-nowrap" id="kelasTab" role="tablist" style="overflow-x:auto; white-space:nowrap;">
-                                <?php $first = true; foreach ($kelas_ada_nilai as $id_kelas => $k): ?>
-                                    <li class="nav-item" style="display:inline-block; margin-right:5px;">
-                                        <a class="nav-link <?= $first ? 'active' : '' ?>"
-                                           id="tab-<?= $id_kelas ?>"
-                                           data-toggle="tab"
-                                           href="#kelas-<?= $id_kelas ?>"
-                                           role="tab"
-                                           aria-controls="kelas-<?= $id_kelas ?>"
-                                           aria-selected="<?= $first ? 'true' : 'false' ?>">
-                                           Kelas <?= htmlspecialchars($k['nama_kelas']) ?>
-                                        </a>
-                                    </li>
-                                <?php $first = false; endforeach; ?>
-                            </ul>
+            <?php if (!empty($kelas_ada_nilai)): ?>
+                <!-- Tabs Kelas -->
+                <ul class="nav nav-tabs flex-nowrap" id="kelasTab" role="tablist" style="overflow-x:auto; white-space:nowrap;">
+                    <?php $first = true; foreach ($kelas_ada_nilai as $id_kelas => $k): ?>
+                        <li class="nav-item" style="display:inline-block; margin-right:5px;">
+                            <a class="nav-link <?= $first ? 'active' : '' ?>"
+                               id="tab-<?= $id_kelas ?>"
+                               data-toggle="tab"
+                               href="#kelas-<?= $id_kelas ?>"
+                               role="tab"
+                               aria-controls="kelas-<?= $id_kelas ?>"
+                               aria-selected="<?= $first ? 'true' : 'false' ?>">
+                               Kelas <?= htmlspecialchars($k['nama_kelas']) ?>
+                            </a>
+                        </li>
+                    <?php $first = false; endforeach; ?>
+                </ul>
 
-                            <div class="tab-content mt-3" id="kelasTabContent">
-                                <?php $first_tab = true; foreach ($kelas_ada_nilai as $id_kelas => $k): ?>
-                                    <div class="tab-pane fade <?= $first_tab ? 'show active' : '' ?>" id="kelas-<?= $id_kelas ?>" role="tabpanel">
-                                        <?php $first_tab = false; ?>
+                <div class="tab-content mt-3" id="kelasTabContent">
+                    <?php $first_tab = true; foreach ($kelas_ada_nilai as $id_kelas => $k): ?>
+                        <div class="tab-pane fade <?= $first_tab ? 'show active' : '' ?>" id="kelas-<?= $id_kelas ?>" role="tabpanel">
+                            <?php $first_tab = false; ?>
 
-                                        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-                                            <h5>Pilih Semester</h5>
-                                            <select class="form-control semester-select" data-kelas="<?= $id_kelas ?>" id="semesterSelect-<?= $id_kelas ?>" style="width:auto;">
-                                                <option value="1" selected>Ganjil</option>
-                                                <option value="2">Genap</option>
-                                            </select>
-                                        </div>
+                            <!-- Pilih Semester -->
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+                                <h5>Pilih Semester</h5>
+                                <select class="form-control semester-select" data-kelas="<?= $id_kelas ?>" id="semesterSelect-<?= $id_kelas ?>" style="width:auto;">
+                                    <option value="1" selected>Ganjil</option>
+                                    <option value="2">Genap</option>
+                                </select>
+                            </div>
 
-                                        <?php for ($sem = 1; $sem <= 2; $sem++): 
-                                            $data_semester = $k['semester'][$sem] ?? [];
-                                            $nilai_mapel = $data_semester['mapel'] ?? [];
-                                            $data_ekskul = $data_semester['ekskul'] ?? [];
-                                            $rekap_kehadiran = $data_semester['kehadiran'] ?? null;
+                            <?php for ($sem = 1; $sem <= 2; $sem++): 
+                                $data_semester = $k['semester'][$sem] ?? [];
+                                $nilai_mapel = $data_semester['mapel'] ?? [];
+                                $data_ekskul = $data_semester['ekskul'] ?? [];
+                                $rekap_kehadiran = $data_semester['kehadiran'] ?? null;
 
-                                            if (!mapel_memiliki_nilai($nilai_mapel)) continue;
-                                        ?>
-                                        <div class="semester-content" id="semester-<?= $id_kelas ?>-<?= $sem ?>" style="<?= $sem == 1 ? '' : 'display:none;' ?>">
-                                            <h5>Semester <?= $sem == 1 ? 'Ganjil' : 'Genap' ?></h5>
+                                if (!mapel_memiliki_nilai($nilai_mapel)) continue;
+                            ?>
+                            <div class="semester-content" id="semester-<?= $id_kelas ?>-<?= $sem ?>" style="<?= $sem == 1 ? '' : 'display:none;' ?>">
+                                <h5>Semester <?= $sem == 1 ? 'Ganjil' : 'Genap' ?></h5>
 
-                                            <table class="table table-bordered table-striped">
-                                                <thead class="thead-dark">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Nama Mapel</th>
+                                            <th class="text-center">Nilai Akhir</th>
+                                            <th>Capaian Pembelajaran</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                            $total_nilai = 0; 
+                                            $count_nilai = 0; 
+                                            $mulok_rows = [];
+
+                                            preg_match('/\d+/', $k['nama_kelas'], $matches);
+                                            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
+
+                                            foreach ($nilai_mapel as $n):
+                                                $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
+
+                                                // Tentukan apakah mapel masuk MULOK
+                                                $is_mulok = false;
+                                                if ($n->kode_mapel == 'PLBJ' || ($n->kode_mapel == 'BING' && $kelas_number >= 3)) {
+                                                    $is_mulok = true;
+                                                    $mulok_rows[] = $n;
+                                                }
+
+                                                // Total & rata-rata dihitung semua nilai termasuk MULOK
+                                                if ($nilai !== null) { 
+                                                    $total_nilai += $nilai; 
+                                                    $count_nilai++; 
+                                                }
+
+                                                // Mapel biasa ditampilkan jika bukan MULOK dan bukan BING
+                                                if (!$is_mulok && $n->kode_mapel != 'BING'): ?>
                                                     <tr>
-                                                        <th>Nama Mapel</th>
-                                                        <th>Nilai Akhir</th>
-                                                        <th>Capaian Pembelajaran</th>
+                                                        <td><?= $n->nama_mapel ?></td>
+                                                        <td class="text-center"><?= $nilai ?? '-' ?></td>
+                                                        <td><?= $n->deskripsi_capaian ?? '-' ?></td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php 
-                                                    $total_nilai = 0; $count_nilai = 0; $mulok_rows = [];
-                                                    preg_match('/\d+/', $k['nama_kelas'], $matches);
-                                                    $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
+                                                <?php endif; 
+                                            endforeach;
+                                        // Tampilkan MULOK
+                                        if (!empty($mulok_rows)): ?>
+                                            <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">MULOK</th></tr>
+                                            <?php foreach ($mulok_rows as $n):
+                                                $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
+                                            ?>
+                                                <tr>
+                                                    <td><?= $n->nama_mapel ?></td>
+                                                    <td class="text-center"><?= $nilai ?? '-' ?></td>
+                                                    <td><?= $n->deskripsi_capaian ?? '-' ?></td>
+                                                </tr>
+                                            <?php endforeach; 
+                                        endif; ?>
 
-                                                    foreach ($nilai_mapel as $n):
-                                                        $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
-                                                        if ($nilai !== null) { $total_nilai += $nilai; $count_nilai++; }
-
-                                                        $is_mulok = false;
-                                                        if ($n->nama_mapel == 'PLBJ' || ($n->nama_mapel == 'Bahasa Inggris' && $kelas_number >= 3)) {
-                                                            $is_mulok = true;
-                                                            $mulok_rows[] = $n;
-                                                        }
-
-                                                        if (!$is_mulok): ?>
-                                                            <tr>
-                                                                <td><?= $n->nama_mapel ?></td>
-                                                                <td><?= $nilai ?? '-' ?></td>
-                                                                <td><?= $n->capaian_pembelajaran ?? '-' ?></td>
-                                                            </tr>
-                                                        <?php endif; 
-                                                    endforeach;
-
-                                                    if (!empty($mulok_rows)): ?>
-                                                        <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">MULOK</th></tr>
-                                                        <?php foreach ($mulok_rows as $n): ?>
-                                                            <tr>
-                                                                <td><?= $n->nama_mapel ?></td>
-                                                                <td><?= $n->nilai_akhir ?? '-' ?></td>
-                                                                <td><?= $n->capaian_pembelajaran ?? '-' ?></td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-
-                                                    <tr><th class="text-right">Jumlah Nilai</th><th><?= $total_nilai ?></th><th></th></tr>
-                                                    <tr><th class="text-right">Rata-rata Nilai</th><th><?= $count_nilai > 0 ? round($total_nilai / $count_nilai, 2) : 0 ?></th><th></th></tr>
+                                        <tr>
+                                            <th class="text-right bg-light text-dark">Jumlah Nilai</th>
+                                            <th class="text-center bg-light text-dark"><?= $total_nilai ?></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-right bg-light text-dark">Rata-rata Nilai</th>
+                                            <th class="text-center bg-light text-dark"><?= $count_nilai > 0 ? round($total_nilai / $count_nilai, 2) : 0 ?></th>
+                                            <th></th>
+                                        </tr>
 
                                                     <!-- ================= EKSKUL ================= -->
                                                     <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Ekstrakurikuler</th></tr>
@@ -172,7 +195,7 @@
                                                             <tr>
                                                                 <td><?= $e->nama_ekskul ?></td>
                                                                 <td><?= $e->nilai ?? '-' ?></td>
-                                                                <td><?= $e->keterangan ?? '-' ?></td>
+                                                                <td><?= $e->deskripsi_ekskul ?? '-' ?></td>
                                                             </tr>
                                                         <?php endforeach; ?>
                                                     <?php else: ?>
