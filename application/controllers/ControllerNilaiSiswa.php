@@ -14,7 +14,7 @@ class ControllerNilaiSiswa extends CI_Controller {
         $this->load->library('form_validation');
         // ✅ Proteksi agar tidak bisa akses tanpa login
         if (!$this->session->userdata('logged_in')) {
-			   redirect('niali');
+			   redirect('nilai');
         }
     }
 
