@@ -48,6 +48,24 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <!-- page script -->
+<script>
+$(document).ready(function(){
+    var body = $('body');
+
+    $('.main-sidebar').hover(
+        function(){ // mouse enter
+            if(body.hasClass('sidebar-collapse')){
+                body.removeClass('sidebar-collapse').addClass('sidebar-open');
+            }
+        },
+        function(){ // mouse leave
+            if(body.hasClass('sidebar-open')){
+                body.removeClass('sidebar-open').addClass('sidebar-collapse');
+            }
+        }
+    );
+});
+</script>
 
 <script>
     $(function() {
