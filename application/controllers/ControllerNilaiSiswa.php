@@ -346,7 +346,10 @@ echo $this->db->last_query();
      
           
     $result = $this->Nilai_model->insert_nilai_ekskul($data);
-
+echo '<pre>';
+print_r($data);
+echo '</pre>';
+exit;
     if ($result) {
         $this->session->set_flashdata('success', 'Nilai ekstrakurikuler berhasil ditambahkan.');
     } else {
