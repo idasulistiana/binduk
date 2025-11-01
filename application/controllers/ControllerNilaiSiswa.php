@@ -330,11 +330,7 @@ echo $this->db->last_query();
         $id_ekskul  = $this->input->post('id_ekskul');
         $id_kelas   = $this->input->post('id_kelas');
         $semester   = $this->input->post('semester');
-        $nilai = strtoupper($this->input->post('nilai'));
-            if (!in_array($nilai, ['A', 'B', 'C'])) {
-                echo "Nilai tidak valid, hanya boleh A, B, atau C.";
-                return;
-            }
+        $nilai = $this->input->post('nilai');
 
         $data = [
             'no_induk'  => $no_induk,
