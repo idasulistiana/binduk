@@ -67,8 +67,7 @@ public function insert_nilai_ekskul($data)
     if ($this->db->affected_rows() > 0) {
         return true;
     } else {
-        // debug untuk melihat error jika gagal
-        log_message('error', 'Gagal insert nilai ekskul: ' . print_r($this->db->error(), true));
+        log_message('error', 'Gagal insert nilai ekskul: ' . $this->db->error()['message']);
         return false;
     }
 }
