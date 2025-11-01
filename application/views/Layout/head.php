@@ -2,6 +2,7 @@
 <html>
 <head>
     <link rel="icon" type="image/png" href="<?= base_url('asset/AdminLTE/dist/img/logo_sekolah.png') ?>">
+	<link rel="icon" type="image/x-icon" href="<?= base_url('asset/AdminLTE/dist/img/favicon_v2.ico') ?>">
 
 
     <meta charset="utf-8">
