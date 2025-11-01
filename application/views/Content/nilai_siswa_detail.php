@@ -61,69 +61,129 @@
 
                                             <?php if (!empty($nilai_mapel)): ?>
                                                 <!-- ===================== TABEL NILAI MAPEL ===================== -->
-                                                <table class="table table-bordered table-striped">
-                                                    <thead class="thead-dark">
-                                                        <tr>
-                                                            <th>Nama Mapel</th>
-                                                            <th class='text-center'>Nilai Akhir</th>
-                                                            <th class='text-center'>Capaian Pembelajaran</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php 
-                                                            $total_nilai = 0; $count_nilai = 0;
-                                                            $mulok_rows = []; $kelas_number = 0;
+                                            <table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Nama Mapel</th>
+            <th class='text-center'>Nilai Akhir</th>
+            <th class='text-center'>Capaian Pembelajaran</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+            $total_nilai = 0; 
+            $count_nilai = 0;
+            $unique_nilai_mapel = []; // Array baru untuk menyimpan data unik
+            $mulok_rows = [];
+            $mapel_inti_rows = [];
+            $kelas_number = 0;
 
-                                                            preg_match('/\d+/', $k['nama_kelas'], $matches);
-                                                            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
+            // Mendapatkan angka kelas
+            preg_match('/\d+/', $k['nama_kelas'], $matches);
+            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
 
-                                                            foreach ($nilai_mapel as $n) {
-                                                                $nilai = $n->nilai_akhir ?? null;
-                                                                if ($nilai !== null) { $total_nilai += $nilai; $count_nilai++; }
+            // =======================================================
+            // 1. PENCEGAHAN DUPLIKASI: Buat array unik berdasarkan kode_mapel
+            // =======================================================
+            foreach ($nilai_mapel as $n) {
+                // Gunakan kode_mapel sebagai kunci untuk menimpa jika ada duplikasi
+                // Entri terakhir (biasanya yang paling relevan) akan dipertahankan
+                $unique_nilai_mapel[$n->kode_mapel] = $n; 
+            }
 
-                                                                $is_mulok = false;
-                                                                if ($n->kode_mapel == 'PLBJ' || ($n->kode_mapel == 'BING' && $kelas_number >= 3)) {
-                                                                    $is_mulok = true;
-                                                                    $mulok_rows[] = $n;
-                                                                }
+            // =======================================================
+            // 2. PENGELOMPOKAN DATA UNIK DAN PENGHITUNGAN
+            // =======================================================
+            foreach ($unique_nilai_mapel as $n) { // Loop sekarang menggunakan data UNIK
+                $nilai = $n->nilai_akhir ?? null;
+                
+                // Hitung total dan jumlah nilai
+                if ($nilai !== null) { $total_nilai += $nilai; $count_nilai++; }
 
-                                                                if (!$is_mulok) {
-                                                                    echo "<tr>
-                                                                        <td>{$n->nama_mapel}</td>
-                                                                        <td class='text-center' >".($nilai ?? '-')."</td>
-                                                                        <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
-                                                                    </tr>";
-                                                                }
-                                                            }
+                $is_plbj = ($n->kode_mapel == 'PLBJ');
+                // BING adalah Mulok hanya untuk kelas 3, 4, 5, 6
+                $is_bing = ($n->kode_mapel == 'BING' && $kelas_number >= 3 && $kelas_number <= 6);
 
-                                                            if (!empty($mulok_rows)) {
-                                                                echo '<tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">MULOK</th></tr>';
-                                                                foreach ($mulok_rows as $n) {
-                                                                    echo "<tr>
-                                                                        <td>{$n->nama_mapel}</td>
-                                                                        <td class='text-center'>{$n->nilai_akhir}</td>
-                                                                        <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
-                                                                    </tr>";
-                                                                }
-                                                            }
+                if ($is_plbj || $is_bing) {
+                    $mulok_rows[] = $n; // Simpan ke array MULOK
+                } else {
+                    // Jika BING ada tapi di kelas 1 atau 2, lewati (tidak ditampilkan)
+                    if ($n->kode_mapel == 'BING' && ($kelas_number < 3 || $kelas_number > 6)) {
+                         continue;
+                    }
+                    $mapel_inti_rows[] = $n; // Simpan ke array Mapel Inti
+                }
+            }
+            
+            // =======================================================
+            // 3. MENAMPILKAN MATA PELAJARAN INTI
+            // =======================================================
+            foreach ($mapel_inti_rows as $n) {
+                $nilai = $n->nilai_akhir ?? '-';
+                echo "<tr>
+                        <td>{$n->nama_mapel}</td>
+                        <td class='text-center'>{$nilai}</td>
+                        <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
+                      </tr>";
+            }
 
-                                                            echo "<tr>
-                                                                    <th class='text-center bg-light text-dark'>Jumlah Nilai</th>
-                                                                    <th class='text-center bg-light text-dark'>{$total_nilai}</th>
-                                                                    <th class='text-center bg-light text-dark'></th>
-                                                                  </tr>
-                                                                  <tr>
-                                                                    <th class='text-center bg-light text-dark' >Rata-rata Nilai</th>
-                                                                    <th class='text-center bg-light text-dark'>".(($count_nilai > 0) ? round($total_nilai/$count_nilai, 2) : 0)."</th>
-                                                                    <th class='text-center bg-light text-dark'></th>
-                                                                  </tr>";
-                                                        ?>
+            // =======================================================
+            // 4. MENAMPILKAN MULOK (jika ada)
+            // =======================================================
+            if (!empty($mulok_rows)) {
+                // Baris pemisah/judul untuk MULOK
+                echo '<tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Muatan Lokal (MULOK)</th></tr>';
+                
+                foreach ($mulok_rows as $n) {
+                    $nilai = $n->nilai_akhir ?? '-';
+                    echo "<tr>
+                            <td>{$n->nama_mapel}</td>
+                            <td class='text-center'>{$nilai}</td>
+                            <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
+                          </tr>";
+                }
+            }
+
+            // =======================================================
+            // 5. MENAMPILKAN JUMLAH NILAI DAN RATA-RATA
+            // =======================================================
+            echo "<tr>
+                      <th class='text-center bg-light text-dark'>Jumlah Nilai</th>
+                      <th class='text-center bg-light text-dark'>{$total_nilai}</th>
+                      <th class='text-center bg-light text-dark'></th>
+                  </tr>
+                  <tr>
+                      <th class='text-center bg-light text-dark' >Rata-rata Nilai</th>
+                      <th class='text-center bg-light text-dark'>".(($count_nilai > 0) ? round($total_nilai/$count_nilai, 2) : 0)."</th>
+                      <th class='text-center bg-light text-dark'></th>
+                  </tr>";
+        ?>
+
+
+
+
+
+
                                                         <!-- ===================== NILAI EKSKUL ===================== -->
                                                         <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Ekstrakurikuler</th></tr>
-                                                        <?php if (!empty($data_ekskul)): ?>
-                                                            <?php foreach ($data_ekskul as $e): ?>
+                                                        <?php 
+                                                            $unique_ekskul = [];
+                                                            
+                                                            // 1. PENCEGAHAN DUPLIKASI: Filter data ekskul menjadi unik
+                                                            if (!empty($data_ekskul)) {
+                                                                foreach ($data_ekskul as $e) {
+                                                                    // Gunakan ID unik jika ada, atau nama ekskul jika tidak
+                                                                    // Asumsi: $e->id_ekskul adalah properti ID Ekskul
+                                                                    $key = $e->id_ekskul ?? $e->nama_ekskul; 
+                                                                    $unique_ekskul[$key] = $e;
+                                                                }
+                                                            }
+                                                        ?>
+
+                                                        <?php if (!empty($unique_ekskul)): ?>
+                                                            <?php foreach ($unique_ekskul as $e): ?>
                                                                 <tr>
-                                                                    <td><?= $e->nama_ekskul ?></td>
+                                                                    <td><?= htmlspecialchars($e->nama_ekskul) ?></td>
                                                                     <td class='text-center'><?= $e->nilai ?? '-' ?></td>
                                                                     <td class='text-left'><?= $e->deskripsi_ekskul ?? '-' ?></td>
                                                                 </tr>
