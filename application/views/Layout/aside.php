@@ -42,7 +42,13 @@
                         <p>Data Kelas Siswa</p>
                     </a>
                 </li>
-
+                 <!-- Data Kehadiran -->
+                <li class="nav-item">
+                   <a href="<?= base_url('kehadiran') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'kehadiran') ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Data Kehadiran siswa</p>
+                    </a>
+                </li>
                 <!-- Data Akademin -->
                 <?php
                 $segment1 = strtolower($this->uri->segment(1));
@@ -85,13 +91,7 @@
                     </ul>
                 </li>
 
-                <!-- Data Kehadiran -->
-                <li class="nav-item">
-                   <a href="<?= base_url('kehadiran') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'kehadiran') ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-book"></i>
-                        <p>Data Kehadiran siswa</p>
-                    </a>
-                </li>
+               
 
                 <!-- Buku Induk -->
                 <li class="nav-item">
