@@ -249,13 +249,13 @@ class ControllerKlapper extends CI_Controller {
                         // Ambil data dari CSV (asumsi urutan kolom: no_induk, keterangan, kelas1..kelas6)
                         $data_insert = [
                             'no_induk'  => $data[0],
-                            'keterangan'=> $data[2],
-                            'kelas_1'   => $data[3] ?: NULL,
-                            'kelas_2'   => $data[4] ?: NULL,
-                            'kelas_3'   => $data[5] ?: NULL,
-                            'kelas_4'   => $data[6] ?: NULL,
-                            'kelas_5'   => $data[7] ?: NULL,
-                            'kelas_6'   => $data[8] ?: NULL
+                            'keterangan'=> $data[1],
+                            'kelas_1'   => $data[2] ?: NULL,
+                            'kelas_2'   => $data[3] ?: NULL,
+                            'kelas_3'   => $data[4] ?: NULL,
+                            'kelas_4'   => $data[5] ?: NULL,
+                            'kelas_5'   => $data[6] ?: NULL,
+                            'kelas_6'   => $data[7] ?: NULL
                         ];
 
                         $this->Klapper_model->insert_klapper($data_insert);
