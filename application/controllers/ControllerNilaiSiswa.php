@@ -30,14 +30,14 @@ class ControllerNilaiSiswa extends CI_Controller {
         $this->load->view('Layout/footer');
     }
 
-    public function edit_siswa($no_induk) {
+   public function edit_siswa($no_induk) {
         $id_kelas = $this->input->post('id_kelas') ?? $this->input->get('id_kelas');
         $semester = $this->input->post('semester') ?? $this->input->get('semester');
 
         $data['siswa']    = $this->DataMaster->get_siswa_by_no_induk($no_induk);
         $data['kelas']    = $this->Kelas_model->get_all();
         $data['mapel']    = $this->Mapel_model->get_all();
-        $data['ekskul']   = $this->Ekskul_model->get_all(); // ✅ ambil semua ekskul
+        $data['ekskul']   = $this->Ekskul_model->get_all(); // ambil semua ekskul
         $data['id_kelas'] = $id_kelas;
         $data['semester'] = $semester;
 
@@ -54,34 +54,51 @@ class ControllerNilaiSiswa extends CI_Controller {
 
             // ambil semua mapel + nilai
             $mapel_nilai = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $id_kelas, $semester);
-            if (!empty($mapel_nilai)) {
-                $data['nilai'] = $mapel_nilai;
-                $data['show_table'] = true;
-            }
+        if (!empty($mapel_nilai)) {
+            $data['nilai'] = $mapel_nilai;
+            $data['show_table'] = true;
+        }
 
-             // ✅ Ambil nilai ekskul yang sudah ada saja
-        $nilai_ekskul = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $id_kelas, $semester);
+        // ambil nilai ekskul siswa yang sudah ada
+        $nilai_ekskul_siswa = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $id_kelas, $semester);
 
-        // Tambahkan deskripsi capaian ekskul
-        foreach ($nilai_ekskul as &$e) {
-            if (!empty($e->nilai)) {
-                $e->deskripsi_ekskul = $this->get_deskripsi_ekskul($e->nilai);
+        // index nilai ekskul berdasarkan id_ekskul
+        $nilai_index = [];
+        foreach ($nilai_ekskul_siswa as $n) {
+            $nilai_index[$n->id_ekskul] = $n;
+        }
+
+        // gabungkan semua ekskul
+        $nilai_ekskul = [];
+        foreach ($data['ekskul'] as $e) {
+            if (isset($nilai_index[$e->id_ekskul])) {
+                $row = $nilai_index[$e->id_ekskul];
+                $row->deskripsi_ekskul = !empty($row->nilai) ? $this->get_deskripsi_ekskul($row->nilai) : "-";
             } else {
-                $e->deskripsi_ekskul = "-";
+                // jika belum ada nilai, buat dummy entry
+                $row = (object)[
+                    'id_nilai_ekskul' => null,
+                    'id_ekskul' => $e->id_ekskul,
+                    'nama_ekskul' => $e->nama_ekskul,
+                    'nilai' => null,
+                    'deskripsi_ekskul' => "-"
+                ];
             }
+            $nilai_ekskul[] = $row;
         }
 
         $data['nilai_ekskul'] = $nilai_ekskul;
-
-        }
-
-        // load view
-        $this->load->view('Layout/head');
-        $this->load->view('Layout/navbar');
-        $this->load->view('Layout/aside');
-        $this->load->view('Content/nilai_siswa_edit', $data);
-        $this->load->view('Layout/footer');
     }
+
+    // load view
+    $this->load->view('Layout/head');
+    $this->load->view('Layout/navbar');
+    $this->load->view('Layout/aside');
+    $this->load->view('Content/nilai_siswa_edit', $data);
+    $this->load->view('Layout/footer');
+}
+
+
 
     // Simpan nilai banyak mapel
     public function add_nilai($no_induk) {
@@ -287,7 +304,7 @@ class ControllerNilaiSiswa extends CI_Controller {
         $this->db->insert('nilai_ekskul', $data);
         $this->session->set_flashdata('success', 'Nilai ekstrakurikuler baru berhasil ditambahkan!');
     }
-echo $this->db->last_query();
+    echo $this->db->last_query();
     redirect('nilai/edit_siswa/' . $no_induk . '?id_kelas=' . $id_kelas . '&semester=' . $semester);
 }
 

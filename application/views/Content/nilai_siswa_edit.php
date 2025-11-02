@@ -126,38 +126,35 @@
                             </table>
 
                             <!-- ==================== TABEL EKSKUL ==================== -->
-                            <?php if (!empty($nilai_ekskul)): ?>
-                                <h5 class="mt-4"><strong>Nilai Ekstrakurikuler</strong></h5>
-                                <table class="table table-bordered">
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            <th>Nama Ekskul</th>
-                                            <th>Nilai</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach($nilai_ekskul as $e): ?>
-                                            <tr>
-                                                <td><?= $e->nama_ekskul ?></td>
-                                                <td><?= !empty($e->nilai) ? $e->nilai : '-' ?></td>
-                                                <td>
-                                                    <?php if (!isset($e->nilai) || $e->nilai === '' || $e->nilai === '-' || is_null($e->nilai)): ?>
-                                                        <!-- Belum ada nilai -->
-                                                        <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#tambahEkskul<?= $e->id_ekskul ?>">
-                                                            Tambah
-                                                        </button>
-                                                        <!-- ==================== MODAL TAMBAH NILAI EKSKUL ==================== -->
-                                                        <div class="modal fade" id="tambahEkskul<?= $e->id_ekskul ?>" tabindex="-1">
+                            <h5 class="mt-4"><strong>Nilai Ekstrakurikuler</strong></h5>
+
+                            <table class="table table-bordered">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Nama Ekskul</th>
+                                        <th>Nilai</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach($nilai_ekskul as $ek): ?>
+                                    <tr>
+                                        <td><?= $ek->nama_ekskul ?></td>
+                                        <td><?= $ek->nilai ?? '-' ?></td>
+                                        <td>
+                                           <?php if (empty($ek->nilai) && empty($ek->id_nilai_ekskul)): ?>
+                                                <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#tambahEkskul<?= $ek->id_ekskul ?>">Tambah</button>
+                                                 <!-- ==================== MODAL TAMBAH NILAI EKSKUL ==================== -->
+                                                        <div class="modal fade" id="tambahEkskul<?= $ek->id_ekskul ?>" tabindex="-1">
                                                             <div class="modal-dialog">
                                                                 <div class="modal-content">
                                                                     <form action="<?= base_url('nilai/store_nilai_ekskul/'.$siswa->no_induk) ?>" method="POST">
                                                                         <div class="modal-header bg-primary text-white">
-                                                                            <h5 class="modal-title">Tambah Nilai Ekskul - <?= $e->nama_ekskul ?></h5>
+                                                                            <h5 class="modal-title">Tambah Nilai Ekskul - <?= $ek->nama_ekskul ?></h5>
                                                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                                                                         </div>
                                                                         <div class="modal-body">
-                                                                            <input type="hidden" name="id_ekskul" value="<?= $e->id_ekskul ?>">
+                                                                            <input type="hidden" name="id_ekskul" value="<?= $ek->id_ekskul ?>">
                                                                             <input type="hidden" name="id_kelas" value="<?= $id_kelas ?>">
                                                                             <input type="hidden" name="semester" value="<?= $semester ?>">
                                                                             <div class="form-group">
@@ -179,22 +176,17 @@
                                                                     </form>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    <?php else: ?>
-                                                        <!-- Sudah ada nilai -->
-                                                        <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editEkskul<?= $e->id_nilai_ekskul ?>">
-                                                            Edit
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteEkskul<?= $e->id_nilai_ekskul ?>">
-                                                            Delete
-                                                        </button>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endif; ?>
+                                                        </div>   
+                                            <?php else: ?>
+                                                <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#editEkskul<?= $ek->id_nilai_ekskul ?>">Edit</button>
+                                                <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteEkskul<?= $ek->id_nilai_ekskul ?>">Delete</button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+
 
                         <?php endif; ?>
                     </div>
