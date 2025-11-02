@@ -46,50 +46,52 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="card-header d-flex p-0">
                         <h3 class="card-title p-3">Informasi Kehadiran</h3>
                          <ul class="nav nav-pills ml-auto p-2">
-                            <li class="nav-item">
-                                <button class="btn btn-success nav-link text-white" href="#tab_1" data-toggle="tab" style="margin-right: 10px">
-                                    <i class="fas fa-users"></i> Daftar Siswa
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-primary nav-link text-white" href="#tab_2" data-toggle="tab" style="margin-right: 10px" id="btnTambahRekap">
-                                    <i class="fas fa-plus"></i> Tambah Kehadiran
-                                </button>
-                            </li>
-                            <li class="nav-item">
-                                <button class="btn btn-warning nav-link text-white" data-toggle="modal" data-target="#importCsvModal" style="margin-right: 10px">
-                                    <i class="fas fa-plus"></i> Import Data
-                                </button>
-                            
-                                <!-- Modal Upload CSV -->
-                                <div class="modal fade" id="importCsvModal" tabindex="-1" role="dialog" aria-labelledby="importCsvModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header bg-primary text-white">
-                                                <h5 class="modal-title" id="importCsvModalLabel">Import Data Kehadiran Siswa</h5>
-                                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <form action="<?= site_url('kehadiran/import_rekap_kehadiran') ?>" method="post" enctype="multipart/form-data">
-                                                <div class="modal-body">
-                                                    <div class="form-group">
-                                                        <label for="file_csv">Pilih file CSV</label>
-                                                        <input type="file" class="form-control-file" id="file_csv" name="file_csv" accept=".csv" required>
-                                                        <small class="form-text text-muted">File CSV harus memiliki no_induk, kelas, semester, sakit, izin, tanpa_keterangan, tahun_ajaran</small>
+                             <?php if ($level_user != 2): ?>
+                                <li class="nav-item">
+                                    <button class="btn btn-success nav-link text-white" href="#tab_1" data-toggle="tab" style="margin-right: 10px">
+                                        <i class="fas fa-users"></i> Daftar Siswa
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="btn btn-primary nav-link text-white" href="#tab_2" data-toggle="tab" style="margin-right: 10px" id="btnTambahRekap">
+                                        <i class="fas fa-plus"></i> Tambah Kehadiran
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="btn btn-warning nav-link text-white" data-toggle="modal" data-target="#importCsvModal" style="margin-right: 10px">
+                                        <i class="fas fa-plus"></i> Import Data
+                                    </button>
+                                
+                                    <!-- Modal Upload CSV -->
+                                    <div class="modal fade" id="importCsvModal" tabindex="-1" role="dialog" aria-labelledby="importCsvModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-primary text-white">
+                                                    <h5 class="modal-title" id="importCsvModalLabel">Import Data Kehadiran Siswa</h5>
+                                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form action="<?= site_url('kehadiran/import_rekap_kehadiran') ?>" method="post" enctype="multipart/form-data">
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label for="file_csv">Pilih file CSV</label>
+                                                            <input type="file" class="form-control-file" id="file_csv" name="file_csv" accept=".csv" required>
+                                                            <small class="form-text text-muted">File CSV harus memiliki no_induk, kelas, semester, sakit, izin, tanpa_keterangan, tahun_ajaran</small>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                    <button type="submit" class="btn btn-primary">Upload CSV</button>
-                                                </div>
-                                            </form>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                        <button type="submit" class="btn btn-primary">Upload CSV</button>
+                                                    </div>
+                                                </form>
 
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                            </li>
+                                </li>
+                            <?php endif; ?>
                             <li class="nav-item">
                               
                                  <button class="btn btn-dark nav-link text-white" data-toggle="modal" data-target="#downloadModal" style="margin-right: 10px">
@@ -184,7 +186,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <th class="text-center">Izin</th>
                                                 <th class="text-center">Tanpa Keterangan</th>
                                                 <th class="text-center">Tahun Ajaran</th>
-                                                <th class="text-center">Aksi</th>
+                                                <?php if ($level_user != 2): ?>
+                                                    <th class="text-center">Aksi</th>
+                                                <?php endif; ?>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -209,16 +213,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <td class="text-center"><?= $r->izin ?></td>
                                                 <td class="text-center"><?= $r->tanpa_keterangan ?></td>
                                                 <td class="text-center"><?= $r->tahun_ajaran ?></td>
-                                                <td class="text-center">
-                                                    <a href="<?= base_url('kehadiran/edit_siswa/'.$r->id_rekap) ?>" class="btn btn-success btn-sm">
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
-                                                    <?php if ($level_user != 2): ?>
-                                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $r->id_rekap ?>">
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-                                                    <?php endif; ?>
-                                                </td>
+                                                <?php if ($level_user != 2): ?>
+                                                    <td class="text-center">
+                                                        <a href="<?= base_url('kehadiran/edit_siswa/'.$r->id_rekap) ?>" class="btn btn-success btn-sm">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <?php if ($level_user != 2): ?>
+                                                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $r->id_rekap ?>">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                <?php endif; ?>
                                             </tr>
 
                                             <!-- Modal Delete -->
