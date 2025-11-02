@@ -46,15 +46,33 @@ class Ekskul_model extends CI_Model {
     }
     
     // show nilai ekskul
-    public function get_nilai_ekskul_siswa($no_induk, $id_kelas, $semester){
-        $this->db->select('e.nama_ekskul, ne.nilai');
-        $this->db->from('nilai_ekskul ne');
-        $this->db->join('ekskul e', 'e.id_ekskul = ne.id_ekskul', 'left');
-        $this->db->where('ne.no_induk', $no_induk);
-        $this->db->where('ne.id_kelas', $id_kelas);
-        $this->db->where('ne.semester', $semester);
-        return $this->db->get()->result();
-    }
+ public function get_nilai_ekskul_siswa($no_induk, $id_kelas, $semester)
+{
+    // Subquery: ambil id_nilai_ekskul terakhir per ekskul untuk siswa tersebut
+    $subquery = $this->db
+        ->select('MAX(id_nilai_ekskul) AS max_id')
+        ->from('nilai_ekskul')
+        ->where('no_induk', $no_induk)
+        ->where('id_kelas', $id_kelas)
+        ->where('semester', $semester)
+        ->where('nilai IS NOT NULL')
+        ->where('nilai !=', '')
+        ->group_by('id_ekskul')
+        ->get_compiled_select();
+
+    // Query utama
+    $this->db->select('ne.id_nilai_ekskul, ne.id_ekskul, e.nama_ekskul, ne.nilai');
+    $this->db->from('nilai_ekskul ne');
+    $this->db->join("($subquery) sub", 'sub.max_id = ne.id_nilai_ekskul');
+    $this->db->join('ekskul e', 'e.id_ekskul = ne.id_ekskul', 'left');
+
+    // ✅ Pramuka di urutan pertama, sisanya urut abjad
+    $this->db->order_by("CASE WHEN e.nama_ekskul = 'Pramuka' THEN 0 ELSE 1 END", 'ASC');
+    $this->db->order_by('e.nama_ekskul', 'ASC');
+
+    return $this->db->get()->result();
+}
+
 
 
     public function get_nilai_ekskul_siswa_withID($no_induk, $id_kelas, $semester, $id_ekskul)

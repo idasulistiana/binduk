@@ -43,5 +43,26 @@ class Klapper_model extends CI_Model {
     public function get_siswa_by_no_induk($no_induk) {
         return $this->db->get_where('siswa', ['no_induk' => $no_induk])->row();
     }
+    public function get_tahun_ajaran_by_kelas($nama_kelas) {
+        return $this->db->where('kelas', $nama_kelas)
+                        ->order_by('tahun_ajaran', 'ASC')
+                        ->get('tahun_ajaran')
+                        ->result();
+    }
+
+    public function insert_or_update_klapper($data) {
+        $this->db->where('no_induk', $data['no_induk']);
+        $exist = $this->db->get('klapper')->row();
+        if ($exist) {
+            $this->db->where('no_induk', $data['no_induk']);
+            $this->db->update('klapper', $data);
+        } else {
+            $this->db->insert('klapper', $data);
+        }
+    }
+    public function get_klapper_by_no_induk($no_induk) {
+    return $this->db->get_where('klapper', ['no_induk' => $no_induk])->row();
+}
+
 
 }

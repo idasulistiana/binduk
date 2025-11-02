@@ -27,7 +27,7 @@
                         <tr><th>Alamat</th><td><?= $siswa->alamat ?></td></tr>
                         <tr><th>Nama Ayah</th><td><?= $siswa->nama_ayah ?></td></tr>
                         <tr><th>Nama Ibu</th><td><?= $siswa->nama_ibu ?></td></tr>
-                        <tr><th>Tanggal Diterima</th><td><?= $siswa->tgl_diterima ?></td></tr>
+                        <tr><th>Tanggal Diterima</th><td><?= date('d-m-Y', strtotime($siswa->tgl_diterima)) ?></td></tr>
                         <tr><th>Sekolah Asal</th><td><?= $siswa->sekolah_asal ?></td></tr>
                     </table>
                 </div>
@@ -176,31 +176,40 @@
                                         </tr>
 
                                                     <!-- ================= EKSKUL ================= -->
-                                                    <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Ekstrakurikuler</th></tr>
-                                                    <?php
-                                                    $pramuka = [];
-                                                    $lainnya = [];
-                                                    foreach ($data_ekskul as $e) {
-                                                        if (stripos($e->nama_ekskul, 'pramuka') !== false) {
-                                                            $pramuka[] = $e;
-                                                        } else if (!empty($e->nilai) || !empty($e->keterangan)) {
-                                                            $lainnya[] = $e;
-                                                        }
-                                                    }
-                                                    $tampil_ekskul = array_merge($pramuka, $lainnya);
-                                                    ?>
+                                                   <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Ekstrakurikuler</th></tr>
+                                                        <?php
+                                                        // Filter hanya yang punya nilai
+                                                        $ekskul_exist = array_filter($data_ekskul, function($e) { 
+                                                            return isset($e->nilai) && $e->nilai !== null && trim($e->nilai) !== '' && trim($e->nilai) !== '-';
+                                                        });
 
-                                                    <?php if (!empty($tampil_ekskul)): ?>
-                                                        <?php foreach ($tampil_ekskul as $e): ?>
-                                                            <tr>
-                                                                <td><?= $e->nama_ekskul ?></td>
-                                                                <td><?= $e->nilai ?? '-' ?></td>
-                                                                <td><?= $e->deskripsi_ekskul ?? '-' ?></td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    <?php else: ?>
-                                                        <tr><td colspan="3" class="text-center">Belum ada nilai ekskul</td></tr>
-                                                    <?php endif; ?>
+                                                        // Pisahkan Pramuka dari yang lain
+                                                        $pramuka = [];
+                                                        $lainnya = [];
+
+                                                        foreach ($ekskul_exist as $e) {
+                                                            if (stripos($e->nama_ekskul, 'pramuka') !== false) {
+                                                                $pramuka[] = $e;
+                                                            } else {
+                                                                $lainnya[] = $e;
+                                                            }
+                                                        }
+
+                                                        $tampil_ekskul = array_merge($pramuka, $lainnya);
+                                                        ?>
+
+                                                        <?php if (!empty($tampil_ekskul)): ?>
+                                                            <?php foreach ($tampil_ekskul as $e): ?>
+                                                                <tr>
+                                                                    <td><?= $e->nama_ekskul ?></td>
+                                                                    <td><?= $e->nilai ?? '-' ?></td>
+                                                                    <td><?= $e->deskripsi_ekskul ?? '-' ?></td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        <?php else: ?>
+                                                            <tr><td colspan="3" class="text-center">Belum ada nilai ekskul</td></tr>
+                                                        <?php endif; ?>
+
 
                                                     <!-- ================= KEHADIRAN ================= -->
                                                     <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Rekap Kehadiran</th></tr>
@@ -314,7 +323,6 @@
                         <table class="table table-bordered table-striped">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Tanggal Masuk</th>
                                     <th>Kelas 1</th>
                                     <th>Kelas 2</th>
                                     <th>Kelas 3</th>
@@ -326,7 +334,6 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><?= date('d-m-Y', strtotime($klapper->tgl_masuk)) ?></td>
                                     <td><?= $klapper->kelas_1 ?? '-' ?></td>
                                     <td><?= $klapper->kelas_2 ?? '-' ?></td>
                                     <td><?= $klapper->kelas_3 ?? '-' ?></td>

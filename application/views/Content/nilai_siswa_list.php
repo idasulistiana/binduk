@@ -50,9 +50,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             <form action="<?= site_url('nilai/import_nilai') ?>" method="post" enctype="multipart/form-data">
                                                 <div class="modal-body">
                                                     <div class="form-group">
-                                                        <label for="file_csv">Pilih file CSV</label>
+                                                        <label for="file_csv">Pilih file</label>
                                                         <input type="file" class="form-control-file" id="file_csv" name="file_csv" accept=".csv" required>
-                                                        <small class="form-text text-muted">File CSV harus memiliki header: Tanggal Masuk, Keterangan, kelas 1, kelas 2, kelas 4, kelas 5,  kelas 6</small>
+                                                        <small class="form-text text-muted">File yang di upload berbentuk csv</small>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

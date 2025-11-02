@@ -11,7 +11,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Form Edit Data Kelas</h3>
                 </div>
-                <form role="form" action="<?= base_url('ControllerKlapper/update_klapper/' . $klapper->no_induk) ?>" method="POST">
+                <form role="form" action="<?= base_url('riwayatkelas/update_klapper/' . $klapper->no_induk) ?>" method="POST">
                     <div class="card-body">
                         <!-- No Induk -->
                          <div class="row">
@@ -32,14 +32,6 @@
                             </div>
                         </div>
                          <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label>Tanggal Masuk</label>
-                                    <input type="date" class="form-control" 
-                                        name="tgl_masuk" 
-                                        value="<?= $klapper->tgl_masuk ?>">
-                                </div>
-                            </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Keterangan</label>
@@ -81,7 +73,7 @@
                             </div>
                         </div>
                         <div class="card-footer text-right" >
-                            <a href="<?= base_url('ControllerKlapper') ?>" class="btn btn-secondary">Cancel</a>
+                            <a href="<?= base_url('riwayatkelas') ?>" class="btn btn-secondary">Cancel</a>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                 </form>

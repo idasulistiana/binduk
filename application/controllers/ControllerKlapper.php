@@ -41,7 +41,6 @@ class ControllerKlapper extends CI_Controller {
     }
 
    public function add_klapper() {
-    $this->form_validation->set_rules('tgl_masuk', 'Tanggal Masuk', 'required');
     $this->form_validation->set_rules('no_induk', 'No Induk', 'required');
 
     if ($this->form_validation->run() == FALSE) {
@@ -83,7 +82,6 @@ class ControllerKlapper extends CI_Controller {
 
         $data = array(
             'no_induk'          => $no_induk,
-            'tgl_masuk'         => $this->input->post('tgl_masuk'),
             'keterangan' => $this->input->post('keterangan')
         );
 
@@ -97,46 +95,52 @@ class ControllerKlapper extends CI_Controller {
         }
     }
 
-
-    public function update_klapper($id_klapper)
-    {
-        // Validasi form
-        $this->form_validation->set_rules('tgl_masuk', 'Tanggal Masuk', 'required');
-
-        if ($this->form_validation->run() == FALSE) {
-            // Load data lama untuk form edit
-            $data['klapper'] = $this->Klapper_model->get_by_id($id_klapper);
-            $this->load->view('Layout/head');
-            $this->load->view('Layout/navbar');
-            $this->load->view('Layout/aside');
-            $this->load->view('Content/edit_klapper', $data);
-            $this->load->view('Layout/footer');
-            echo validation_errors();
-        } else {
-            // Ambil data kelas dari POST
-            $kelas_db = [];
-            for ($i = 1; $i <= 6; $i++) {
-                $input_name = 'kelas' . $i;
-                $db_name = 'kelas_' . $i; // nama kolom di DB
-                $kelas_db[$db_name] = $this->input->post($input_name) ?: NULL;
-            }
-
-            // Data utama
-            $data_update = array(
-                'tgl_masuk' => $this->input->post('tgl_masuk'),
-                'keterangan' => $this->input->post('keterangan')
-            );
-
-            // Gabungkan data kelas
-            $data_update = array_merge($data_update, $kelas_db);
-
-            // Panggil model update
-            $this->Klapper_model->update_klapper($id_klapper, $data_update);
-
-            $this->session->set_flashdata('success', 'Data klapper berhasil diupdate');
-            redirect('riwayatkelas');
-        }
+   public function update_klapper($id_klapper)
+{
+    // 1. Set form validation
+    $this->form_validation->set_rules('keterangan', 'Keterangan', 'required');
+    for ($i = 1; $i <= 6; $i++) {
+        $this->form_validation->set_rules('kelas' . $i, 'Kelas ' . $i, 'trim'); // opsional bisa ditambah rules
     }
+
+    // 2. Cek validasi
+    if ($this->form_validation->run() == FALSE) {
+        // Ambil data lama untuk form edit
+        $data['klapper'] = $this->Klapper_model->get_by_id($id_klapper);
+        $data['errors'] = validation_errors();
+
+        // Load view
+        $this->load->view('Layout/head');
+        $this->load->view('Layout/navbar');
+        $this->load->view('Layout/aside');
+        $this->load->view('Content/edit_klapper', $data);
+        $this->load->view('Layout/footer');
+    } else {
+        // Ambil data kelas dari POST
+        $kelas_db = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $input_name = 'kelas' . $i;     // nama input di form: kelas1, kelas2, ...
+            $db_name = 'kelas_' . $i;       // nama kolom di DB: kelas_1, kelas_2, ...
+            $kelas_db[$db_name] = $this->input->post($input_name) ?: NULL;
+        }
+
+        // Ambil data utama
+        $data_update = [
+            'keterangan' => $this->input->post('keterangan')
+        ];
+
+        // Gabungkan data kelas
+        $data_update = array_merge($data_update, $kelas_db);
+
+        // Panggil model untuk update
+        $this->Klapper_model->update_klapper($id_klapper, $data_update);
+
+        // Set flashdata dan redirect
+        $this->session->set_flashdata('success', 'Data klapper berhasil diupdate');
+        redirect('riwayatkelas');
+    }
+}
+
 
     public function delete_klapper($no_induk) {
         $this->Klapper_model->delete_klapper($no_induk);
@@ -172,14 +176,13 @@ class ControllerKlapper extends CI_Controller {
                 <th>No</th>
                 <th>No Induk</th>
                 <th>Nama Siswa</th>
-                <th>Tanggal Masuk</th>
-                <th>Keterangan</th>
                 <th>Kelas 1</th>
                 <th>Kelas 2</th>
                 <th>Kelas 3</th>
                 <th>Kelas 4</th>
                 <th>Kelas 5</th>
                 <th>Kelas 6</th>
+                <th>Keterangan</th>
             </tr>';
 
         // Isi data klapper
@@ -189,14 +192,13 @@ class ControllerKlapper extends CI_Controller {
                 <td>'.$no.'</td>
                 <td>'.$k->no_induk.'</td>
                 <td>'.$k->nama_siswa.'</td>
-                <td>'.$k->tgl_masuk.'</td>
-                <td>'.($k->keterangan ? $k->keterangan : '-').'</td>
                 <td>'.($k->kelas_1 ? $k->kelas_1 : '-').'</td>
                 <td>'.($k->kelas_2 ? $k->kelas_2 : '-').'</td>
                 <td>'.($k->kelas_3 ? $k->kelas_3 : '-').'</td>
                 <td>'.($k->kelas_4 ? $k->kelas_4 : '-').'</td>
                 <td>'.($k->kelas_5 ? $k->kelas_5 : '-').'</td>
                 <td>'.($k->kelas_6 ? $k->kelas_6 : '-').'</td>
+                <td>'.($k->keterangan ? $k->keterangan : '-').'</td>
             </tr>';
             $no++;
         }
@@ -244,10 +246,9 @@ class ControllerKlapper extends CI_Controller {
                             continue;
                         }
 
-                        // Ambil data dari CSV (asumsi urutan kolom: no_induk, tgl_masuk, keterangan, kelas1..kelas6)
+                        // Ambil data dari CSV (asumsi urutan kolom: no_induk, keterangan, kelas1..kelas6)
                         $data_insert = [
                             'no_induk'  => $data[0],
-                            'tgl_masuk' => $data[1],
                             'keterangan'=> $data[2],
                             'kelas_1'   => $data[3] ?: NULL,
                             'kelas_2'   => $data[4] ?: NULL,

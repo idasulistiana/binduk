@@ -126,9 +126,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <th rowspan="2" class="text-center">No Induk</th>
                                                 <th rowspan="2" class="text-center">Nama Siswa</th>
                                                 <th rowspan="2" class="text-center">Gender</th>
-                                                <th rowspan="2" class="text-center">Tgl Masuk</th>
                                                 <th colspan="6" class="text-center">Tahun Kelas</th>
-                                                <th rowspan="2" class="text-center">Ket.Keluar</th>
+                                                <th rowspan="2" class="text-center">Keterangan</th>
                                                 <?php if ($level_user != 2): ?>
                                                     <th rowspan="2" class="text-center">Action</th>
                                                 <?php endif; ?>
@@ -150,7 +149,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <td class="text-center"><?= $k->no_induk ?></td>
                                                 <td class="text-center"><?= $k->nama_siswa ?></td>
                                                 <td class="text-center"><?= $k->gender ?></td>
-                                                <td class="text-center"><?= $k->tgl_masuk ?></td>
                                                 <?php 
                                                     $kelas_cols = ['kelas_1','kelas_2','kelas_3','kelas_4','kelas_5','kelas_6'];
                                                     foreach($kelas_cols as $col) {

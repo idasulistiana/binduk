@@ -35,217 +35,166 @@
                                 <div class="tab-pane fade <?= $first_tab ? 'show active' : '' ?>" id="kelas-<?= $id_kelas ?>" role="tabpanel">
                                     <?php $first_tab = false; ?>
 
-                                    <!-- Select semester -->
+                                    <!-- Pilih Semester -->
                                     <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
                                         <h5>Pilih Semester</h5>
-                                        <select class="form-control" id="semesterSelect-<?= $id_kelas ?>" style="width:auto;">
+                                        <select class="form-control semester-select" data-kelas="<?= $id_kelas ?>" id="semesterSelect-<?= $id_kelas ?>" style="width:auto;">
                                             <option value="1" selected>Ganjil</option>
                                             <option value="2">Genap</option>
                                         </select>
                                     </div>
 
-                                    <?php for ($sem = 1; $sem <= 2; $sem++): ?>
-                                        <div class="semester-content" id="semester-<?= $id_kelas ?>-<?= $sem ?>" style="<?= $sem == 1 ? '' : 'display:none;' ?>">
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                                <h5>Semester <?= $sem == 1 ? 'Ganjil' : 'Genap' ?></h5>
-                                                <a href="<?= base_url('nilai/edit_siswa/'.$siswa->no_induk) . '?id_kelas='.$id_kelas.'&semester='.$sem ?>" 
-                                                   class="btn btn-warning btn-sm" style= "margin-bottom:5px">Edit Nilai</a>
-                                            </div>
+                                    <?php for ($sem = 1; $sem <= 2; $sem++): 
+                                        $data_semester = $k['semester'][$sem] ?? [];
+                                        $nilai_mapel = $data_semester['mapel'] ?? [];
+                                        $data_ekskul = $data_semester['ekskul'] ?? [];
+                                        $rekap_kehadiran = $data_semester['kehadiran'] ?? null;
+                                        if (empty($nilai_mapel) && empty($data_ekskul) && empty($rekap_kehadiran)) continue;
+                                    ?>
+                                    <div class="semester-content" id="semester-<?= $id_kelas ?>-<?= $sem ?>" style="<?= $sem == 1 ? '' : 'display:none;' ?>">
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <h5>Semester <?= $sem == 1 ? 'Ganjil' : 'Genap' ?></h5>
+                                            <a href="<?= base_url('nilai/edit_siswa/'.$siswa->no_induk) . '?id_kelas='.$id_kelas.'&semester='.$sem ?>" 
+                                               class="btn btn-warning btn-sm" style="margin-bottom:5px;">Edit Nilai</a>
+                                        </div>
 
-                                            <?php 
-                                                $data_semester = $k['semester'][$sem] ?? [];
-                                                $nilai_mapel = $data_semester['mapel'] ?? [];
-                                                $data_ekskul = $data_semester['ekskul'] ?? [];
-                                                $rekap_kehadiran = $data_semester['kehadiran'] ?? null;
+                                        <table class="table table-bordered table-striped">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Nama Mapel</th>
+                                                    <th class="text-center">Nilai Akhir</th>
+                                                    <th>Capaian Pembelajaran</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php 
+                                            $total_nilai = 0; 
+                                            $count_nilai = 0; 
+                                            $mulok_rows = [];
+
+                                            preg_match('/\d+/', $k['nama_kelas'], $matches);
+                                            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
+
+                                            foreach ($nilai_mapel as $n):
+                                                $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
+
+                                                // Tentukan apakah mapel masuk MULOK
+                                                $is_mulok = false;
+                                                if ($n->kode_mapel == 'PLBJ' || ($n->kode_mapel == 'BING' && $kelas_number >= 3)) {
+                                                    $is_mulok = true;
+                                                    $mulok_rows[] = $n;
+                                                }
+
+                                                // Total & rata-rata dihitung semua nilai termasuk MULOK
+                                                if ($nilai !== null) { 
+                                                    $total_nilai += $nilai; 
+                                                    $count_nilai++; 
+                                                }
+
+                                                // Mapel biasa ditampilkan jika bukan MULOK dan bukan BING
+                                                if (!$is_mulok && $n->kode_mapel != 'BING'): ?>
+                                                    <tr>
+                                                        <td><?= $n->nama_mapel ?></td>
+                                                        <td class="text-center"><?= $nilai ?? '-' ?></td>
+                                                        <td><?= $n->deskripsi_capaian ?? '-' ?></td>
+                                                    </tr>
+                                                <?php endif; 
+                                            endforeach;
+                                        // Tampilkan MULOK
+                                        if (!empty($mulok_rows)): ?>
+                                            <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">MULOK</th></tr>
+                                            <?php foreach ($mulok_rows as $n):
+                                                $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
                                             ?>
+                                                <tr>
+                                                    <td><?= $n->nama_mapel ?></td>
+                                                    <td class="text-center"><?= $nilai ?? '-' ?></td>
+                                                    <td><?= $n->deskripsi_capaian ?? '-' ?></td>
+                                                </tr>
+                                            <?php endforeach; 
+                                        endif; ?>
+                                                <tr>
+                                                    <th class="text-right bg-light text-dark">Jumlah Nilai</th>
+                                                    <th class="text-center bg-light text-dark"><?= $total_nilai ?></th>
+                                                    <th></th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="text-right bg-light text-dark">Rata-rata Nilai</th>
+                                                    <th class="text-center bg-light text-dark"><?= $count_nilai > 0 ? round($total_nilai / $count_nilai, 2) : 0 ?></th>
+                                                    <th></th>
+                                                </tr>
 
-                                            <?php if (!empty($nilai_mapel)): ?>
-                                                <!-- ===================== TABEL NILAI MAPEL ===================== -->
-                                            <table class="table table-bordered table-striped">
-    <thead class="thead-dark">
-        <tr>
-            <th>Nama Mapel</th>
-            <th class='text-center'>Nilai Akhir</th>
-            <th class='text-center'>Capaian Pembelajaran</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-            $total_nilai = 0; 
-            $count_nilai = 0;
-            $unique_nilai_mapel = []; // Array baru untuk menyimpan data unik
-            $mulok_rows = [];
-            $mapel_inti_rows = [];
-            $kelas_number = 0;
+                                                <!-- ================== EKSKUL ================== -->
+                                                <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Ekstrakurikuler</th></tr>
+                                                <?php
+                                                
+                                                    $ekskul_exist = array_filter($data_ekskul, function($e) { 
+                                                        return isset($e->nilai) && trim($e->nilai) !== '' && trim($e->nilai) !== '-';
+                                                    });
+                                                    
+                                                    // Urutkan Pramuka di atas
+                                                    $pramuka = [];
+                                                    $lainnya = [];
+                                                    foreach ($ekskul_exist as $e) {
+                                                
+                                                        if (stripos($e->nama_ekskul, 'pramuka') !== false) {
+                                                            $pramuka[] = $e;
+                                                        } else {
+                                                            $lainnya[] = $e;
+                                                        }
+                                                    }
+                                                    $tampil_ekskul = array_merge($pramuka, $lainnya);
+                                                ?>
 
-            // Mendapatkan angka kelas
-            preg_match('/\d+/', $k['nama_kelas'], $matches);
-            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
-
-            // =======================================================
-            // 1. PENCEGAHAN DUPLIKASI: Buat array unik berdasarkan kode_mapel
-            // =======================================================
-            foreach ($nilai_mapel as $n) {
-                // Gunakan kode_mapel sebagai kunci untuk menimpa jika ada duplikasi
-                // Entri terakhir (biasanya yang paling relevan) akan dipertahankan
-                $unique_nilai_mapel[$n->kode_mapel] = $n; 
-            }
-
-            // =======================================================
-            // 2. PENGELOMPOKAN DATA UNIK DAN PENGHITUNGAN
-            // =======================================================
-            foreach ($unique_nilai_mapel as $n) { // Loop sekarang menggunakan data UNIK
-                $nilai = $n->nilai_akhir ?? null;
-                
-                // Hitung total dan jumlah nilai
-                if ($nilai !== null) { $total_nilai += $nilai; $count_nilai++; }
-
-                $is_plbj = ($n->kode_mapel == 'PLBJ');
-                // BING adalah Mulok hanya untuk kelas 3, 4, 5, 6
-                $is_bing = ($n->kode_mapel == 'BING' && $kelas_number >= 3 && $kelas_number <= 6);
-
-                if ($is_plbj || $is_bing) {
-                    $mulok_rows[] = $n; // Simpan ke array MULOK
-                } else {
-                    // Jika BING ada tapi di kelas 1 atau 2, lewati (tidak ditampilkan)
-                    if ($n->kode_mapel == 'BING' && ($kelas_number < 3 || $kelas_number > 6)) {
-                         continue;
-                    }
-                    $mapel_inti_rows[] = $n; // Simpan ke array Mapel Inti
-                }
-            }
-            
-            // =======================================================
-            // 3. MENAMPILKAN MATA PELAJARAN INTI
-            // =======================================================
-            foreach ($mapel_inti_rows as $n) {
-                $nilai = $n->nilai_akhir ?? '-';
-                echo "<tr>
-                        <td>{$n->nama_mapel}</td>
-                        <td class='text-center'>{$nilai}</td>
-                        <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
-                      </tr>";
-            }
-
-            // =======================================================
-            // 4. MENAMPILKAN MULOK (jika ada)
-            // =======================================================
-            if (!empty($mulok_rows)) {
-                // Baris pemisah/judul untuk MULOK
-                echo '<tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Muatan Lokal (MULOK)</th></tr>';
-                
-                foreach ($mulok_rows as $n) {
-                    $nilai = $n->nilai_akhir ?? '-';
-                    echo "<tr>
-                            <td>{$n->nama_mapel}</td>
-                            <td class='text-center'>{$nilai}</td>
-                            <td class='text-left'>".($n->deskripsi_capaian ?? '-')."</td>
-                          </tr>";
-                }
-            }
-
-            // =======================================================
-            // 5. MENAMPILKAN JUMLAH NILAI DAN RATA-RATA
-            // =======================================================
-            echo "<tr>
-                      <th class='text-center bg-light text-dark'>Jumlah Nilai</th>
-                      <th class='text-center bg-light text-dark'>{$total_nilai}</th>
-                      <th class='text-center bg-light text-dark'></th>
-                  </tr>
-                  <tr>
-                      <th class='text-center bg-light text-dark' >Rata-rata Nilai</th>
-                      <th class='text-center bg-light text-dark'>".(($count_nilai > 0) ? round($total_nilai/$count_nilai, 2) : 0)."</th>
-                      <th class='text-center bg-light text-dark'></th>
-                  </tr>";
-        ?>
-
-
-
-
-
-
-                                                        <!-- ===================== NILAI EKSKUL ===================== -->
-                                                        <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">Ekstrakurikuler</th></tr>
-                                                        <?php 
-                                                            $unique_ekskul = [];
-                                                            
-                                                            // 1. PENCEGAHAN DUPLIKASI: Filter data ekskul menjadi unik
-                                                            if (!empty($data_ekskul)) {
-                                                                foreach ($data_ekskul as $e) {
-                                                                    // Gunakan ID unik jika ada, atau nama ekskul jika tidak
-                                                                    // Asumsi: $e->id_ekskul adalah properti ID Ekskul
-                                                                    $key = $e->id_ekskul ?? $e->nama_ekskul; 
-                                                                    $unique_ekskul[$key] = $e;
-                                                                }
-                                                            }
-                                                        ?>
-
-                                                        <?php if (!empty($unique_ekskul)): ?>
-                                                            <?php foreach ($unique_ekskul as $e): ?>
-                                                                <tr>
-                                                                    <td><?= htmlspecialchars($e->nama_ekskul) ?></td>
-                                                                    <td class='text-center'><?= $e->nilai ?? '-' ?></td>
-                                                                    <td class='text-left'><?= $e->deskripsi_ekskul ?? '-' ?></td>
-                                                                </tr>
-                                                            <?php endforeach; ?>
-                                                        <?php else: ?>
-                                                            <tr><td colspan="3" class="text-center">Belum ada nilai ekskul</td></tr>
-                                                        <?php endif; ?>
-                                                    </tbody>
-                                                </table>
-                                                <!-- ===================== TABEL REKAP KEHADIRAN ===================== -->
-                                                <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
-                                                    <h6><strong>Rekap Kehadiran</strong></h6>
-
-                                                    <?php if (!empty($rekap_kehadiran) && !empty($rekap_kehadiran->id_rekap)): ?>
-                                                        <a href="<?= base_url('kehadiran/edit_siswa/' . $rekap_kehadiran->id_rekap) ?>" 
-                                                        class="btn btn-warning btn-sm">
-                                                        Edit Kehadiran
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <a href="<?= site_url('kehadiran?auto_add=1#tab_2') ?>" 
-                                                            class="btn btn-primary"
-                                                            onclick="sessionStorage.setItem('previous_url', window.location.href)">
-                                                            Tambah Rekap
-                                                        </a>
-                                                    <?php endif; ?>
-                                                </div>
-
-                                                <table class="table table-bordered table-striped">
-                                                    <thead class="thead-dark">
-                                                        <tr class="text-center">
-                                                            <th>Tahun Ajaran</th>
-                                                            <th>Sakit</th>
-                                                            <th>Izin</th>
-                                                            <th>Tanpa Keterangan</th>
+                                                <?php if (!empty($tampil_ekskul)): ?>
+                                                    <?php foreach ($tampil_ekskul as $e): ?>
+                                                        <tr>
+                                                            <td><?= $e->nama_ekskul ?></td>
+                                                            <td class="text-center"><?= $e->nilai ?? '-' ?></td>
+                                                            <td><?= $e->deskripsi_ekskul ?? '-' ?></td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php 
-                                                            // Gunakan default jika datanya kosong
-                                                            $sakit = $rekap_kehadiran->sakit ?? 0;
-                                                            $izin  = $rekap_kehadiran->izin ?? 0;
-                                                            $tanpa = $rekap_kehadiran->tanpa_keterangan ?? 0;
-                                                            $tahun = $rekap_kehadiran->tahun_ajaran ?? '-';
-                                                        ?>
-                                                        <tr class="text-center">
-                                                            <td><?= $tahun ?></td>
-                                                            <td><?= $sakit ?></td>
-                                                            <td><?= $izin ?></td>
-                                                            <td><?= $tanpa ?></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <tr><td colspan="3" class="text-center">Belum ada nilai ekskul</td></tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
+
+                                        <!-- ================== REKAP KEHADIRAN ================== -->
+                                        <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                                            <h6><strong>Rekap Kehadiran</strong></h6>
+                                            <?php if (!empty($rekap_kehadiran) && !empty($rekap_kehadiran->id_rekap)): ?>
+                                                <a href="<?= base_url('kehadiran/edit_siswa/' . $rekap_kehadiran->id_rekap) ?>" class="btn btn-warning btn-sm">Edit Kehadiran</a>
                                             <?php else: ?>
-                                              <div class="bg-warning text-dark p-2 rounded"> Belum ada nilai untuk siswa ini.</div>
+                                                <a href="<?= site_url('kehadiran?auto_add=1#tab_2') ?>" class="btn btn-primary btn-sm" onclick="sessionStorage.setItem('previous_url', window.location.href)">Tambah Rekap</a>
                                             <?php endif; ?>
                                         </div>
+
+                                        <table class="table table-bordered table-striped">
+                                            <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th>Tahun Ajaran</th>
+                                                    <th>Sakit</th>
+                                                    <th>Izin</th>
+                                                    <th>Tanpa Keterangan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="text-center">
+                                                    <td><?= $rekap_kehadiran->tahun_ajaran ?? '-' ?></td>
+                                                    <td><?= $rekap_kehadiran->sakit ?? 0 ?></td>
+                                                    <td><?= $rekap_kehadiran->izin ?? 0 ?></td>
+                                                    <td><?= $rekap_kehadiran->tanpa_keterangan ?? 0 ?></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <?php endfor; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <div class="bg-warning text-dark p-2 rounded" style=>Belum ada data nilai untuk siswa ini.</div>
+                        <div class="bg-warning text-dark p-2 rounded">Belum ada data nilai untuk siswa ini.</div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -261,15 +210,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const idKelas = this.id.replace('semesterSelect-', '');
             const selected = this.value;
 
-            // sembunyikan semua semester
             document.querySelectorAll(`#semester-${idKelas}-1, #semester-${idKelas}-2`).forEach(function(el) {
                 el.style.display = 'none';
             });
-
-            // tampilkan semester yang dipilih
             document.querySelector(`#semester-${idKelas}-${selected}`).style.display = 'block';
         });
     });
 });
-
 </script>

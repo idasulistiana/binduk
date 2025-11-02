@@ -26,7 +26,7 @@ class Rekap_kehadiran_model extends CI_Model {
         $this->db->join('siswa', 'siswa.no_induk = rekap_kehadiran.no_induk', 'left');
         $this->db->join('kelas', 'kelas.id_kelas = rekap_kehadiran.id_kelas', 'left');
         $this->db->order_by('rekap_kehadiran.no_induk', 'ASC');
-        $this->db->order_by('rekap_kehadiran.semester', 'ASC');
+        $this->db->order_by('rekap_kehadiran.id_kelas', 'ASC');
         return $this->db->get()->result();
     }
     public function get_by_id($id_rekap)
@@ -139,7 +139,7 @@ class Rekap_kehadiran_model extends CI_Model {
         $this->db->where_in('rekap_kehadiran.id_kelas', $kelas);
         $this->db->where_in('rekap_kehadiran.semester', $semester);
         $this->db->order_by('rekap_kehadiran.no_induk','ASC');
-        $this->db->order_by('rekap_kehadiran.semester','ASC');
+        $this->db->order_by('rekap_kehadiran.id_kelas','ASC');
         
         return $this->db->get()->result();
     }
@@ -155,5 +155,12 @@ class Rekap_kehadiran_model extends CI_Model {
             return null; // jika nama kelas tidak ditemukan
         }
     }
+    public function get_kehadiran_by_no_induk($no_induk, $id_kelas, $semester) {
+    return $this->db->get_where('rekap_kehadiran', [
+        'no_induk' => $no_induk,
+        'id_kelas' => $id_kelas,
+        'semester' => $semester
+    ])->row();
+}
 
 }

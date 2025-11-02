@@ -53,7 +53,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             </li>
                             <li class="nav-item">
                                 <button class="btn btn-primary nav-link text-white" href="#tab_2" data-toggle="tab" style="margin-right: 10px" id="btnTambahRekap">
-                                    <i class="fas fa-plus"></i> Tambah Siswa
+                                    <i class="fas fa-plus"></i> Tambah Kehadiran
                                 </button>
                             </li>
                             <li class="nav-item">
