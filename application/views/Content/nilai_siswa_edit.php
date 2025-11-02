@@ -142,7 +142,7 @@
                                         <td><?= $ek->nama_ekskul ?></td>
                                         <td><?= $ek->nilai ?? '-' ?></td>
                                         <td>
-                                           <?php if (empty($ek->nilai) && empty($ek->id_nilai_ekskul)): ?>
+                                          <?php if (empty($ek->nilai) || empty($ek->id_nilai_ekskul) || $ek->nilai === "-"): ?> 
                                                 <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#tambahEkskul<?= $ek->id_ekskul ?>">Tambah</button>
                                                  <!-- ==================== MODAL TAMBAH NILAI EKSKUL ==================== -->
                                                         <div class="modal fade" id="tambahEkskul<?= $ek->id_ekskul ?>" tabindex="-1">
