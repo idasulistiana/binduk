@@ -90,7 +90,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                         <div class="form-group">
                                                             <label for="file_csv">Pilih file CSV</label>
                                                             <input type="file" class="form-control-file" id="file_csv" name="file_csv" accept=".csv" required>
-                                                            <small class="form-text text-muted">File CSV harus memiliki header: Tanggal Masuk, Keterangan, kelas 1, kelas 2, kelas 4, kelas 5,  kelas 6</small>
+                                                            <small class="form-text text-muted">File CSV harus memiliki header: kelas 1, kelas 2, kelas 4, kelas 5,  kelas 6, Keterangan</small>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
