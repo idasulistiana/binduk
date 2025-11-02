@@ -160,7 +160,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <td class="text-center"><?= $k->keterangan ?></td>
                                                 <?php if ($level_user != 2): ?>
                                                     <td class="text-center">
-                                                        <a href="<?= base_url('ControllerKlapper/update_klapper/'.$k->no_induk) ?>" class="btn btn-success btn-sm"><i class="fa fa-edit"></i></a>
+                                                        <a href="<?= base_url('riwayatkelas/update_klapper/'.$k->no_induk) ?>" class="btn btn-success btn-sm"><i class="fa fa-edit"></i></a>
                                                         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $k->no_induk ?>"><i class="fa fa-trash"></i></button>
                                                     </td>
                                                 <?php endif; ?>
@@ -199,7 +199,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <label>No Induk Siswa</label>
                                                 <input type="number" name="no_induk" id="no_induk" max="9999" oninput="if(this.value.length > 4) this.value = this.value.slice(0,4);" class="form-control" placeholder="Ketik No Induk atau Nama Siswa" require>
                                             </div>
-                                            <div class="form-group">
+                                        </div>
+                                        <div class="col-sm-6">
+                                             <div class="form-group">
                                                 <label>Keterangan</label>
                                                 <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
                                             </div>
