@@ -30,7 +30,7 @@
                 <!-- Pembantu Induk -->
                 <li class="nav-item">
                     <a href="<?= base_url('siswa') ?>" class="nav-link <?= strtolower($this->uri->segment(1)) == 'siswa' ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-database"></i>
+                        <i class="nav-icon fas fa-users"></i>
                         <p>Identitas Siswa</p>
                     </a>
                 </li>
@@ -38,18 +38,18 @@
                  <!-- Data Klapper -->
                 <li class="nav-item">
                    <a href="<?= base_url('riwayatkelas') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'riwayatkelas') ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-book"></i>
+                        <i class="nav-icon fa fa-chalkboard-teacher"></i>
                         <p>Data Kelas Siswa</p>
                     </a>
                 </li>
                  <!-- Data Kehadiran -->
                 <li class="nav-item">
                    <a href="<?= base_url('kehadiran') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'kehadiran') ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-book"></i>
+                        <i class="nav-icon fas fa-barcode"></i>
                         <p>Data Kehadiran siswa</p>
                     </a>
                 </li>
-                <!-- Data Akademin -->
+                <!-- Data Akademik-->
                 <?php
                 $segment1 = strtolower($this->uri->segment(1));
                 $submenu = ['kelas', 'mapel', 'ekskul', 'nilai']; // submenu yg terkait dengan Data Akademik
@@ -57,7 +57,7 @@
 
                 <li class="nav-item has-treeview <?= in_array($segment1, $submenu) ? 'menu-open' : '' ?>">
                     <a href="#" class="nav-link <?= in_array($segment1, $submenu) ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-feather"></i>
+                        <i class="nav-icon fas fa-database"></i>
                         <p>
                             Data Akademik
                             <i class="right fas fa-angle-left"></i>
@@ -96,7 +96,7 @@
                 <!-- Buku Induk -->
                 <li class="nav-item">
                     <a href="<?= base_url('bukuinduk') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'bukuinduk') ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-barcode"></i>
+                        <i class="nav-icon fas fa-book"></i>
                         <p>Buku Induk Siswa</p>
                     </a>
                 </li>
