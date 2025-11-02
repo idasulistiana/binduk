@@ -295,11 +295,11 @@ class ControllerBukuIndukSiswa extends CI_Controller {
                 }
 
                 $mapel_table_html .= '<tr>
-                    <th colspan="2" style="border:1px solid black;">Jumlah Nilai</th>
+                    <th  style="border:1px solid black;">Jumlah Nilai</th>
                     <th style="border:1px solid black;">' . $total . '</th>
                 </tr>
                 <tr style="border:1px solid black; page-break-inside:avoid;">
-                    <th colspan="2" style="border:1px solid black;">Rata-rata Nilai</th>
+                    <th  style="border:1px solid black;">Rata-rata Nilai</th>
                     <th style="border:1px solid black;">' . ($count > 0 ? round($total / $count, 2) : 0) . '</th>
                 </tr>
                 </tbody></table><br>';
