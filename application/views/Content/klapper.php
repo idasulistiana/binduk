@@ -204,12 +204,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label>Tanggal Masuk</label>
-                                                <input type="date" name="tgl_masuk" class="form-control" placeholder="Masukan Tanggal Masuk" required>
-                                            </div>
-                                        </div>
                                     </div>
                                      <div class="row">
                                         <div class="col-sm-12">
