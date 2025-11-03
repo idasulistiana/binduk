@@ -293,15 +293,15 @@ class ControllerRekapKehadiran extends CI_Controller {
                         $this->session->set_flashdata('success', "Data Rekap Kehadiran berhasil diimpor ($success_count siswa)!");
                     }
 
-                    redirect('ControllerRekapKehadiran');
+                    redirect('kehadiran');
                 }
             } else {
                 $this->session->set_flashdata('error', 'File yang diunggah bukan format CSV!');
-                redirect('ControllerRekapKehadiran');
+                redirect('kehadiran');
             }
         } else {
             $this->session->set_flashdata('error', 'File CSV belum diunggah!');
-            redirect('ControllerRekapKehadiran');
+            redirect('kehadiran');
         }
     }
 
