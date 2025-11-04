@@ -16,6 +16,7 @@ class ControllerDataMaster extends CI_Controller
 		$this->load->library('pdf');
 	  	$this->load->library('session');
         $this->load->helper(['url', 'form']);
+		$this->load->model('Kelas_model'); // Model Rekap Kehadiran
         // ✅ Proteksi agar tidak bisa akses tanpa login
         if (!$this->session->userdata('logged_in')) {
 			   redirect('login');
@@ -24,6 +25,7 @@ class ControllerDataMaster extends CI_Controller
 	}
 	public function index() {
         $data['siswa'] = $this->DataMaster->get_all_siswa();
+		$data['kelas'] = $this->Kelas_model->get_all();
         $data['level_user'] = $this->session->userdata('level_user');
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');
@@ -46,7 +48,7 @@ class ControllerDataMaster extends CI_Controller
 		$this->form_validation->set_rules('alamat', 'Alamat', 'required');
 		$this->form_validation->set_rules('nama_ayah', 'Nama Ayah', 'required');
 		$this->form_validation->set_rules('tgl_diterima', 'Tanggal Diterima', 'required');
-
+		$this->form_validation->set_rules('kelas', 'Rombel Saat Ini', 'required');
 		$data['level_user'] = $this->session->userdata('level_user');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -87,7 +89,8 @@ class ControllerDataMaster extends CI_Controller
 				'tgl_lahir' => $this->input->post('tgl_lahir'),
 				'nama_ibu' => $this->input->post('nama_ibu'),
 				'nama_ayah' => $this->input->post('nama_ayah'),
-				'tgl_diterima' => $this->input->post('tgl_diterima')
+				'tgl_diterima' => $this->input->post('tgl_diterima'),
+				'kelas' => $this->input->post('kelas')
 			);
 
 			$this->DataMaster->insert_siswa($data);
@@ -103,48 +106,55 @@ class ControllerDataMaster extends CI_Controller
 		redirect('siswa');
 	}
 	public function update_siswa($id)
-	{
-		$this->form_validation->set_rules('no_induk', 'No Induk Siswa', 'required');
-		$this->form_validation->set_rules('nama', 'Nama Siswa', 'required');
-		$this->form_validation->set_rules('gender', 'Jenis Kelamin', 'required');
-		$this->form_validation->set_rules('agama', 'Agama', 'required');
-		$this->form_validation->set_rules('alamat', 'Alamat', 'required');
-		$this->form_validation->set_rules('tempat_lahir', 'Tempat Lahir', 'required');
-		$this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir', 'required');
-		$this->form_validation->set_rules('nama_ibu', 'Nama Ibu', 'required');
-		$this->form_validation->set_rules('nama_ayah', 'Nama Ayah', 'required');
-		$this->form_validation->set_rules('tgl_diterima', 'Tanggal Diterima', 'required');
-	
+{
+    // Validasi form
+    $this->form_validation->set_rules('no_induk', 'No Induk Siswa', 'required|trim');
+    $this->form_validation->set_rules('nama', 'Nama Siswa', 'required|trim');
+    $this->form_validation->set_rules('gender', 'Jenis Kelamin', 'required');
+    $this->form_validation->set_rules('agama', 'Agama', 'required|trim');
+    $this->form_validation->set_rules('alamat', 'Alamat', 'required|trim');
+    $this->form_validation->set_rules('tempat_lahir', 'Tempat Lahir', 'required|trim');
+    $this->form_validation->set_rules('tgl_lahir', 'Tanggal Lahir', 'required');
+    $this->form_validation->set_rules('nama_ibu', 'Nama Ibu', 'required|trim');
+    $this->form_validation->set_rules('nama_ayah', 'Nama Ayah', 'required|trim');
+    $this->form_validation->set_rules('tgl_diterima', 'Tanggal Diterima', 'required');
+    $this->form_validation->set_rules('kelas', 'Rombel Saat Ini', 'required'); // name sesuai form
 
-		if ($this->form_validation->run() == FALSE) {
-			$data = array(
-				'siswa' => $this->DataMaster->edit_siswa($id)
-			);
-			$this->load->view('Layout/head');
-			$this->load->view('Layout/navbar');
-			$this->load->view('Layout/aside');
-			$this->load->view('Content/edit_siswa', $data);
-			$this->load->view('Layout/footer');
-		} else {
-			$data = array(
-				'no_induk' => $this->input->post('no_induk'),
-				'nama_siswa' => $this->input->post('nama'),
-				'gender' => $this->input->post('gender'),
-				'agama' => $this->input->post('agama'),
-				'alamat' => $this->input->post('alamat'),
-				'tempat_lahir' => $this->input->post('tempat_lahir'),
-				'tgl_lahir' => $this->input->post('tgl_lahir'),
-				'nama_ibu' => $this->input->post('nama_ibu'),
-				'nama_ayah' => $this->input->post('nama_ayah'),
-				'tgl_diterima' => $this->input->post('tgl_diterima')
-				
-			);
-			$this->DataMaster->update_siswa($id, $data);
-			$this->session->set_flashdata('success', 'Data Siswa Berhasil Diperbaharui!');
-			redirect('siswa');
-		}
+    if ($this->form_validation->run() == FALSE) {
+        $data = array(
+            'siswa' => $this->DataMaster->edit_siswa($id),
+            'kelas' => $this->Kelas_model->get_all() 
+        );
+        $this->load->view('Layout/head');
+        $this->load->view('Layout/navbar');
+        $this->load->view('Layout/aside');
+        $this->load->view('Content/edit_siswa', $data);
+        $this->load->view('Layout/footer');
+    } else {
+        // Ambil data dari form
+        $data = array(
+            'no_induk' => htmlspecialchars(trim($this->input->post('no_induk'))),
+            'nama_siswa' => htmlspecialchars(trim($this->input->post('nama'))),
+            'gender' => $this->input->post('gender'),
+            'agama' => htmlspecialchars(trim($this->input->post('agama'))),
+            'alamat' => htmlspecialchars(trim($this->input->post('alamat'))),
+            'tempat_lahir' => htmlspecialchars(trim($this->input->post('tempat_lahir'))),
+            'tgl_lahir' => $this->input->post('tgl_lahir'),
+            'nama_ibu' => htmlspecialchars(trim($this->input->post('nama_ibu'))),
+            'nama_ayah' => htmlspecialchars(trim($this->input->post('nama_ayah'))),
+            'tgl_diterima' => $this->input->post('tgl_diterima'),
+            'kelas' => $this->input->post('kelas') // ini id_kelas
+        );
 
-	}
+        // Update data siswa
+        $this->DataMaster->update_siswa($id, $data);
+
+        $this->session->set_flashdata('success', 'Data Siswa Berhasil Diperbaharui!');
+        redirect('siswa');
+    }
+}
+
+
 	public function import_siswa()
 	{
 		if(isset($_FILES['file_csv']['name'])){

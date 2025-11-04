@@ -54,7 +54,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         </div><!-- /.container-fluid -->
     </section>
-    <div class="col-md-12">
+    <div class="col-md-12" style="margin-left:10px">
         <div class="row">
             <div class="col-12 padding-left20">
                 <!-- Custom Tabs -->
@@ -129,6 +129,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <th class="text-center">No</th>
                                                 <th class="text-center">NISN</th>
                                                 <th class="text-center">No Induk</th>
+                                                <th class="text-center">Kelas</th>
                                                 <th class="text-center">Nama Siswa</th>
                                                 <th class="text-center">Gender</th>
                                                 <th class="text-center">TTL</th>
@@ -153,6 +154,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                     <td class="text-center"><?= $no++ ?></td>
                                                     <td class="text-center"><strong><?= $value->nisn ?></strong></td>
                                                     <td class="text-center"><?= $value->no_induk ?></td>
+                                                    <td class="text-center"><strong><?= $value->nama_kelas ?></strong></td>
                                                     <td class="text-center"><strong><?= $value->nama_siswa ?></strong></td>
                                                     <td class="text-center"><?= $value->gender ?></td>
                                                     <td class="text-center">
@@ -276,6 +278,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Tanggal Diterima</label>
+                                                <input type="date" name="tgl_diterima" value="<?= set_value('tgl_diterima') ?>" class="form-control">
+                                                <?= form_error('tgl_diterima', '<small class="text-danger pl-3">', '</small>'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6"> 
+                                            <div class="form-group">
+                                            <label>Kelas</label>
+                                             <select name="kelas" class="form-control" required> <option value="">-- Pilih Kelas --</option> 
+                                                <?php foreach ($kelas as $k) : ?> <option value="<?= $k->id_kelas; ?>"><?= $k->nama_kelas; ?></option>
+                                                    <?php endforeach; ?> 
+                                            </select> </div> </div>
+                                    </div>
 
                                     <div class="row">
                                         <div class="col-sm-6">
@@ -311,15 +329,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label>Tanggal Diterima</label>
-                                                <input type="date" name="tgl_diterima" value="<?= set_value('tgl_diterima') ?>" class="form-control">
-                                                <?= form_error('tgl_diterima', '<small class="text-danger pl-3">', '</small>'); ?>
-                                            </div>
-                                        </div>
-                                    </div>
+                                  
 
                                     <div class="card-footer text-end mt-3">
                                         <div class="d-flex justify-content-end">

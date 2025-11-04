@@ -73,8 +73,10 @@ class DataMaster extends CI_Model
     }
     // Ambil semua data siswa
     public function get_all_siswa() {
-        $this->db->order_by('nama_siswa', 'ASC');
-        $query = $this->db->get('siswa'); // Nama tabel = siswa
+        $this->db->select('siswa.*, kelas.nama_kelas');
+        $this->db->from('siswa');
+        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // ubah 'siswa.id_kelas' ke 'siswa.kelas'
+        $query = $this->db->get();
         return $query->result();
     }
     //kelola data produk
@@ -192,6 +194,8 @@ class DataMaster extends CI_Model
         $query = $this->db->get('siswa');
         return $query->row(); // ambil 1 record
     }
+
+
 }
                         
 /* End of file DataMaster.php */

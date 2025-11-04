@@ -102,7 +102,32 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Tanggal Diterima</label>
+                                                <input type="date" name="tgl_diterima" 
+                                                    value="<?= set_value('tgl_diterima', $siswa->tgl_diterima) ?>" 
+                                                    class="form-control">
+                                                <?= form_error('tgl_diterima', '<small class="text-danger pl-3">', '</small>'); ?>
+                                            </div>
+                                        </div>
+                                     <div class="col-sm-6">
+                                        <div class="form-group">
+                                        <label>Kelas</label>
+                                             <select name="kelas" class="form-control" required>
+                                                <option value="">-- Pilih Kelas --</option>
+                                                <?php foreach ($kelas as $k) : ?>
+                                                    <option value="<?= $k->id_kelas; ?>"
+                                                        <?= ($k->id_kelas == $siswa->kelas ? 'selected' : ''); ?>>
+                                                        <?= $k->nama_kelas; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                </div>
 
+                                    </div>
                                 <!-- Row 4: Tanggal Lahir & Nama Ibu -->
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -131,30 +156,14 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                         <div class="form-group">
-                                            <label>Sekolah Asal</label>
-                                            <input type="text" name="sekolah_asal" value="<?= $siswa->sekolah_asal ?>" class="form-control" placeholder="Masukkan Sekolah Asal">
-                                            <?= form_error('sekolah_asal', '<small class="text-danger pl-3">', '</small>'); ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Row 6: Sekolah Asal & Tanggal Diterima -->
-                                <div class="row">
-                                    <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Alamat</label>
                                             <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan Alamat"><?= $siswa->alamat ?></textarea>
                                             <?= form_error('alamat', '<small class="text-danger pl-3">', '</small>'); ?>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label>Tanggal Diterima</label>
-                                            <input type="date" name="tgl_diterima" value="<?= $siswa->tgl_diterima ?>" class="form-control">
-                                            <?= form_error('tgl_diterima', '<small class="text-danger pl-3">', '</small>'); ?>
-                                        </div>
-                                    </div>
+                                </div>
+                                  
                                 </div>
                             </div>
 
