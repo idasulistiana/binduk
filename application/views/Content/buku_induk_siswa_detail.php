@@ -28,7 +28,6 @@
                         <tr><th>Nama Ayah</th><td><?= $siswa->nama_ayah ?></td></tr>
                         <tr><th>Nama Ibu</th><td><?= $siswa->nama_ibu ?></td></tr>
                         <tr><th>Tanggal Diterima</th><td><?= date('d-m-Y', strtotime($siswa->tgl_diterima)) ?></td></tr>
-                        <tr><th>Sekolah Asal</th><td><?= $siswa->sekolah_asal ?></td></tr>
                     </table>
                 </div>
             </div>

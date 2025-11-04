@@ -137,7 +137,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <th class="text-center">Nama Ayah</th>
                                                 <th class="text-center">Nama Ibu</th>
                                                 <th class="text-center">Diterima</th>
-                                                <th class="text-center">Asal</th>
 
                                                 <!-- Sembunyikan kolom Action jika level_user = 2 -->
                                                 <?php if ($level_user != 2): ?>
@@ -166,7 +165,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                     <td class="text-center"><?= $value->nama_ayah ?></td>
                                                     <td class="text-center"><?= $value->nama_ibu ?></td>
                                                     <td class="text-center"><?= date('d-m-Y', strtotime($value->tgl_diterima)) ?></td>
-                                                    <td class="text-center"><?= $value->sekolah_asal ?></td>
 
                                                     <!-- Hanya tampilkan tombol aksi jika level_user bukan 2 -->
                                                     <?php if ($level_user != 2): ?>
@@ -304,23 +302,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <?= form_error('nama_ayah', '<small class="text-danger pl-3">', '</small>'); ?>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label>Sekolah Asal</label>
-                                                <input type="text" name="sekolah_asal" value="<?= set_value('sekolah_asal') ?>" class="form-control" placeholder="Masukkan Sekolah Asal" required>
-                                                <?= form_error('sekolah_asal', '<small class="text-danger pl-3">', '</small>'); ?>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-sm-6">
+                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label>Alamat</label>
                                                 <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan Alamat"><?= set_value('alamat') ?></textarea>
                                                 <?= form_error('alamat', '<small class="text-danger pl-3">', '</small>'); ?>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="row">
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label>Tanggal Diterima</label>

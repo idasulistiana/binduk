@@ -46,7 +46,6 @@ class ControllerDataMaster extends CI_Controller
 		$this->form_validation->set_rules('alamat', 'Alamat', 'required');
 		$this->form_validation->set_rules('nama_ayah', 'Nama Ayah', 'required');
 		$this->form_validation->set_rules('tgl_diterima', 'Tanggal Diterima', 'required');
-		$this->form_validation->set_rules('sekolah_asal', 'Sekolah Asal', 'required');
 
 		$data['level_user'] = $this->session->userdata('level_user');
 
@@ -88,8 +87,7 @@ class ControllerDataMaster extends CI_Controller
 				'tgl_lahir' => $this->input->post('tgl_lahir'),
 				'nama_ibu' => $this->input->post('nama_ibu'),
 				'nama_ayah' => $this->input->post('nama_ayah'),
-				'tgl_diterima' => $this->input->post('tgl_diterima'),
-				'sekolah_asal' => $this->input->post('sekolah_asal')
+				'tgl_diterima' => $this->input->post('tgl_diterima')
 			);
 
 			$this->DataMaster->insert_siswa($data);
@@ -116,7 +114,7 @@ class ControllerDataMaster extends CI_Controller
 		$this->form_validation->set_rules('nama_ibu', 'Nama Ibu', 'required');
 		$this->form_validation->set_rules('nama_ayah', 'Nama Ayah', 'required');
 		$this->form_validation->set_rules('tgl_diterima', 'Tanggal Diterima', 'required');
-		$this->form_validation->set_rules('sekolah_asal', 'Sekolah Asal', 'required');
+	
 
 		if ($this->form_validation->run() == FALSE) {
 			$data = array(
@@ -138,8 +136,8 @@ class ControllerDataMaster extends CI_Controller
 				'tgl_lahir' => $this->input->post('tgl_lahir'),
 				'nama_ibu' => $this->input->post('nama_ibu'),
 				'nama_ayah' => $this->input->post('nama_ayah'),
-				'tgl_diterima' => $this->input->post('tgl_diterima'),
-				'sekolah_asal' => $this->input->post('sekolah_asal')
+				'tgl_diterima' => $this->input->post('tgl_diterima')
+				
 			);
 			$this->DataMaster->update_siswa($id, $data);
 			$this->session->set_flashdata('success', 'Data Siswa Berhasil Diperbaharui!');
@@ -181,8 +179,7 @@ class ControllerDataMaster extends CI_Controller
 								'alamat' => $data[7],                            
 								'nama_ayah' => $data[8],
 								'nama_ibu' => $data[9],
-								'tgl_diterima' => $data[10],
-								'sekolah_asal' => $data[11]
+								'tgl_diterima' => $data[10]
 							];
 							$this->DataMaster->insert_siswa($insert_data);
 							$success_count++;
@@ -256,7 +253,6 @@ class ControllerDataMaster extends CI_Controller
 				<th width="100">Alamat</th>
 				<th>Nama Ayah</th>
 				<th>Tanggal Diterima</th>
-				<th width="100">Sekolah Asal</th>
 			</tr>';
 
 		// Isi data siswa
@@ -275,7 +271,7 @@ class ControllerDataMaster extends CI_Controller
 				<td>'.$s->alamat.'</td>
 				<td>'.$s->nama_ayah.'</td>
 				<td>'.$s->tgl_diterima.'</td>
-				<td>'.$s->sekolah_asal.'</td>
+				
 			</tr>';
 			$no++;
 		}
