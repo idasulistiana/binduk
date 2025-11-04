@@ -189,7 +189,8 @@ class ControllerDataMaster extends CI_Controller
 								'alamat' => $data[7],                            
 								'nama_ayah' => $data[8],
 								'nama_ibu' => $data[9],
-								'tgl_diterima' => $data[10]
+								'tgl_diterima' => $data[10],
+								'kelas' => $data[11],
 							];
 							$this->DataMaster->insert_siswa($insert_data);
 							$success_count++;
@@ -253,8 +254,9 @@ class ControllerDataMaster extends CI_Controller
 			<tr style="background-color:#f2f2f2; text-align:center;">
 				<th width="30">No</th>
 				<th>NISN</th>
-				<th>Nama Siswa</th>
 				<th width="40">No Induk</th>
+				<th>Kelas</th>
+				<th>Nama Siswa</th>
 				<th>Gender</th>
 				<th width="40">Agama</th>
 				<th>Tempat Lahir</th>
@@ -271,8 +273,9 @@ class ControllerDataMaster extends CI_Controller
 			$html .= '<tr style="text-align:center;">
 				<td>'.$no.'</td>
 				<td>'.$s->nisn.'</td>
-				<td>'.$s->nama_siswa.'</td>
 				<td>'.$s->no_induk.'</td>
+				<td>'.$s->nama_kelas.'</td>
+				<td>'.$s->nama_siswa.'</td>
 				<td>'.$s->gender.'</td>
 				<td>'.$s->agama.'</td>
 				<td>'.$s->tempat_lahir.'</td>
