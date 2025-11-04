@@ -113,14 +113,16 @@ class ControllerBukuIndukSiswa extends CI_Controller {
      * Fungsi untuk menghasilkan deskripsi capaian pembelajaran berdasarkan nilai akhir
      */
     private function get_deskripsi_capaian($nilai) {
-        if ($nilai >= 91) {
-            return "Sangat Baik (SB) - Peserta didik sangat menguasai konsep, keterampilan, dan sikap dalam pembelajaran. Mampu menjelaskan, menerapkan, serta menyelesaikan masalah secara mandiri dan kreatif.";
-        } elseif ($nilai >= 81) {
-            return " Baik (B)  - Peserta didik menguasai sebagian besar materi dan keterampilan dengan baik. Dapat menerapkan pengetahuan dalam konteks sederhana serta menunjukkan kemandirian dan tanggung jawab dalam belajar.";
-        } elseif ($nilai >= 71) {
-            return " Cukup (C)  - Peserta didik memahami sebagian konsep dasar namun masih perlu bimbingan dalam penerapan dan pengembangan kemampuan berpikir kritis atau kreatif.";
+       if ($nilai >= 90) {
+            return "<b>A (Sangat Baik/Istimewa)</b> - Peserta didik menunjukkan penguasaan materi yang komprehensif dan kemampuan aplikasi yang luar biasa. Hasil belajar jauh melebihi standar ketuntasan.";
+        } elseif ($nilai >= 80) {
+            return "<b>B (Baik)</b> - Peserta didik menunjukkan penguasaan materi yang kuat dan mampu mengaplikasikannya dengan baik. Telah mencapai standar ketuntasan dengan hasil yang memuaskan.";
+        } elseif ($nilai >= 70) {
+            return "<b>C (Cukup/Memuaskan)</b> - Peserta didik menunjukkan penguasaan materi yang memadai dan telah mencapai batas minimal standar ketuntasan. Mungkin masih memerlukan sedikit peningkatan di beberapa area.";
+        } elseif ($nilai >= 60) {
+            return "<b>D (Kurang)</b> - Peserta didik menunjukkan penguasaan materi yang belum memadai atau masih di bawah standar ketuntasan minimal. Diperlukan perbaikan dan dukungan belajar yang intensif.";
         } else {
-            return " Perlu Bimbingan (PB)  - Peserta didik belum menunjukkan penguasaan yang memadai terhadap materi dan keterampilan. Perlu pendampingan intensif dan latihan tambahan untuk mencapai kompetensi yang diharapkan.";
+            return "<b>E (Sangat Kurang)</b> - Peserta didik belum menunjukkan penguasaan terhadap materi pelajaran. Membutuhkan bimbingan dan pendampingan yang lebih intensif untuk mencapai kompetensi dasar.";
         }
     }
     
