@@ -12,6 +12,40 @@
 
     <!-- ================= Inline CSS kritikal ================= -->
     <style>
+    .content-wrapper .content {
+    margin: 10px !important;
+    }
+
+    /* Matikan efek hover sidebar (AdminLTE biasanya pakai :hover untuk buka) */
+    /* ======== FIX ICON BERGERAK SAAT HOVER (AdminLTE 3) ======== */
+
+        /* Kunci lebar sidebar dan nonaktifkan efek hover expand */
+        body.sidebar-collapse .main-sidebar,
+        body.sidebar-collapse .main-sidebar:hover {
+        width: 80px !important;
+        overflow: hidden !important;
+        transition: none !important;
+        }
+
+        /* Pastikan konten utama tidak bergeser */
+        body.sidebar-collapse .content-wrapper,
+        body.sidebar-collapse .main-header,
+        body.sidebar-collapse .main-footer {
+        margin-left: 80px !important;
+        transition: none !important;
+        }
+
+        /* Matikan semua animasi dan transformasi di dalam sidebar */
+        body.sidebar-collapse .main-sidebar *,
+        body.sidebar-collapse .main-sidebar:hover * {
+        transition: none !important;
+        transform: none !important;
+        animation: none !important;
+        }
+        
+    /* Matikan efek hover sidebar (AdminLTE biasanya pakai :hover untuk buka) */
+
+
         /* Sembunyikan seluruh halaman sampai semua CSS & gambar siap */
         body {
             display: none;

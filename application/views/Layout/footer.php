@@ -59,22 +59,50 @@
         });
     </script>
 <script>
-$(document).ready(function(){
-    var body = $('body');
+$(document).ready(function() {
+    // Target tombol toggle (biasanya di navbar)
+    var $toggleBtn = $('[data-widget="pushmenu"] i'); // ambil elemen <i> di dalam tombol
 
-    $('.main-sidebar').hover(
-        function(){ // mouse enter
-            if(body.hasClass('sidebar-collapse')){
-                body.removeClass('sidebar-collapse').addClass('sidebar-open');
-            }
-        },
-        function(){ // mouse leave
-            if(body.hasClass('sidebar-open')){
-                body.removeClass('sidebar-open').addClass('sidebar-collapse');
-            }
+    // Fungsi untuk mengganti ikon berdasarkan keadaan sidebar
+    function updateToggleIcon() {
+        if ($('body').hasClass('sidebar-collapse')) {
+            // Sidebar collapsed → tampilkan burger icon
+            $toggleBtn.removeClass('fa-arrow-left').addClass('fa-bars');
+        } else {
+            // Sidebar expanded → tampilkan arrow-left icon
+            $toggleBtn.removeClass('fa-bars').addClass('fa-arrow-left');
         }
-    );
+    }
+
+    // Jalankan sekali saat halaman pertama kali dimuat
+    updateToggleIcon();
+
+    // Jalankan setiap kali tombol toggle diklik
+    $(document).on('click', '[data-widget="pushmenu"]', function() {
+        // Delay sedikit supaya class sidebar-collapse sempat berubah
+        setTimeout(updateToggleIcon, 300);
+    });
+
+    // Tambahan: hapus efek transisi glitch
+    var $sidebarHost = $('.main-sidebar .os-host');
+    if ($('body').hasClass('sidebar-collapse')) {
+        $sidebarHost.removeClass('os-host-transition');
+        console.log("Kelas transisi dinamis pada sidebar telah dihapus.");
+    }
 });
+
+
+// Jika Anda menggunakan tombol toggle default (AdminLTE)
+$(document).on('expanded.lte.pushmenu collapsed.lte.pushmenu', function (e) {
+    var $sidebarHost = $('.main-sidebar .os-host');
+    if ($('body').hasClass('sidebar-collapse')) {
+        $sidebarHost.removeClass('os-host-transition');
+    } else {
+        // Kembalikan kelas jika sidebar dibuka kembali (agar transisi normal)
+        $sidebarHost.addClass('os-host-transition');
+    }
+});
+
 </script>
 
 <script>
