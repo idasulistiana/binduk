@@ -156,72 +156,97 @@ class ControllerDataMaster extends CI_Controller
 
 
 	public function import_siswa()
-	{
-		if(isset($_FILES['file_csv']['name'])){
-			$file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
+{
+    if (isset($_FILES['file_csv']['name'])) {
+        $file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
 
-			if(in_array($_FILES['file_csv']['type'], $file_mimes)){
-				$file = $_FILES['file_csv']['tmp_name'];
+        if (in_array($_FILES['file_csv']['type'], $file_mimes)) {
+            $file = $_FILES['file_csv']['tmp_name'];
 
-				if (($handle = fopen($file, "r")) !== FALSE) {
-					$row = 0;
-					$failed_nisn = []; // untuk menyimpan NISN yang duplikat
-					$success_count = 0;
+            if (($handle = fopen($file, "r")) !== FALSE) {
+                $row = 0;
+                $insert_count = 0;
+                $update_count = 0;
+                $failed_kelas = [];
 
-					while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-						if($row == 0){ 
-							$row++; // skip header
-							continue; 
-						}
+                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                    if ($row == 0) { 
+                        $row++; // lewati baris header CSV
+                        continue; 
+                    }
 
-						$nisn = $data[0];
+                    // urutan kolom CSV:
+                    // 0=nisn, 1=no_induk, 2=nama_siswa, 3=gender, 4=tgl_lahir,
+                    // 5=tempat_lahir, 6=agama, 7=alamat, 8=nama_ayah, 9=nama_ibu,
+                    // 10=tgl_diterima, 11=kelas (nama_kelas di CSV)
+                    $nisn = trim($data[0]);
+                    $nama_kelas = trim($data[11]);
 
-						// Cek duplicate NISN
-						if(!$this->DataMaster->cek_nisn($nisn)){
-							$insert_data = [
-								'nisn' => $nisn,
-								'no_induk' => $data[1],
-								'nama_siswa' => $data[2],
-								'gender' => $data[3],
-								'tgl_lahir' => $data[4],
-								'tempat_lahir' => $data[5],
-								'agama' => $data[6],
-								'alamat' => $data[7],                            
-								'nama_ayah' => $data[8],
-								'nama_ibu' => $data[9],
-								'tgl_diterima' => $data[10],
-								'kelas' => $data[11],
-							];
-							$this->DataMaster->insert_siswa($insert_data);
-							$success_count++;
-						} else {
-							$failed_nisn[] = $nisn;
-						}
+                    // 🔹 Cari id_kelas berdasarkan nama_kelas
+                    $kelas_row = $this->db->get_where('kelas', ['nama_kelas' => $nama_kelas])->row();
+                    if ($kelas_row) {
+                        $id_kelas = $kelas_row->id_kelas;
+                    } else {
+                        // Jika nama kelas tidak ditemukan, catat dan lewati baris ini
+                        $failed_kelas[] = $nama_kelas;
+                        $row++;
+                        continue;
+                    }
 
-						$row++;
-					}
-					fclose($handle);
+                    // 🔹 Data siswa yang akan disimpan
+                    $data_siswa = [
+                        'nisn' => $nisn,
+                        'no_induk' => trim($data[1]),
+                        'nama_siswa' => trim($data[2]),
+                        'gender' => trim($data[3]),
+                        'tgl_lahir' => trim($data[4]),
+                        'tempat_lahir' => trim($data[5]),
+                        'agama' => trim($data[6]),
+                        'alamat' => trim($data[7]),
+                        'nama_ayah' => trim($data[8]),
+                        'nama_ibu' => trim($data[9]),
+                        'tgl_diterima' => trim($data[10]),
+                        'kelas' => $id_kelas // ← simpan id_kelas ke kolom 'kelas' di tabel siswa
+                    ];
 
-					// Set flashdata
-					if(!empty($failed_nisn)){
-						$this->session->set_flashdata('failed', 'Beberapa NISN sudah ada dan gagal diimpor: '.implode(', ', $failed_nisn));
-					}
+                    // 🔹 Cek apakah NISN sudah ada
+                    $existing = $this->db->get_where('siswa', ['nisn' => $nisn])->row();
 
-					if($success_count > 0){
-						$this->session->set_flashdata('success', "Data Siswa Berhasil Diimpor ($success_count siswa)!");
-					}
+                    if ($existing) {
+                        // Update data lama
+                        $this->db->where('nisn', $nisn);
+                        $this->db->update('siswa', $data_siswa);
+                        $update_count++;
+                    } else {
+                        // Tambah data baru
+                        $this->db->insert('siswa', $data_siswa);
+                        $insert_count++;
+                    }
 
-					redirect('siswa');
-				}
-			} else {
-				$this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
-				redirect('siswa');
-			}
-		} else {
-			$this->session->set_flashdata('error', 'File CSV belum diunggah!');
-			redirect('siswa');
-		}
-	}
+                    $row++;
+                }
+
+                fclose($handle);
+
+                // 🔹 Buat pesan hasil
+                $msg = [];
+                if ($insert_count > 0) $msg[] = "$insert_count siswa baru berhasil ditambahkan";
+                if ($update_count > 0) $msg[] = "$update_count siswa berhasil diperbarui";
+                if (!empty($failed_kelas)) $msg[] = "Kelas tidak ditemukan: " . implode(', ', array_unique($failed_kelas));
+
+                $this->session->set_flashdata('success', implode('. ', $msg) . '.');
+                redirect('siswa');
+            }
+        } else {
+            $this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
+            redirect('siswa');
+        }
+    } else {
+        $this->session->set_flashdata('error', 'File CSV belum diunggah!');
+        redirect('siswa');
+    }
+}
+
 
 	public function download_siswa() {
 		// Ambil semua data siswa
