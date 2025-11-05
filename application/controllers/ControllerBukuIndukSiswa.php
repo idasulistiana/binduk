@@ -22,8 +22,8 @@ class ControllerBukuIndukSiswa extends CI_Controller {
 
     // ====================== INDEX (DAFTAR SISWA) ======================
     public function index() {
-        $data['siswa'] = $this->DataMaster->select_siswa();
-
+        $data['siswa'] = $this->DataMaster->get_all_siswa();
+      
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');
         $this->load->view('Layout/aside');

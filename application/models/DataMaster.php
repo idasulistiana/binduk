@@ -188,11 +188,16 @@ class DataMaster extends CI_Model
         return $this->db->get('siswa')->result();
     }
 
-    // Fungsi untuk ambil siswa berdasarkan nisn
+    
     public function get_siswa_by_no_induk($no_induk) {
-        $this->db->where('no_induk', $no_induk);
-        $query = $this->db->get('siswa');
-        return $query->row(); // ambil 1 record
+        $this->db->select('siswa.*, kelas.nama_kelas'); // ambil nama_kelas dari tabel kelas
+        $this->db->from('siswa');
+        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // relasi id_kelas dengan siswa.kelas
+        $this->db->where('siswa.no_induk', $no_induk);
+        $query = $this->db->get();
+        print_r($query);
+        return $query->row();
+        
     }
 
 

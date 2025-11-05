@@ -32,6 +32,7 @@
                             <tr>
                                 <th class="text-center">No</th>
                                 <th class="text-center">No Induk</th>
+                                <th class="text-center">Kelas</th>
                                 <th class="text-center">Nama Siswa</th>
                                 <th class="text-center">Gender</th>
                                 <th class="text-center">Action</th>
@@ -41,6 +42,7 @@
                             <?php $no=1; foreach($siswa as $s): ?>
                                 <tr>
                                     <td class="text-center"><?= $no++ ?></td>
+                                    <td class="text-center"><?= $s->nama_kelas ?></td>
                                     <td class="text-center"><?= $s->no_induk ?></td>
                                     <td class="text-center"><?= $s->nama_siswa ?></td>
                                     <td class="text-center"><?= $s->gender ?></td>

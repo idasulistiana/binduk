@@ -117,6 +117,8 @@ $(document).on('expanded.lte.pushmenu collapsed.lte.pushmenu', function (e) {
         $("#example1").DataTable({
             "responsive": true,
             "autoWidth": false,
+            "pageLength": 25, // jumlah data default per halaman
+            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"] ],
         });
 
         //Date range picker
