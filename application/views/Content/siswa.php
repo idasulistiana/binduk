@@ -120,10 +120,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <div class="tab-pane <?php if (form_error('nama') == '') {
                                                         echo 'active';
                                                     } ?>" id="tab_1">
-                                <div class="card-body">
-                                   
-
-                                    <table id="example1" class="table table-bordered table-striped">
+                                <div class="card-body">   
+                                 <div style="margin-bottom: 10px;">
+                                    <label>Kelas:</label>
+                                    <select id="filterKelas" name="kelas" class="form-control" style="width: 150px; display: inline-block;">
+                                        <option value="">Semua Kelas</option>
+                                        <?php foreach ($kelas as $k) : ?>
+                                            <option value="<?= $k->id_kelas; ?>"><?= $k->nama_kelas; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <!-- Loading Spinner -->
+                                    <table id="tableSiswa" class="table table-bordered table-striped">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">No</th>
@@ -154,7 +162,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                     <td class="text-center"><?= $no++ ?></td>
                                                     <td class="text-center"><strong><?= !empty($value->nisn) ? $value->nisn : '-' ?></strong></td>
                                                     <td class="text-center"><?= !empty($value->no_induk) ? $value->no_induk : '-' ?></td>
-                                                    <td class="text-center"><strong><?= !empty($value->nama_kelas) ? $value->nama_kelas : '-' ?></strong></td>
+                                                    <td class="text-center"><strong><?= !empty($value->nama_kelas) ? 'Kelas ' . $value->nama_kelas : '-' ?></strong></td>
                                                     <td class="text-center"><strong><?= !empty($value->nama_siswa) ? $value->nama_siswa : '-' ?></strong></td>
                                                     <td class="text-center"><?= !empty($value->gender) ? $value->gender : '-' ?></td>
                                                     <td class="text-center">
@@ -184,26 +192,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                     <?php endif; ?>
                                                 </tr>
 
-                                                <!-- Modal Konfirmasi Delete -->
-                                                <div class="modal fade" id="deleteModal<?= $value->nisn ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel<?= $value->nisn ?>" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">Konfirmasi Hapus</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                Apakah Anda yakin ingin menghapus data siswa <strong><?= $value->nama_siswa ?></strong>?
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                <a href="<?= base_url('siswa/delete_siswa/' . $value->nisn) ?>" class="btn btn-danger">Hapus</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             <?php
                                             }
                                             ?>
@@ -212,7 +200,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 </div>
                                 <!-- /.card-body -->
                             </div>
-                            <!-- /.tab-pane -->
+                            
+                        <!-- Spinner di tengah tabel -->
+                        <div id="tableLoadingSpinner" 
+                            style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+                                     text-align:center; z-index:10;">
+                            <div class="spinner-border text-primary" style="width:3rem; height:3rem;" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-2 mb-0 text-primary font-weight-bold">Memuat data...</p>
+                        </div>
+
+                            <!-- Modal Konfirmasi Delete -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Apakah Anda yakin ingin menghapus data siswa <strong id="namaSiswaHapus"></strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                <a href="#" id="btnDeleteConfirm" class="btn btn-danger">Hapus</a>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
+                                                    <!-- /.tab-pane -->
                             <div class="tab-pane <?php if (form_error('nama') != '') {
                                                         echo 'active';
                                                     } ?>" id="tab_2">
@@ -354,3 +374,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <!-- /.row -->
     </div>
 </div>
+

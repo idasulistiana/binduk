@@ -12,6 +12,21 @@
 
     <!-- ================= Inline CSS kritikal ================= -->
     <style>
+
+
+    #tableSiswa td, 
+    #tableSiswa th {
+    text-align: center;
+    vertical-align: middle;
+    }
+
+    #tableLoadingSpinner {
+        transition: opacity 0.3s ease;
+        }
+        #tableLoadingSpinner[style*="display: none"] {
+        opacity: 0;
+        }
+
     .content-wrapper .content {
     margin: 10px !important;
     }

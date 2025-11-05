@@ -49,6 +49,125 @@
 
 <!-- page script -->
  <script>
+ var level_user = <?= $this->session->userdata('level_user') ?>;
+  var table = $('#tableSiswa').DataTable({
+    "columns": [
+        { "data": null }, // nomor urut
+        { "data": "nisn" },
+        { "data": "no_induk" },
+        { "data": "nama_kelas" },
+        { "data": "nama_siswa" },
+        { "data": "gender" },
+        { 
+            "data": null, // gabungkan 2 field
+            "render": function(data, type, row) {
+                let tempat = row.tempat_lahir ? row.tempat_lahir : '-';
+                let tanggal = row.tgl_lahir ? new Date(row.tgl_lahir).toLocaleDateString('id-ID') : '-';
+                return tempat + ', ' + tanggal;
+            }
+        },
+        { "data": "agama" },
+        { "data": "alamat" },
+        { "data": "nama_ayah" },
+        { "data": "nama_ibu" },
+        { 
+            "data": "tgl_diterima",
+            "render": function(data) {
+                return data ? new Date(data).toLocaleDateString('id-ID') : '-';
+            }
+        },
+        { 
+            "data": null,
+            "orderable": false,
+            "render": function(data, type, row) {
+                if (level_user != 2) {
+                    return `
+                        <div class="text-center">
+                            <a href="<?= base_url('siswa/update_siswa/') ?>${row.nisn}" class="btn btn-success btn-sm">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                             <button class="btn btn-danger btn-sm delete-siswa" 
+                                        data-nisn="${row.nisn}" 
+                                        data-nama="${row.nama_siswa}">
+                                    <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    return '-';
+                }
+            }
+        }
+    ],
+    "columnDefs": [
+        {
+            "targets": 0,
+            "render": function(data, type, row, meta){
+                return meta.row + 1;
+            }
+        }
+    ]
+});
+
+function loadSiswa(kelas_id = '') {
+     $('#tableLoadingSpinner').show();
+    $.ajax({
+        url: "<?= site_url('ControllerDataMaster/get_siswa') ?>",
+        type: "POST",
+        data: { kelas: kelas_id },
+        dataType: "json",
+        success: function(response) {
+            let data = response.data; // ambil array siswa
+
+            // hapus data lama
+            table.clear();
+
+            // kalau ada data, masukkan
+            if(data.length > 0){
+                table.rows.add(data); // masukkan array data baru
+            }
+
+            table.draw(); // render tabel
+        },
+        error: function(xhr, status, error) {
+            console.log("AJAX Error:", error);
+        },
+        complete: function() {
+            // sembunyikan spinner ketika selesai
+            $('#tableLoadingSpinner').hide();
+        }
+    });
+}
+$('#filterKelas').change(function() {
+    let kelas_id = $(this).val();
+    loadSiswa(kelas_id);
+});
+
+
+loadSiswa();
+
+// Ketika tombol delete diklik
+$('#tableSiswa').on('click', '.delete-siswa', function() {
+    let nisn = $(this).data('nisn');
+    let row = table.row($(this).parents('tr')).data(); // ambil data siswa
+    let namaSiswa = row.nama_siswa;
+
+    // Set nama siswa di modal
+    $('#namaSiswaHapus').text(namaSiswa);
+
+    // Set link hapus
+    $('#btnDeleteConfirm').attr('href', "<?= base_url('siswa/delete_siswa/') ?>" + nisn);
+
+    // Tampilkan modal
+    $('#deleteModal').modal('show');
+});
+
+
+// ajax data table data siswa
+
+
+
+
         window.addEventListener("load", function() {
             document.body.style.display = 'block';
              var logo = document.getElementById('logo-sekolah');
@@ -60,6 +179,7 @@
     </script>
 <script>
 $(document).ready(function() {
+ 
     // Target tombol toggle (biasanya di navbar)
     var $toggleBtn = $('[data-widget="pushmenu"] i'); // ambil elemen <i> di dalam tombol
 

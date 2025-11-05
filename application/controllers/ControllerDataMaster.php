@@ -23,6 +23,14 @@ class ControllerDataMaster extends CI_Controller
         }
            
 	}
+	public function get_siswa()
+	{
+		$kelas = $this->input->post('kelas'); // ambil dari filter dropdown
+		$data = $this->DataMaster->get_siswa($kelas);
+
+		echo json_encode(['data' => $data]); // DataTables biasanya pakai key 'data'
+	}
+
 	public function index() {
         $data['siswa'] = $this->DataMaster->get_all_siswa();
 		$data['kelas'] = $this->Kelas_model->get_all();

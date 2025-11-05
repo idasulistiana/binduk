@@ -80,6 +80,20 @@ class DataMaster extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
+   public function get_siswa($kelas_id = '') // buat filter kelas 
+    {
+        $this->db->select('siswa.*, kelas.nama_kelas');
+        $this->db->from('siswa');
+        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left');
+
+        if($kelas_id != ''){
+            $this->db->where('siswa.kelas', $kelas_id);
+        }
+
+        $query = $this->db->get();
+        return $query->result(); // hanya return data
+    }
+
     //kelola data produk
     public function insert_produk($data)
     {
