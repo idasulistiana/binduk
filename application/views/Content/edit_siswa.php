@@ -60,7 +60,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>No Induk</label>
-                                            <input type="number" name="no_induk" value="<?= $siswa->no_induk ?>" class="form-control" placeholder="Masukkan Nomor Induk" readonly>
+                                            <input type="number" name="no_induk" value="<?= $siswa->no_induk ?>" class="form-control" placeholder="Masukkan Nomor Induk" >
                                             <?= form_error('no_induk', '<small class="text-danger pl-3">', '</small>'); ?>
                                         </div>
                                     </div>
