@@ -152,21 +152,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             ?>
                                                 <tr>
                                                     <td class="text-center"><?= $no++ ?></td>
-                                                    <td class="text-center"><strong><?= $value->nisn ?></strong></td>
-                                                    <td class="text-center"><?= $value->no_induk ?></td>
-                                                    <td class="text-center"><strong><?= $value->nama_kelas ?></strong></td>
-                                                    <td class="text-center"><strong><?= $value->nama_siswa ?></strong></td>
-                                                    <td class="text-center"><?= $value->gender ?></td>
+                                                    <td class="text-center"><strong><?= !empty($value->nisn) ? $value->nisn : '-' ?></strong></td>
+                                                    <td class="text-center"><?= !empty($value->no_induk) ? $value->no_induk : '-' ?></td>
+                                                    <td class="text-center"><strong><?= !empty($value->nama_kelas) ? $value->nama_kelas : '-' ?></strong></td>
+                                                    <td class="text-center"><strong><?= !empty($value->nama_siswa) ? $value->nama_siswa : '-' ?></strong></td>
+                                                    <td class="text-center"><?= !empty($value->gender) ? $value->gender : '-' ?></td>
                                                     <td class="text-center">
                                                         <span class="badge bg-warning"></span>
-                                                        <?= $value->tempat_lahir ?><br> 
-                                                        <?= date('d-m-Y', strtotime($value->tgl_lahir)) ?>
+                                                        <?= !empty($value->tempat_lahir) ? $value->tempat_lahir : '-' ?><br>
+                                                        <?= !empty($value->tgl_lahir) ? date('d-m-Y', strtotime($value->tgl_lahir)) : '-' ?>
                                                     </td>
-                                                    <td class="text-center"><?= $value->agama ?></td>
-                                                    <td class="text-center"><?= $value->alamat ?></td>
-                                                    <td class="text-center"><?= $value->nama_ayah ?></td>
-                                                    <td class="text-center"><?= $value->nama_ibu ?></td>
-                                                    <td class="text-center"><?= date('d-m-Y', strtotime($value->tgl_diterima)) ?></td>
+                                                    <td class="text-center"><?= !empty($value->agama) ? $value->agama : '-' ?></td>
+                                                    <td class="text-center"><?= !empty($value->alamat) ? $value->alamat : '-' ?></td>
+                                                    <td class="text-center"><?= !empty($value->nama_ayah) ? $value->nama_ayah : '-' ?></td>
+                                                    <td class="text-center"><?= !empty($value->nama_ibu) ? $value->nama_ibu : '-' ?></td>
+                                                    <td class="text-center"><?= !empty($value->tgl_diterima) ? date('d-m-Y', strtotime($value->tgl_diterima)) : '-' ?></td>
+
 
                                                     <!-- Hanya tampilkan tombol aksi jika level_user bukan 2 -->
                                                     <?php if ($level_user != 2): ?>
