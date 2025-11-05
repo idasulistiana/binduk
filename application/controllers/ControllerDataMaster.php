@@ -280,16 +280,16 @@ class ControllerDataMaster extends CI_Controller
 				<th width="30">No</th>
 				<th>NISN</th>
 				<th width="40">No Induk</th>
-				<th>Kelas</th>
 				<th>Nama Siswa</th>
 				<th>Gender</th>
-				<th width="40">Agama</th>
-				<th>Tempat Lahir</th>
 				<th>Tanggal Lahir</th>
-				<th>Nama Ibu</th>
+				<th>Tempat Lahir</th>
+				<th width="40">Agama</th>
 				<th width="100">Alamat</th>
 				<th>Nama Ayah</th>
+				<th>Nama Ibu</th>
 				<th>Tanggal Diterima</th>
+				<th>Kelas</th>
 			</tr>';
 
 		// Isi data siswa
@@ -299,16 +299,16 @@ class ControllerDataMaster extends CI_Controller
 				<td>'.$no.'</td>
 				<td>'.$s->nisn.'</td>
 				<td>'.$s->no_induk.'</td>
-				<td>'.$s->nama_kelas.'</td>
 				<td>'.$s->nama_siswa.'</td>
 				<td>'.$s->gender.'</td>
-				<td>'.$s->agama.'</td>
-				<td>'.$s->tempat_lahir.'</td>
 				<td>'.$s->tgl_lahir.'</td>
-				<td>'.$s->nama_ibu.'</td>
+				<td>'.$s->tempat_lahir.'</td>
+				<td>'.$s->agama.'</td>
 				<td>'.$s->alamat.'</td>
 				<td>'.$s->nama_ayah.'</td>
+				<td>'.$s->nama_ibu.'</td>
 				<td>'.$s->tgl_diterima.'</td>
+				<td>'.$s->nama_kelas.'</td>
 				
 			</tr>';
 			$no++;
