@@ -76,6 +76,7 @@ class DataMaster extends CI_Model
         $this->db->select('siswa.*, kelas.nama_kelas');
         $this->db->from('siswa');
         $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // ubah 'siswa.id_kelas' ke 'siswa.kelas'
+        $this->db->order_by('siswa.no_induk', 'ASC'); 
         $query = $this->db->get();
         return $query->result();
     }
