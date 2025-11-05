@@ -32,7 +32,7 @@ class ControllerDashboard extends CI_Controller
         $this->load->view('Layout/navbar');
         $this->load->view('Layout/aside');
         $this->load->view('Content/dashboard_view', $data);
-        $this->load->view('Layout/footer');
+        $this->load->view('Layout/footer', $data);
         $this->load->view('Layout/head');
     }
     

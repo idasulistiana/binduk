@@ -25,6 +25,7 @@ class ControllerDataMaster extends CI_Controller
 	}
 	public function get_siswa()
 	{
+		
 		$kelas = $this->input->post('kelas'); // ambil dari filter dropdown
 		$data = $this->DataMaster->get_siswa($kelas);
 
@@ -39,7 +40,7 @@ class ControllerDataMaster extends CI_Controller
         $this->load->view('Layout/navbar');
         $this->load->view('Layout/aside');
         $this->load->view('Content/siswa', $data); // view Ekskul
-        $this->load->view('Layout/footer');
+        $this->load->view('Layout/footer', $data);
     }
 
 	public function add_siswa()

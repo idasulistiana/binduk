@@ -9,6 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     $CI =& get_instance();
     $level_user = $CI->session->userdata('level_user');
 ?>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -162,7 +163,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                     <td class="text-center"><?= $no++ ?></td>
                                                     <td class="text-center"><strong><?= !empty($value->nisn) ? $value->nisn : '-' ?></strong></td>
                                                     <td class="text-center"><?= !empty($value->no_induk) ? $value->no_induk : '-' ?></td>
-                                                    <td class="text-center"><strong><?= !empty($value->nama_kelas) ? 'Kelas ' . $value->nama_kelas : '-' ?></strong></td>
+                                                    <td class="text-center"><strong><?= !empty($value->nama_kelas) ?  $value->nama_kelas : '-' ?></strong></td>
                                                     <td class="text-center"><strong><?= !empty($value->nama_siswa) ? $value->nama_siswa : '-' ?></strong></td>
                                                     <td class="text-center"><?= !empty($value->gender) ? $value->gender : '-' ?></td>
                                                     <td class="text-center">
@@ -179,16 +180,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                                                     <!-- Hanya tampilkan tombol aksi jika level_user bukan 2 -->
                                                     <?php if ($level_user != 2): ?>
-                                                    <td class="text-center">
-                                                        <!-- Tombol Delete -->
-                                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $value->nisn ?>">
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-                                                        <!-- Tombol Edit -->
-                                                        <a href="<?= base_url('siswa/update_siswa/' . $value->nisn) ?>" class="btn btn-success btn-sm">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                    </td>
+                                                        <td class="text-center">
+                                                            <!-- Tombol Delete -->
+                                                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $value->nisn ?>">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                            <!-- Tombol Edit -->
+                                                            <a href="<?= base_url('siswa/update_siswa/' . $value->nisn) ?>" class="btn btn-success btn-sm">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                        </td>
                                                     <?php endif; ?>
                                                 </tr>
 
@@ -374,4 +375,113 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <!-- /.row -->
     </div>
 </div>
+ <script>
+ // Ambil nilai level_user dari PHP
+ 
+$(document).ready(function() {
 
+    // --- Siapkan kolom dasar (tanpa kolom aksi) ---
+    var columns = [
+        { "data": null }, // nomor urut
+        { "data": "nisn" },
+        { "data": "no_induk" },
+        { "data": "nama_kelas" },
+        { "data": "nama_siswa" },
+        { "data": "gender" },
+        { 
+            "data": null,
+            "render": function(data, type, row) {
+                let tempat = row.tempat_lahir ? row.tempat_lahir : '-';
+                let tanggal = row.tgl_lahir 
+                    ? new Date(row.tgl_lahir).toLocaleDateString('id-ID') 
+                    : '-';
+                return tempat + ', ' + tanggal;
+            }
+        },
+        { "data": "agama" },
+        { "data": "alamat" },
+        { "data": "nama_ayah" },
+        { "data": "nama_ibu" },
+        { 
+            "data": "tgl_diterima",
+            "render": function(data) {
+                return data ? new Date(data).toLocaleDateString('id-ID') : '-';
+            }
+        }
+
+        <?php if ($level_user == 1): ?>, // tambahkan koma karena ini bagian JS array
+        {
+            "data": null,
+            "orderable": false,
+            "render": function(data, type, row) {
+                return `
+                    <div class="text-center">
+                        <a href="<?= base_url('siswa/update_siswa/') ?>${row.nisn}" 
+                           class="btn btn-success btn-sm" title="Edit">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <button class="btn btn-danger btn-sm delete-siswa" 
+                                data-nisn="${row.nisn}" 
+                                data-nama="${row.nama_siswa}"
+                                title="Hapus">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        <?php endif; ?>
+    ];
+
+    // --- Inisialisasi DataTable ---
+    var table = $('#tableSiswa').DataTable({
+        "processing": true,
+        "columns": columns,
+        "columnDefs": [
+            {
+                "targets": 0,
+                "render": function(data, type, row, meta){
+                    return meta.row + 1; // nomor urut
+                }
+            }
+        ]
+    });
+
+    // --- Fungsi load data via AJAX ---
+    function loadSiswa(kelas_id = '') {
+        $('#tableLoadingSpinner').show();
+
+        $.ajax({
+            url: "<?= site_url('ControllerDataMaster/get_siswa') ?>",
+            type: "POST",
+            data: { kelas: kelas_id },
+            dataType: "json",
+            success: function(response) {
+                let data = response.data || [];
+                table.clear();
+
+                if (data.length > 0) {
+                    table.rows.add(data);
+                }
+
+                table.draw();
+            },
+            error: function(xhr, status, error) {
+                console.log("AJAX Error:", error);
+            },
+            complete: function() {
+                $('#tableLoadingSpinner').hide();
+            }
+        });
+    }
+
+    // --- Event filter kelas ---
+    $('#filterKelas').change(function() {
+        let kelas_id = $(this).val();
+        loadSiswa(kelas_id);
+    });
+
+    // --- Load data pertama kali ---
+    loadSiswa();
+});
+</script>
