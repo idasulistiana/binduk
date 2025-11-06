@@ -283,10 +283,7 @@ class ControllerNilaiSiswa extends CI_Controller {
     $semester        = $this->input->post('semester');
     $nilai           = $this->input->post('nilai');
 
-    //  echo '<pre>';
-    // print_r($_POST);
-    // echo '</pre>';
-    // exit;
+
 
     if (!empty($id_nilai_ekskul)) {
         // === UPDATE ===
@@ -307,7 +304,7 @@ class ControllerNilaiSiswa extends CI_Controller {
         $this->db->insert('nilai_ekskul', $data);
         $this->session->set_flashdata('success', 'Nilai ekstrakurikuler baru berhasil ditambahkan!');
     }
-    echo $this->db->last_query();
+
     redirect('nilai/edit_siswa/' . $no_induk . '?id_kelas=' . $id_kelas . '&semester=' . $semester);
 }
 

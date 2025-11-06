@@ -210,7 +210,6 @@ class DataMaster extends CI_Model
         $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // relasi id_kelas dengan siswa.kelas
         $this->db->where('siswa.no_induk', $no_induk);
         $query = $this->db->get();
-        print_r($query);
         return $query->row();
         
     }
