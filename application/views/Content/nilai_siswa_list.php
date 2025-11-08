@@ -141,26 +141,32 @@ $(document).ready(function() {
             }
         },
         { "data": "gender" },
-        <?php if ($level_user != 2): ?>
         {
             "data": null,
             "orderable": false,
             "render": function(data, type, row) {
-                return `
-                    <div class="text-center">
-                        <a href="<?= base_url('nilai/edit_siswa/') ?>${row.no_induk}" 
+                let tambah = '';
+                <?php if ($level_user != 2): ?>
+                tambah = `<a href="<?= base_url('nilai/edit_siswa/') ?>${row.no_induk}" 
                         class="btn btn-primary btn-sm" title="Tambah Nilai">
                             <i class="fa fa-plus"></i> Tambah
-                        </a>
-                        <a href="<?= base_url('nilai/all_nilai_siswa/') ?>${row.no_induk}" 
-                        class="btn btn-warning btn-sm text-white" title="Edit Nilai">
+                        </a>`;
+                <?php endif; ?>
+
+                let edit = `<a href="<?= base_url('nilai/all_nilai_siswa/') ?>${row.no_induk}" 
+                            class="btn btn-warning btn-sm text-white" title="Edit Nilai">
                             <i class="fa fa-edit"></i> Edit
-                        </a>
+                            </a>`;
+
+                return `
+                    <div class="text-center">
+                        ${tambah}
+                        ${edit}
                     </div>
                 `;
             }
         }
-        <?php endif; ?>
+
     ];
 
     // --- Inisialisasi DataTable ---

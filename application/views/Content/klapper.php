@@ -295,22 +295,29 @@ $(document).ready(function() {
         { "data": "kelas_5" },
         { "data": "kelas_6" },
         { "data": "keterangan" },
+        <?php if ($level_user != 2): ?>, // tambahkan koma karena ini bagian JS array
         {
             "data": null,
             "orderable": false,
             "render": function(data, type, row) {
                 return `
                     <div class="text-center">
-                        <a href="<?= base_url('riwayatkelas/update_klapper/') ?>${row.no_induk}" class="btn btn-success btn-sm">
+                        <a href="<?= base_url('riwayatkelas/update_klapper/') ?>${row.no_induk}" 
+                        class="btn btn-success btn-sm" title="Edit">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <button class="btn btn-danger btn-sm" onclick="hapusData('${row.no_induk}', '${row.nama_siswa}')">
+                        <button class="btn btn-danger btn-sm delete-siswa" 
+                                data-no_induk="${row.no_induk}" 
+                                data-nama="${row.nama_siswa}" 
+                                title="Hapus">
                             <i class="fa fa-trash"></i>
                         </button>
                     </div>
                 `;
             }
         }
+        <?php endif; ?>
+
     ];
 
     // --- Inisialisasi DataTable ---
