@@ -3,10 +3,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 #[\AllowDynamicProperties]
 class Dashboard_model extends CI_Model
 {
-    public function get_total_siswa()
+   public function get_total_siswa()
     {
-        return $this->db->count_all('siswa');
+        return $this->db
+            ->where('status', 'Aktif') // hanya siswa aktif
+            ->from('siswa')
+            ->count_all_results();
     }
+
 
    public function get_siswa_laki()
     {
