@@ -466,15 +466,15 @@ class ControllerNilaiSiswa extends CI_Controller {
 
                     // ==================== MAPEL ====================
                     $mapel_nilai = [
-                        ['kode_mapel' => 'MTK',    'nilai_akhir' => $data[3]  ?? null],
-                        ['kode_mapel' => 'IPADSI', 'nilai_akhir' => $data[4]  ?? null],
+                        ['kode_mapel' => 'PAIDBP', 'nilai_akhir' => $data[3]  ?? null],
+                        ['kode_mapel' => 'PPDK',   'nilai_akhir' => $data[4] ?? null],
                         ['kode_mapel' => 'BI',     'nilai_akhir' => $data[5]  ?? null],
-                        ['kode_mapel' => 'SnMs',   'nilai_akhir' => $data[6]  ?? null],
-                        ['kode_mapel' => 'PLBJ',   'nilai_akhir' => $data[7]  ?? null],
-                        ['kode_mapel' => 'BING',   'nilai_akhir' => $data[8]  ?? null],
-                        ['kode_mapel' => 'PAIDBP', 'nilai_akhir' => $data[9]  ?? null],
-                        ['kode_mapel' => 'PPDK',   'nilai_akhir' => $data[10] ?? null],
-                        ['kode_mapel' => 'PJODK',  'nilai_akhir' => $data[11] ?? null],
+                        ['kode_mapel' => 'MTK',    'nilai_akhir' => $data[6]  ?? null],
+                        ['kode_mapel' => 'IPADSI', 'nilai_akhir' => $data[7]  ?? null],
+                        ['kode_mapel' => 'PJODK',  'nilai_akhir' => $data[8] ?? null],
+                        ['kode_mapel' => 'SnMs',   'nilai_akhir' => $data[9]  ?? null],
+                        ['kode_mapel' => 'BING',   'nilai_akhir' => $data[10]  ?? null],
+                        ['kode_mapel' => 'PLBJ',   'nilai_akhir' => $data[11]  ?? null],
                     ];
 
                     foreach ($mapel_nilai as $n) {
@@ -503,9 +503,9 @@ class ControllerNilaiSiswa extends CI_Controller {
                     // ==================== EKSKUL ====================
                     $nilai_ekskul = [
                         ['kode_ekskul' => 'PRMK', 'nilai' => $data[16] ?? null],
-                        ['kode_ekskul' => 'KRTE', 'nilai' => $data[17] ?? null],
-                        ['kode_ekskul' => 'SNTR', 'nilai' => $data[18] ?? null],
-                        ['kode_ekskul' => 'PSKB', 'nilai' => $data[19] ?? null],
+                        ['kode_ekskul' => 'PSKB', 'nilai' => $data[17] ?? null],
+                        ['kode_ekskul' => 'KRTE', 'nilai' => $data[18] ?? null],
+                        ['kode_ekskul' => 'SNTR', 'nilai' => $data[19] ?? null],
                         ['kode_ekskul' => 'VOLI', 'nilai' => $data[20] ?? null],
                         ['kode_ekskul' => 'FTSL', 'nilai' => $data[21] ?? null],
                         ['kode_ekskul' => 'HDRH', 'nilai' => $data[22] ?? null],
