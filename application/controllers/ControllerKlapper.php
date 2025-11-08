@@ -55,7 +55,7 @@ class ControllerKlapper extends CI_Controller {
     $this->form_validation->set_rules('no_induk', 'No Induk', 'required');
 
     if ($this->form_validation->run() == FALSE) {
-        $data['siswa']   = $this->DataMaster->select_siswa();
+        $data['siswa']   = $this->DataMaster->siswa_forklapper();
         $data['klapper'] = $this->Klapper_model->get_all();
 
         $this->load->view('Layout/head');
