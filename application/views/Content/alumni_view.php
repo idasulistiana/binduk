@@ -24,64 +24,63 @@ $level_user = $CI->session->userdata('level_user');
             <?php endif; ?>
         </div>
     </section>
-
-    <div class="col-md-12" style="margin-left:10px">
-        <div class="card">
-       
-
-            <div class="card-body">
-                <table id="tableAlumni" class="table table-bordered table-striped">
-                    <thead>
-                        <tr class="text-center">
-                            <th>No</th>
-                            <th>NISN</th>
-                            <th>No Induk</th>
-                            <th>Kelas Terakhir</th>
-                            <th>Nama Alumni</th>
-                            <th>Gender</th>
-                            <th>TTL</th>
-                            <th>Agama</th>
-                            <th>Alamat</th>
-                            <th>Nama Ayah</th>
-                            <th>Nama Ibu</th>
-                            <th>Tahun Lulus</th>
-                            <?php if ($level_user != 2): ?>
-                                <th>Action</th>
-                            <?php endif; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $no = 1; foreach ($alumni as $a): ?>
-                        <tr class="text-center">
-                            <td><?= $no++; ?></td>
-                            <td><?= $a->nisn; ?></td>
-                            <td><?= $a->no_induk; ?></td>
-                            <td><?= $a->nama_kelas; ?></td>
-                            <td><?= $a->nama_siswa; ?></td>
-                            <td><?= $a->gender; ?></td>
-                            <td><?= $a->tempat_lahir; ?>, <?= date('d-m-Y', strtotime($a->tgl_lahir)); ?></td>
-                            <td><?= $a->agama; ?></td>
-                            <td><?= $a->alamat; ?></td>
-                            <td><?= $a->nama_ayah; ?></td>
-                            <td><?= $a->nama_ibu; ?></td>
-                            <td><?= !empty($a->tahun_lulus) ? $a->tahun_lulus : '-'; ?></td>
-                            <?php if ($level_user != 2): ?>
-                                <td>
-                                      <!-- Tombol Edit -->
-                                    <a href="<?= base_url('alumni/update/'.$a->nisn) ?>" class="btn btn-success btn-sm">
-                                        <i class="fa fa-edit"></i>
-                                    </a>
-                                    <a href="<?= site_url('alumni/delete/'.$a->nisn); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data alumni ini?')">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
-                                </td>
-                            <?php endif; ?>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+    <section class="content">          
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <table id="tableAlumni" class="table table-bordered table-striped">
+                        <thead>
+                            <tr class="text-center">
+                                <th>No</th>
+                                <th>NISN</th>
+                                <th>No Induk</th>
+                                <th>Kelas Terakhir</th>
+                                <th>Nama Alumni</th>
+                                <th>Gender</th>
+                                <th>TTL</th>
+                                <th>Agama</th>
+                                <th>Alamat</th>
+                                <th>Nama Ayah</th>
+                                <th>Nama Ibu</th>
+                                <th>Tahun Lulus</th>
+                                <?php if ($level_user != 2): ?>
+                                    <th>Action</th>
+                                <?php endif; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; foreach ($alumni as $a): ?>
+                            <tr class="text-center">
+                                <td><?= $no++; ?></td>
+                                <td><?= $a->nisn; ?></td>
+                                <td><?= $a->no_induk; ?></td>
+                                <td><?= $a->nama_kelas; ?></td>
+                                <td><?= $a->nama_siswa; ?></td>
+                                <td><?= $a->gender; ?></td>
+                                <td><?= $a->tempat_lahir; ?>, <?= date('d-m-Y', strtotime($a->tgl_lahir)); ?></td>
+                                <td><?= $a->agama; ?></td>
+                                <td><?= $a->alamat; ?></td>
+                                <td><?= $a->nama_ayah; ?></td>
+                                <td><?= $a->nama_ibu; ?></td>
+                                <td><?= !empty($a->tahun_lulus) ? $a->tahun_lulus : '-'; ?></td>
+                                <?php if ($level_user != 2): ?>
+                                    <td>
+                                        <!-- Tombol Edit -->
+                                        <a href="<?= base_url('alumni/update/'.$a->nisn) ?>" class="btn btn-success btn-sm">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="<?= site_url('alumni/delete/'.$a->nisn); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data alumni ini?')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </td>
+                                <?php endif; ?>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 

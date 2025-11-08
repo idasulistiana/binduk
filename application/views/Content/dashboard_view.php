@@ -96,52 +96,50 @@
       </div>
     </div>
   <!-- Jumlah rombel -->
-<div class="card mt-4">
-    <div class="card-header bg-success text-white">
-        <h5 class="mb-0">Data Jumlah Siswa per Rombel</h5>
-    </div>
+  <div class="card mt-4">
+      <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Data Jumlah Siswa per Rombel</h5>
+      </div>
 
-    <div class="card-body p-3" style="background-color: #e9fbe9;">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped text-center">
-                <thead class="bg-light">
-                    <tr>
-                        <th>NO</th>
-                        <th>ROMBEL</th>
-                        <th>Laki-laki</th>
-                        <th>Perempuan</th>
-                        <th>JUMLAH</th>
-                    </tr>
-                </thead>
+      <div class="card-body p-3" style="background-color: #e9fbe9;">
+          <div class="table-responsive">
+              <table class="table table-bordered table-striped text-center">
+                  <thead class="bg-light">
+                      <tr>
+                          <th>NO</th>
+                          <th>ROMBEL</th>
+                          <th>Laki-laki</th>
+                          <th>Perempuan</th>
+                          <th>JUMLAH</th>
+                      </tr>
+                  </thead>
 
-                <tbody>
-                    <?php $no = 1; foreach ($jumlah_siswa as $row): ?>
-                        <tr>
-                            <td><?= $no++ ?></td>
-                            <td><?= $row->nama_kelas ?></td>
-                            <td><?= $row->total_L ?></td>
-                            <td><?= $row->total_P ?></td>
-                            <td><?= $row->total_siswa ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
+                  <tbody>
+                      <?php $no = 1; foreach ($jumlah_siswa as $row): ?>
+                          <tr>
+                              <td><?= $no++ ?></td>
+                              <td><?= $row->nama_kelas ?></td>
+                              <td><?= $row->total_L ?></td>
+                              <td><?= $row->total_P ?></td>
+                              <td><?= $row->total_siswa ?></td>
+                          </tr>
+                      <?php endforeach; ?>
+                  </tbody>
 
-                <tfoot class="bg-light">
-                    <tr>
-                        <th colspan="2">JUMLAH</th>
-                        <th><?= $total_keseluruhan->total_L ?></th>
-                        <th><?= $total_keseluruhan->total_P ?></th>
-                        <th><?= $total_keseluruhan->total_siswa ?></th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
-</div>
+                  <tfoot class="bg-light">
+                      <tr>
+                          <th colspan="2">JUMLAH</th>
+                          <th><?= $total_keseluruhan->total_L ?></th>
+                          <th><?= $total_keseluruhan->total_P ?></th>
+                          <th><?= $total_keseluruhan->total_siswa ?></th>
+                      </tr>
+                  </tfoot>
+              </table>
+          </div>
+      </div>
+  </div>
 
-   
-
-  </section>
+</section>
 </div>
 <script>
     // Nonaktifkan cache halaman agar tombol Back tidak menampilkan halaman lama
