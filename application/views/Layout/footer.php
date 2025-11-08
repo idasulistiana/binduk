@@ -329,7 +329,7 @@ $(document).ready(function() {
     }
 });
 //=========== ADD Data TABLE=======
-$(".table-list-nilai-siswa").DataTable();
+
 $(".table-rekapkehadiran-siswa").DataTable();
 </script>
 

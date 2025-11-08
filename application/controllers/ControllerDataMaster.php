@@ -34,7 +34,7 @@ class ControllerDataMaster extends CI_Controller
 
 	public function index() {
         $data['siswa'] = $this->DataMaster->get_all_siswa();
-		$data['kelas'] = $this->Kelas_model->get_all();
+		$data['kelas'] = $this->Kelas_model->get_all_active_class();
         $data['level_user'] = $this->session->userdata('level_user');
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');

@@ -21,14 +21,24 @@ class ControllerNilaiSiswa extends CI_Controller {
 
     // Tampilkan daftar nilai untuk semua siswa
     public function index() {
-        $data['siswa'] = $this->DataMaster->select_siswa();
+        $data['siswa'] = $this->DataMaster->get_siswa_fornilai();
+        $data['kelas'] = $this->Kelas_model->get_all_active_class();
         $data['level_user'] = $this->session->userdata('level_user');
+
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');
         $this->load->view('Layout/aside');
         $this->load->view('Content/nilai_siswa_list', $data); // view daftar siswa
-        $this->load->view('Layout/footer');
+        $this->load->view('Layout/footer',  $data);
     }
+    public function get_siswa()
+	{
+		
+		$kelas = $this->input->post('kelas'); // ambil dari filter dropdown
+		$data = $this->DataMaster->get_siswa_fornilai($kelas);
+
+		echo json_encode(['data' => $data]); // DataTables biasanya pakai key 'data'
+	}
 
    public function edit_siswa($no_induk) {
         $id_kelas = $this->input->post('id_kelas') ?? $this->input->get('id_kelas');

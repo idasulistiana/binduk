@@ -1,3 +1,8 @@
+<!-- jQuery dulu, baru Popper.js, baru Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
     // Ambil session dari CodeIgniter
@@ -68,12 +73,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </ul>
                 </div>
                 <div class="card-body">
+                       <div style="margin-bottom: 10px;">
+                            <label>Kelas:</label>
+                            <select id="filterKelas" name="kelas" class="form-control" style="width: 150px; display: inline-block;">
+                                <option value="">Semua Kelas</option>
+                                <?php foreach ($kelas as $k) : ?>
+                                    <option value="<?= $k->id_kelas; ?>"><?= $k->nama_kelas; ?></option>
+                                <?php endforeach; ?>
+                                <option value="lulus">Lulus</option>
+                            </select>
+                        </div>
                     <table class="table table-bordered table-striped table-list-nilai-siswa">
                         <thead>
                             <tr>
                                 <th class="text-center">No</th>
                                 <th class="text-center">No Induk</th>
                                 <th class="text-center">Nama Siswa</th>
+                                <th class="text-center">Kelas</th>
                                 <th class="text-center">Gender</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -84,6 +100,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <td class="text-center"><?= $no++ ?></td>
                                     <td class="text-center"><?= $s->no_induk ?></td>
                                     <td class="text-center"><?= $s->nama_siswa ?></td>
+                                     <td class="text-center"><?= $s->nama_kelas ?></td>
                                     <td class="text-center"><?= $s->gender ?></td>
                                     <td class="text-center">
                                         <a href="<?= base_url('nilai/edit_siswa/'.$s->no_induk) ?>" class="btn btn-primary btn-sm">
@@ -103,3 +120,84 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </section>
 </div>
+<script>
+$(document).ready(function() {
+
+    // --- Siapkan kolom untuk DataTable ---
+    var columns = [
+        { "data": null }, // nomor urut
+        { "data": "no_induk" },
+        { "data": "nama_siswa" },
+        { "data": "nama_kelas" },
+        { "data": "gender" },
+        <?php if ($level_user != 2): ?> // jika bukan level guru
+        {
+            "data": null,
+            "orderable": false,
+            "render": function(data, type, row) {
+                return `
+                    <div class="text-center">
+                        <a href="<?= base_url('nilai/edit_siswa/') ?>${row.no_induk}" 
+                           class="btn btn-primary btn-sm" title="Tambah Nilai">
+                            <i class="fa fa-plus"></i> Tambah
+                        </a>
+                        <a href="<?= base_url('nilai/all_nilai_siswa/') ?>${row.no_induk}" 
+                           class="btn btn-warning btn-sm text-white" title="Edit Nilai">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                    </div>
+                `;
+            }
+        }
+        <?php endif; ?>
+    ];
+
+    // --- Inisialisasi DataTable ---
+    var table = $('.table-list-nilai-siswa').DataTable({
+        "processing": true,
+        "columns": columns,
+        "columnDefs": [
+            {
+                "targets": 0,
+                "render": function(data, type, row, meta) {
+                    return meta.row + 1; // nomor urut
+                }
+            },
+            { "className": "text-center", "targets": "_all" }
+        ]
+    });
+
+    // --- Fungsi untuk load data via AJAX ---
+    function loadSiswa(kelas_id = '') {
+        $.ajax({
+            url: "<?= site_url('ControllerNilaiSiswa/get_siswa') ?>",
+            type: "POST",
+            data: { kelas: kelas_id },
+            dataType: "json",
+            beforeSend: function() {
+                table.clear().draw();
+            },
+            success: function(response) {
+                let data = response.data || [];
+                table.clear();
+                if (data.length > 0) {
+                    table.rows.add(data);
+                }
+                table.draw();
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", error);
+            }
+        });
+    }
+
+    // --- Event ketika filter kelas diganti ---
+    $('#filterKelas').change(function() {
+        let kelas_id = $(this).val();
+        loadSiswa(kelas_id);
+    });
+
+    // --- Load data pertama kali ---
+    loadSiswa();
+});
+</script>
