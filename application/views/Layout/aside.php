@@ -44,7 +44,7 @@
                         <li class="nav-item">
                             <a href="<?= base_url('siswa') ?>" class="nav-link <?= strtolower($this->uri->segment(1)) == 'siswa' ? 'active' : '' ?>">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Siswa Aktif</p>
+                                <p>Aktif</p>
                             </a>
                         </li>
                          <li class="nav-item">
@@ -115,8 +115,6 @@
                         </li>
                     </ul>
                 </li>
-
-               
 
                 <!-- Buku Induk -->
                 <li class="nav-item">

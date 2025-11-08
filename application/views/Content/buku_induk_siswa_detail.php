@@ -141,7 +141,11 @@
                                                 }
 
                                                 // Mapel biasa ditampilkan jika bukan MULOK dan bukan BING
-                                                if (!$is_mulok && $n->kode_mapel != 'BING'): ?>
+                                                if (
+                                                    !$is_mulok &&
+                                                    $n->kode_mapel != 'BING' &&
+                                                    !($n->kode_mapel == 'IPADSI' && in_array($kelas_number, [1, 2, 3, 4]))
+                                                ): ?>
                                                     <tr>
                                                         <td><?= $n->nama_mapel ?></td>
                                                         <td class="text-center"><?= $nilai ?? '-' ?></td>

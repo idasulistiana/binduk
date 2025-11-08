@@ -23,6 +23,7 @@ class ControllerBukuIndukSiswa extends CI_Controller {
     // ====================== INDEX (DAFTAR SISWA) ======================
     public function index() {
         $data['siswa'] = $this->DataMaster->get_all_siswa();
+        $data['kelas'] = $this->Kelas_model->get_all_active_class();
       
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');
@@ -30,10 +31,19 @@ class ControllerBukuIndukSiswa extends CI_Controller {
         $this->load->view('Content/buku_induk_siswa', $data);
         $this->load->view('Layout/footer');
     }
+    public function get_siswa()
+	{
+		
+		$kelas = $this->input->post('kelas'); // ambil dari filter dropdown
+		$data = $this->DataMaster->get_siswa_fornilai($kelas);
+
+		echo json_encode(['data' => $data]); // DataTables biasanya pakai key 'data'
+	}
     // ====================== DETAIL SISWA ======================
     public function detail($no_induk = null)
     {
         // --- Ambil data utama siswa ---
+        $data['kelas'] = $this->Kelas_model->get_all_active_class();
         $data['siswa'] = $this->Buku_induk_siswa_model->get_siswa_by_no_induk($no_induk);
 
         if (!$data['siswa']) {
