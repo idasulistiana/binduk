@@ -26,14 +26,39 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
+                 <!-- Data Akademik-->
+                <?php
+                $segment1 = strtolower($this->uri->segment(1));
+                $submenu = ['siswa', 'alumni']; // submenu yg terkait dengan Data Akademik
+                ?>
+
+                <li class="nav-item has-treeview <?= in_array($segment1, $submenu) ? 'menu-open' : '' ?>">
+                    <a href="#" class="nav-link <?= in_array($segment1, $submenu) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>
+                            Data Siswa
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?= base_url('siswa') ?>" class="nav-link <?= strtolower($this->uri->segment(1)) == 'siswa' ? 'active' : '' ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Siswa Aktif</p>
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a href="<?= base_url('alumni') ?>" class="nav-link <?= ($segment1 == 'alumni') ? 'active' : '' ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Alumni</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
 
                 <!-- Pembantu Induk -->
-                <li class="nav-item">
-                    <a href="<?= base_url('siswa') ?>" class="nav-link <?= strtolower($this->uri->segment(1)) == 'siswa' ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Identitas Siswa</p>
-                    </a>
-                </li>
+                
 
                  <!-- Data Klapper -->
                 <li class="nav-item">

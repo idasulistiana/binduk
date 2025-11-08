@@ -68,6 +68,15 @@ $route['siswa/add_siswa'] = 'ControllerDataMaster/add_siswa';
 $route['siswa/download_siswa'] = 'ControllerDataMaster/download_siswa'; 
 $route['siswa/import_siswa'] = 'ControllerDataMaster/import_siswa';
 
+// 🔹 Data Alumni
+$route['alumni']     = 'ControllerAlumni';
+ $route['alumni/update/(:num)'] = 'ControllerAlumni/update/$1';
+// $route['siswa/update_siswa/(:num)'] = 'ControllerDataMaster/update_siswa/$1';
+// $route['siswa/delete_siswa/(:any)'] = 'ControllerDataMaster/delete_siswa/$1';
+// $route['siswa/add_siswa'] = 'ControllerDataMaster/add_siswa'; 
+// $route['siswa/download_siswa'] = 'ControllerDataMaster/download_siswa'; 
+// $route['siswa/import_siswa'] = 'ControllerDataMaster/import_siswa';
+
 // 🔹 Mapel
 $route['mapel']     = 'ControllerMapel';
 $route['mapel/edit_mapel/(:num)'] = 'ControllerMapel/edit_mapel/$1';

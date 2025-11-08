@@ -48,10 +48,10 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <!-- page script -->
- <script>
+<script>
 
-// Ketika tombol delete diklik
-$('#tableSiswa').on('click', '.delete-siswa', function() {
+    // Ketika tombol delete diklik
+    $('#tableSiswa').on('click', '.delete-siswa', function() {
     let nisn = $(this).data('nisn');
     let row = table.row($(this).parents('tr')).data(); // ambil data siswa
     let namaSiswa = row.nama_siswa;
@@ -64,23 +64,22 @@ $('#tableSiswa').on('click', '.delete-siswa', function() {
 
     // Tampilkan modal
     $('#deleteModal').modal('show');
-});
+    });
 
 
 // ajax data table data siswa
 
+    window.addEventListener("load", function() {
+        document.body.style.display = 'block';
+            var logo = document.getElementById('logo-sekolah');
+        if (logo) {
+            // Mengubah opacity menjadi 0.8 (nilai aslinya) untuk membuatnya terlihat
+            logo.style.opacity = '0.8'; 
+        }
+    });
+</script>
 
 
-
-        window.addEventListener("load", function() {
-            document.body.style.display = 'block';
-             var logo = document.getElementById('logo-sekolah');
-            if (logo) {
-                // Mengubah opacity menjadi 0.8 (nilai aslinya) untuk membuatnya terlihat
-                logo.style.opacity = '0.8'; 
-            }
-        });
-    </script>
 <script>
 $(document).ready(function() {
  
@@ -138,7 +137,7 @@ $(document).on('expanded.lte.pushmenu collapsed.lte.pushmenu', function (e) {
 </script>
 <script>
     $(function() {
-        $("#example1").DataTable({
+        $("#example1, #tableAlumni").DataTable({
             "responsive": true,
             "autoWidth": false,
             "pageLength": 25, // jumlah data default per halaman
