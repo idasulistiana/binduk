@@ -7,6 +7,7 @@ class ControllerKlapper extends CI_Controller {
         parent::__construct();
         $this->load->model('Klapper_model');
         $this->load->model('DataMaster');
+        $this->load->model('Kelas_model');
         $this->load->library('form_validation');
         $this->load->library('Pdf');
         // ✅ Proteksi agar tidak bisa akses tanpa login
@@ -16,8 +17,8 @@ class ControllerKlapper extends CI_Controller {
     }
 
     public function index() {
-        $data['siswa'] = $this->DataMaster->select_siswa(); 
-        $data['klapper'] = $this->Klapper_model->get_all();
+        $data['klapper'] = $this->DataMaster->siswa_forklapper(); 
+         $data['kelas'] = $this->Kelas_model->get_all_active_class();
         $data['level_user'] = $this->session->userdata('level_user');
         $this->load->view('Layout/head');
 		$this->load->view('Layout/navbar');
@@ -25,6 +26,16 @@ class ControllerKlapper extends CI_Controller {
 		$this->load->view('Content/klapper', $data);
 		$this->load->view('Layout/footer');
     }
+   public function get_klapper()
+	{
+		
+		$kelas = $this->input->post('kelas'); // ambil dari filter dropdown
+		$data = $this->DataMaster->get_siswa_forklapper($kelas);
+
+		echo json_encode(['data' => $data]); // DataTables biasanya pakai key 'data'
+    }
+
+
     public function get_siswa_autocomplete() {
         $term = $this->input->get('term'); // kata yang diketik user
         $this->load->model('DataMaster');

@@ -72,14 +72,22 @@ class DataMaster extends CI_Model
         $this->db->delete('kategori');
     }
     // Ambil semua data siswa
-    public function select_siswa() {
-        $this->db->select('siswa.*, kelas.nama_kelas');
-        $this->db->from('siswa');
-        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // ubah 'siswa.id_kelas' ke 'siswa.kelas'
-        $this->db->order_by('siswa.no_induk', 'ASC'); 
+   public function siswa_forklapper() {
+        $this->db->select('
+            klapper.*, 
+            siswa.*, 
+            kelas.nama_kelas
+        ');
+        $this->db->from('klapper');
+        $this->db->join('siswa', 'siswa.no_induk = klapper.no_induk', 'left');
+        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left');
+        $this->db->order_by('siswa.no_induk', 'ASC');
+
         $query = $this->db->get();
         return $query->result();
     }
+
+
 
     public function get_all_siswa() {
         $this->db->select('siswa.*, kelas.nama_kelas');
@@ -147,6 +155,35 @@ class DataMaster extends CI_Model
     {
         $this->db->where('id_produk', $id);
         $this->db->delete('produk');
+    }
+    public function get_siswa_forklapper($kelas_id = '') 
+    {
+        $this->db->select('klapper.*, kelas.nama_kelas, siswa.nama_siswa, siswa.gender');
+        $this->db->from('klapper');
+        $this->db->join('siswa', 'siswa.no_induk = klapper.no_induk', 'left');
+        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left');
+
+        // Filter berdasarkan kelas atau status
+        if ($kelas_id != '') {
+            if ($kelas_id == 'lulus') {
+                // Jika yang dipilih adalah "lulus", tampilkan siswa yang sudah lulus
+                $this->db->where('siswa.status', 'lulus');
+            } else {
+                // Jika bukan "lulus", tampilkan siswa berdasarkan id kelas
+                $this->db->where('siswa.kelas', $kelas_id);
+                $this->db->where('siswa.status', 'aktif'); // hanya siswa aktif
+            }
+        } else {
+            // Jika tidak ada filter kelas, tampilkan semua siswa aktif
+            $this->db->where('siswa.status', 'aktif');
+        }
+
+        // Urutkan berdasarkan kelas dan nama
+        $this->db->order_by('kelas.nama_kelas', 'ASC');
+        $this->db->order_by('siswa.nama_siswa', 'ASC');
+
+        $query = $this->db->get();
+        return $query->result();
     }
 
    public function get_siswa_fornilai($kelas_id = '') 

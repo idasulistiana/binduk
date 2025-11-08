@@ -114,16 +114,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <div class="card-body">
+                          <div style="margin-bottom: 10px;">
+                            <label>Kelas:</label>
+                            <select id="filterKelas" name="kelas" class="form-control" style="width: 150px; display: inline-block;">
+                                <option value="">Semua Kelas</option>
+                                <?php foreach ($kelas as $k) : ?>
+                                    <option value="<?= $k->id_kelas; ?>"><?= $k->nama_kelas; ?></option>
+                                <?php endforeach; ?>
+                                <option value="lulus">Lulus</option>
+                            </select>
+                        </div>
                         <div class="tab-content">
                             <!-- Tab Daftar Klapper -->
                             <div class="tab-pane active" id="tab_1">
                                 <div class="card-body">
-                                    <table id="example1" class="table table-bordered table-striped">
+                                    <table id="table-datakelas" class="table table-bordered table-striped">
                                         <thead>
                                             <!-- Baris pertama: judul umum -->
                                             <tr>
                                                 <th rowspan="2" class="text-center">No</th>
                                                 <th rowspan="2" class="text-center">No Induk</th>
+                                                <th rowspan="2" class="text-center">Kelas</th>
                                                 <th rowspan="2" class="text-center">Nama Siswa</th>
                                                 <th rowspan="2" class="text-center">Gender</th>
                                                 <th colspan="6" class="text-center">Tahun Kelas</th>
@@ -145,8 +156,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <tbody>
                                         <?php $no=1; foreach($klapper as $k): ?>
                                             <tr>
+                                                
                                                 <td class="text-center"><?= $no++ ?></td>
                                                 <td class="text-center"><?= $k->no_induk ?></td>
+                                                <td class="text-center"><?= $k->nama_kelas ?></td>
                                                 <td class="text-center"><?= $k->nama_siswa ?></td>
                                                 <td class="text-center"><?= $k->gender ?></td>
                                                 <?php 
@@ -254,3 +267,79 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </div>
 
+<!-- DataTables -->
+<script>
+$(document).ready(function() {
+
+    // --- Siapkan kolom DataTable ---
+    var columns = [
+        { "data": null }, // nomor urut
+        { "data": "no_induk" },
+        { "data": "nama_kelas" },
+        { "data": "nama_siswa" },
+        { "data": "gender" },
+        { "data": "kelas_1" },
+        { "data": "kelas_2" },
+        { "data": "kelas_3" },
+        { "data": "kelas_4" },
+        { "data": "kelas_5" },
+        { "data": "kelas_6" },
+        { "data": "keterangan" },
+        {
+            "data": null,
+            "orderable": false,
+            "render": function(data, type, row) {
+                return `
+                    <div class="text-center">
+                        <a href="<?= base_url('riwayatkelas/update_klapper/') ?>${row.no_induk}" class="btn btn-success btn-sm">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <button class="btn btn-danger btn-sm" onclick="hapusData('${row.no_induk}', '${row.nama_siswa}')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    ];
+
+    // --- Inisialisasi DataTable ---
+    var table = $('#table-datakelas').DataTable({
+        "processing": true,
+        "serverSide": false, // ubah ke true kalau ingin server-side
+        "ajax": {
+            "url": "<?= site_url('ControllerKlapper/get_klapper') ?>",
+            "type": "POST",
+            "data": function(d) {
+                d.kelas = $('#filterKelas').val();
+            },
+            "dataSrc": function(json) {
+                return json.data || [];
+            }
+        },
+        "columns": columns,
+        "columnDefs": [
+            {
+                "targets": 0,
+                "render": function(data, type, row, meta) {
+                    return meta.row + 1; // nomor urut otomatis
+                }
+            },
+            { "className": "text-center", "targets": "_all" }
+        ]
+    });
+
+    // --- Reload data ketika filter kelas berubah ---
+    $('#filterKelas').change(function() {
+        table.ajax.reload();
+    });
+
+});
+
+// --- Fungsi hapus data ---
+function hapusData(no_induk, nama) {
+    if (confirm("Apakah Anda yakin ingin menghapus data " + nama + "?")) {
+        window.location.href = "<?= base_url('ControllerKlapper/delete_klapper/') ?>" + no_induk;
+    }
+}
+</script>
