@@ -215,7 +215,8 @@ class ControllerDataMaster extends CI_Controller
                         'nama_ayah' => trim($data[8]),
                         'nama_ibu' => trim($data[9]),
                         'tgl_diterima' => trim($data[10]),
-                        'kelas' => $id_kelas // ← simpan id_kelas ke kolom 'kelas' di tabel siswa
+                        'kelas' => $id_kelas, // ← simpan id_kelas ke kolom 'kelas' di tabel siswa
+						'status' => trim($data[12]),
                     ];
 
                     // 🔹 Cek apakah NISN sudah ada

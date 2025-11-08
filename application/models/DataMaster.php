@@ -72,15 +72,14 @@ class DataMaster extends CI_Model
         $this->db->delete('kategori');
     }
     // Ambil semua data siswa
-    // public function get_all_siswa() {
-    //     $this->db->select('siswa.*, kelas.nama_kelas');
-    //     $this->db->from('siswa');
-    //     $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // ubah 'siswa.id_kelas' ke 'siswa.kelas'
-    //     $this->db->where('siswa.status_siswa', 'aktif');
-    //     $this->db->order_by('siswa.no_induk', 'ASC'); 
-    //     $query = $this->db->get();
-    //     return $query->result();
-    // }
+    public function select_siswa() {
+        $this->db->select('siswa.*, kelas.nama_kelas');
+        $this->db->from('siswa');
+        $this->db->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left'); // ubah 'siswa.id_kelas' ke 'siswa.kelas'
+        $this->db->order_by('siswa.no_induk', 'ASC'); 
+        $query = $this->db->get();
+        return $query->result();
+    }
 
     public function get_all_siswa() {
         $this->db->select('siswa.*, kelas.nama_kelas');
