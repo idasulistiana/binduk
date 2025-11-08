@@ -296,7 +296,7 @@ $(document).ready(function() {
         { "data": "kelas_5" },
         { "data": "kelas_6" },
         { "data": "keterangan" },
-        <?php if ($level_user == 2): ?>, // tambahkan koma karena ini bagian JS array
+        <?php if ($level_user == 1): ?>, // tambahkan koma karena ini bagian JS array
         {
             "data": null,
             "orderable": false,
