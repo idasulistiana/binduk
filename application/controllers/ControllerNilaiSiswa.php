@@ -271,7 +271,7 @@ class ControllerNilaiSiswa extends CI_Controller {
         $nilai = strtoupper(trim($nilai)); // ubah ke huruf besar agar aman
 
         switch ($nilai) {
-            case 'A':
+            case 'SB':
                 return "Peserta didik sangat aktif dan menunjukkan prestasi tinggi dalam kegiatan ekstrakurikuler. Ia memiliki semangat, disiplin, dan kerja sama yang luar biasa.";
             case 'B':
                 return "Peserta didik aktif mengikuti kegiatan ekstrakurikuler dengan semangat dan tanggung jawab yang baik.";
