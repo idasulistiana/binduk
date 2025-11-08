@@ -62,7 +62,13 @@ class Klapper_model extends CI_Model {
     }
     public function get_klapper_by_no_induk($no_induk) {
     return $this->db->get_where('klapper', ['no_induk' => $no_induk])->row();
-}
+    }
+    public function update_by_no_induk($no_induk, $data)
+    {
+        $this->db->where('no_induk', $no_induk);
+        return $this->db->update('klapper', $data);
+    }
+
 
 
 }

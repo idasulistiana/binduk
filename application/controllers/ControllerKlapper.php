@@ -224,79 +224,87 @@ class ControllerKlapper extends CI_Controller {
         $pdf->Output('Data_Kelas_Siswa.pdf', 'D'); // 'D' = download
     }
     public function import_kelas()
-    {
-        if(isset($_FILES['file_csv']['name'])){
-            $file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
+{
+    if (isset($_FILES['file_csv']['name'])) {
+        $file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
 
-            if(in_array($_FILES['file_csv']['type'], $file_mimes)){
-                $file = $_FILES['file_csv']['tmp_name'];
+        if (in_array($_FILES['file_csv']['type'], $file_mimes)) {
+            $file = $_FILES['file_csv']['tmp_name'];
 
-                if (($handle = fopen($file, "r")) !== FALSE) {
-                    $row = 0;
-                    $failed_no_induk = []; // untuk menyimpan no_induk yang gagal
-                    $success_count = 0;
+            if (($handle = fopen($file, "r")) !== FALSE) {
+                $row = 0;
+                $failed_no_induk = [];
+                $success_insert = 0;
+                $success_update = 0;
 
-                    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                        if($row == 0){ 
-                            $row++; // skip header
-                            continue; 
-                        }
+                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                    if ($row == 0) { 
+                        $row++; // skip header
+                        continue;
+                    }
 
-                        $no_induk = $data[0]; // kolom 0 = no_induk
+                    $no_induk = trim($data[0]);
 
-                        // ✅ Pastikan no_induk ada di tabel siswa
-                        if(!$this->DataMaster->get_siswa_by_no_induk($no_induk)){
-                            $failed_no_induk[] = $no_induk . " (tidak ditemukan di data siswa)";
-                            $row++;
-                            continue;
-                        }
-
-                        // ✅ Cek duplicate di tabel klapper
-                        if($this->Klapper_model->get_by_no_induk($no_induk)){
-                            $failed_no_induk[] = $no_induk . " (sudah ada di klapper)";
-                            $row++;
-                            continue;
-                        }
-
-                        // Ambil data dari CSV (asumsi urutan kolom: no_induk, keterangan, kelas1..kelas6)
-                        $data_insert = [
-                            'no_induk'  => $data[0],
-                            'keterangan'=> $data[1],
-                            'kelas_1'   => $data[2] ?: NULL,
-                            'kelas_2'   => $data[3] ?: NULL,
-                            'kelas_3'   => $data[4] ?: NULL,
-                            'kelas_4'   => $data[5] ?: NULL,
-                            'kelas_5'   => $data[6] ?: NULL,
-                            'kelas_6'   => $data[7] ?: NULL
-                        ];
-
-                        $this->Klapper_model->insert_klapper($data_insert);
-                        $success_count++;
+                    // ✅ Pastikan no_induk ada di tabel siswa
+                    $siswa = $this->DataMaster->get_siswa_by_no_induk($no_induk);
+                    if (!$siswa) {
+                        $failed_no_induk[] = $no_induk . " (tidak ditemukan di data siswa)";
                         $row++;
+                        continue;
                     }
 
-                    fclose($handle);
+                    // Data untuk insert/update
+                    $data_insert = [
+                        'no_induk'  => $no_induk,
+                        'keterangan'=> $data[1] ?? NULL,
+                        'kelas_1'   => $data[2] ?? NULL,
+                        'kelas_2'   => $data[3] ?? NULL,
+                        'kelas_3'   => $data[4] ?? NULL,
+                        'kelas_4'   => $data[5] ?? NULL,
+                        'kelas_5'   => $data[6] ?? NULL,
+                        'kelas_6'   => $data[7] ?? NULL
+                    ];
 
-                    // Set flashdata
-                    if(!empty($failed_no_induk)){
-                        $this->session->set_flashdata('failed', 'Beberapa No Induk gagal diimpor: '.implode(', ', $failed_no_induk));
+                    // ✅ Jika no_induk sudah ada → UPDATE
+                    $existing = $this->Klapper_model->get_by_no_induk($no_induk);
+                    if ($existing) {
+                        $this->Klapper_model->update_by_no_induk($no_induk, $data_insert);
+                        $success_update++;
+                    } else {
+                        // Jika belum ada → INSERT
+                        $this->Klapper_model->insert_klapper($data_insert);
+                        $success_insert++;
                     }
 
-                    if($success_count > 0){
-                        $this->session->set_flashdata('success', "Data Kelas Berhasil Diimpor ($success_count siswa)!");
-                    }
-
-                    redirect('riwayatkelas/add_klapper');
+                    $row++;
                 }
-            } else {
-                $this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
+
+                fclose($handle);
+
+                // Set flash message
+                $message = [];
+                if ($success_insert > 0) {
+                    $message[] = "$success_insert data baru berhasil diimpor";
+                }
+                if ($success_update > 0) {
+                    $message[] = "$success_update data berhasil diperbarui";
+                }
+                if (!empty($failed_no_induk)) {
+                    $this->session->set_flashdata('failed', 'Gagal impor: '.implode(', ', $failed_no_induk));
+                }
+
+                $this->session->set_flashdata('success', implode('. ', $message));
                 redirect('riwayatkelas/add_klapper');
             }
         } else {
-            $this->session->set_flashdata('error', 'File CSV belum diunggah!');
+            $this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
             redirect('riwayatkelas/add_klapper');
         }
+    } else {
+        $this->session->set_flashdata('error', 'File CSV belum diunggah!');
+        redirect('riwayatkelas/add_klapper');
     }
+}
 
 
 }
