@@ -71,26 +71,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <th class="text-center">No</th>
                                                 <th class="text-center">Nama Kelas</th>
                                                 <?php if ($level_user != 2): ?>
+                                                <th class="text-center">Status</th>
                                                     <th class="text-center">Action</th>
                                                 <?php endif; ?>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php $no=1; foreach($kelas as $k): ?>
-                                                <tr>
-                                                    <td class="text-center"><?= $no++ ?></td>
-                                                    <td class="text-center"><?= $k->nama_kelas ?></td>
-                                                    <?php if ($level_user != 2): ?>
-                                                        <td class="text-center">
-                                                            <a href="<?= base_url('kelas/edit_kelas/'.$k->id_kelas) ?>" class="btn btn-success btn-sm">
-                                                                <i class="fa fa-edit"></i>
-                                                            </a>
-                                                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $k->id_kelas ?>">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    <?php endif; ?>
-                                                </tr>
+                                            <?php 
+                                                $no = 1;
+
+                                                // Jika level_user = 1 → tampilkan semua kelas
+                                                if ($level_user == 1): 
+                                                    foreach ($kelas as $k): ?>
+                                                        <tr>
+                                                            <td class="text-center"><?= $no++ ?></td>
+                                                            <td class="text-center"><?= $k->nama_kelas ?></td>
+                                                            <td class="text-center"><?= $k->status == 1 ? 'Aktif' : 'Tidak Aktif'; ?></td>
+                                                            <td class="text-center">
+                                                                <a href="<?= base_url('kelas/edit_kelas/'.$k->id_kelas) ?>" class="btn btn-success btn-sm">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $k->id_kelas ?>">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+
+                                                <?php 
+                                                // Jika level_user = 2 → hanya tampilkan kelas aktif
+                                                elseif ($level_user == 2): 
+                                                    $no = 1;
+                                                    foreach ($kelas_aktif as $k): ?>
+                                                        <tr>
+                                                            <td class="text-center"><?= $no++ ?></td>
+                                                            <td class="text-center"><?= $k->nama_kelas ?></td>
+                                                        </tr>
 
                                                 <!-- Modal Delete -->
                                                 <div class="modal fade" id="deleteModal<?= $k->id_kelas ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel<?= $k->id_kelas?>" aria-hidden="true">
@@ -110,8 +126,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                            <?php endforeach; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                                                            
                                         </tbody>
                                     </table>
                                 </div>

@@ -17,6 +17,7 @@ class ControllerKelas extends CI_Controller {
     public function index() {
         $data['kelas'] = $this->Kelas_model->get_all();
         $data['level_user'] = $this->session->userdata('level_user');
+        $data['kelas_aktif'] = $this->Kelas_model->get_all_active_class();
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');
         $this->load->view('Layout/aside');
@@ -68,20 +69,27 @@ class ControllerKelas extends CI_Controller {
     // Update kelas
     public function update_kelas($id) {
         $this->form_validation->set_rules('nama_kelas', 'Nama Kelas', 'required');
+        $this->form_validation->set_rules('status', 'Status', 'required');
 
         if ($this->form_validation->run() == FALSE) {
             $this->edit_kelas($id);
             echo validation_errors();
         } else {
             $nama_kelas = $this->input->post('nama_kelas');
+            $status = $this->input->post('status'); // Ambil nilai status dari form
 
-            $data_update = ['nama_kelas' => $nama_kelas];
+            $data_update = [
+                'nama_kelas' => $nama_kelas,
+                'status' => $status
+            ];
+
             $this->Kelas_model->update_kelas($id, $data_update);
 
             $this->session->set_flashdata('success', 'Data kelas berhasil diupdate');
             redirect('kelas');
         }
     }
+
 
     // Hapus kelas
     public function delete_kelas($id) {

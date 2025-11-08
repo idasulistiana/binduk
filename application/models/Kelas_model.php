@@ -13,6 +13,11 @@ class Kelas_model extends CI_Model {
     public function get_all() {
         return $this->db->get($this->table)->result();
     }
+     // Ambil semua data kelas
+    public function get_all_active_class() {
+        $this->db->where('status', 1); 
+        return $this->db->get('kelas')->result(); 
+    }
 
     // Ambil data kelas berdasarkan nama
     public function get_by_name($nama_kelas) {
