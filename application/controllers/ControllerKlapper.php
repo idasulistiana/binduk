@@ -57,6 +57,7 @@ class ControllerKlapper extends CI_Controller {
     if ($this->form_validation->run() == FALSE) {
         $data['siswa']   = $this->DataMaster->siswa_forklapper();
         $data['klapper'] = $this->Klapper_model->get_all();
+        $data['kelas'] = $this->Kelas_model->get_all_active_class();
 
         $this->load->view('Layout/head');
         $this->load->view('Layout/navbar');
