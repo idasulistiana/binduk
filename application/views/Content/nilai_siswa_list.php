@@ -136,7 +136,7 @@ $(document).ready(function() {
                 if (row.status && row.status.toLowerCase() === 'lulus') {
                     return 'Lulus';
                 } else {
-                    return row.nama_kelas || '-'; // kalau aktif, tampilkan kelas
+                    return data ? 'Kelas ' + data : '-';
                 }
             }
         },
