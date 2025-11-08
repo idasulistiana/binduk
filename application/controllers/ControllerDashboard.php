@@ -24,10 +24,12 @@ class ControllerDashboard extends CI_Controller
         $data['siswa_perempuan'] = $this->dashboard->get_siswa_perempuan();
         $data['total_kelas'] = $this->dashboard->get_total_kelas();
         $data['identitas'] = $this->dashboard->get_identitas_sekolah();
-        $data['jumlah_siswa'] = $this->dashboard->getJumlahSiswaPerRombel();
+       // $data['jumlah_siswa'] = $this->dashboard->getJumlahSiswaPerRombel();
         $data['total_per_kelas'] = $this->dashboard-> getTotalPerKelas();
         $data['total_keseluruhan'] = $this->dashboard->getTotalKeseluruhan();
+        $data['jumlah_siswa'] = $this->dashboard->getJumlahSiswaPerKelas();
 	    $data['level_user'] = $this->session->userdata('level_user');
+
 
         $this->load->view('Layout/navbar');
         $this->load->view('Layout/aside');

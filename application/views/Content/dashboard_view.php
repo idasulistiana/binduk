@@ -95,12 +95,12 @@
         </div>
       </div>
     </div>
-
-    <!-- Jumlah rombel -->
-    <div class="card mt-4">
+  <!-- Jumlah rombel -->
+<div class="card mt-4">
     <div class="card-header bg-success text-white">
         <h5 class="mb-0">Data Jumlah Siswa per Rombel</h5>
     </div>
+
     <div class="card-body p-3" style="background-color: #e9fbe9;">
         <div class="table-responsive">
             <table class="table table-bordered table-striped text-center">
@@ -113,17 +113,19 @@
                         <th>JUMLAH</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <?php $no = 1; foreach ($jumlah_siswa as $row): ?>
                         <tr>
                             <td><?= $no++ ?></td>
                             <td><?= $row->nama_kelas ?></td>
-                            <td><?= $row->L ?></td>
-                            <td><?= $row->P ?></td>
-                            <td><?= $total_per_kelas->total_siswa ?></td>
+                            <td><?= $row->total_L ?></td>
+                            <td><?= $row->total_P ?></td>
+                            <td><?= $row->total_siswa ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+
                 <tfoot class="bg-light">
                     <tr>
                         <th colspan="2">JUMLAH</th>
@@ -136,6 +138,8 @@
         </div>
     </div>
 </div>
+
+   
 
   </section>
 </div>

@@ -51,14 +51,33 @@ class Dashboard_model extends CI_Model
     public function getTotalKeseluruhan()
     {
         $query = $this->db->select('
-            SUM(L) as total_L, 
-            SUM(P) as total_P, 
-            (SUM(L) + SUM(P)) as total_siswa
-        ')
-        ->from('kelas')
-        ->get();
+                SUM(CASE WHEN gender = "Laki-Laki" THEN 1 ELSE 0 END) AS total_L,
+                SUM(CASE WHEN gender = "Perempuan" THEN 1 ELSE 0 END) AS total_P,
+                COUNT(no_induk) AS total_siswa
+            ')
+            ->from('siswa')
+            ->where('status', 'aktif') // opsional: hanya siswa aktif
+            ->get();
 
-        return $query->row(); // hasil satu baris (objek)
+        return $query->row(); // hasil satu baris
     }
+
+    public function getJumlahSiswaPerKelas()
+    {
+        $query = $this->db->select('
+                kelas.nama_kelas,
+                SUM(CASE WHEN siswa.gender = "Laki-Laki" THEN 1 ELSE 0 END) AS total_L,
+                SUM(CASE WHEN siswa.gender = "Perempuan" THEN 1 ELSE 0 END) AS total_P,
+                COUNT(siswa.no_induk) AS total_siswa
+            ')
+            ->from('siswa')
+            ->join('kelas', 'kelas.id_kelas = siswa.kelas', 'left')
+            ->where('siswa.status', 'aktif') // opsional: hanya siswa aktif
+            ->group_by('kelas.id_kelas')
+            ->get();
+
+        return $query->result(); // hasil banyak baris (array objek)
+    }
+
 
 }
