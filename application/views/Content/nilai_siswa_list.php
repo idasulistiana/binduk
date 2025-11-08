@@ -90,7 +90,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <th class="text-center">No</th>
                                 <th class="text-center">No Induk</th>
                                 <th class="text-center">Nama Siswa</th>
-                                <th class="text-center">Kelas</th>
+                                <th class="text-center">Status</th>
                                 <th class="text-center">Gender</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -129,9 +129,19 @@ $(document).ready(function() {
         { "data": null }, // nomor urut
         { "data": "no_induk" },
         { "data": "nama_siswa" },
-        { "data": "nama_kelas" },
+        {
+            "data": "nama_kelas",
+            "render": function(data, type, row) {
+                // Jika status siswa 'Lulus', tampilkan 'Lulus'
+                if (row.status && row.status.toLowerCase() === 'lulus') {
+                    return 'Lulus';
+                } else {
+                    return row.nama_kelas || '-'; // kalau aktif, tampilkan kelas
+                }
+            }
+        },
         { "data": "gender" },
-        <?php if ($level_user != 2): ?> // jika bukan level guru
+        <?php if ($level_user != 2): ?>
         {
             "data": null,
             "orderable": false,
@@ -139,11 +149,11 @@ $(document).ready(function() {
                 return `
                     <div class="text-center">
                         <a href="<?= base_url('nilai/edit_siswa/') ?>${row.no_induk}" 
-                           class="btn btn-primary btn-sm" title="Tambah Nilai">
+                        class="btn btn-primary btn-sm" title="Tambah Nilai">
                             <i class="fa fa-plus"></i> Tambah
                         </a>
                         <a href="<?= base_url('nilai/all_nilai_siswa/') ?>${row.no_induk}" 
-                           class="btn btn-warning btn-sm text-white" title="Edit Nilai">
+                        class="btn btn-warning btn-sm text-white" title="Edit Nilai">
                             <i class="fa fa-edit"></i> Edit
                         </a>
                     </div>
