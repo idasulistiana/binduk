@@ -139,7 +139,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                     <th rowspan="2" class="text-center">Gender</th>
                                                     <th colspan="6" class="text-center">Tahun Kelas</th>
                                                     <th rowspan="2" class="text-center">Keterangan</th>
-                                                    <?php if ($level_user != 2): ?>
+                                                    <?php if ($level_user == 1): ?>
                                                         <th rowspan="2" class="text-center">Action</th>
                                                     <?php endif; ?>
                                                 </tr>
@@ -296,7 +296,7 @@ $(document).ready(function() {
         { "data": "kelas_5" },
         { "data": "kelas_6" },
         { "data": "keterangan" },
-        <?php if ($level_user != 2): ?>, // tambahkan koma karena ini bagian JS array
+        <?php if ($level_user == 2): ?>, // tambahkan koma karena ini bagian JS array
         {
             "data": null,
             "orderable": false,
