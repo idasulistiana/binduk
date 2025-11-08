@@ -134,7 +134,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             <tr>
                                                 <th rowspan="2" class="text-center">No</th>
                                                 <th rowspan="2" class="text-center">No Induk</th>
-                                                <th rowspan="2" class="text-center">Kelas</th>
+                                                <th rowspan="2" class="text-center">Status</th>
                                                 <th rowspan="2" class="text-center">Nama Siswa</th>
                                                 <th rowspan="2" class="text-center">Gender</th>
                                                 <th colspan="6" class="text-center">Tahun Kelas</th>
@@ -275,7 +275,17 @@ $(document).ready(function() {
     var columns = [
         { "data": null }, // nomor urut
         { "data": "no_induk" },
-        { "data": "nama_kelas" },
+        {
+            "data": "nama_kelas",
+            "render": function(data, type, row) {
+                // Jika status siswa 'Lulus', tampilkan 'Lulus'
+                if (row.status && row.status.toLowerCase() === 'lulus') {
+                    return 'Lulus';
+                } else {
+                    return data ? 'Kelas ' + data : '-';
+                }
+            }
+        },
         { "data": "nama_siswa" },
         { "data": "gender" },
         { "data": "kelas_1" },

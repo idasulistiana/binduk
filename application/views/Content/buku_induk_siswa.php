@@ -82,7 +82,17 @@ $(document).ready(function() {
     var columns = [
         { "data": null }, // nomor urut
         { "data": "no_induk" },
-        { "data": "nama_kelas" },
+        {
+            "data": "nama_kelas",
+            "render": function(data, type, row) {
+                // Jika status siswa 'Lulus', tampilkan 'Lulus'
+                if (row.status && row.status.toLowerCase() === 'lulus') {
+                    return 'Lulus';
+                } else {
+                    return data ? 'Kelas ' + data : '-';
+                }
+            }
+        },
         { "data": "nama_siswa" },
         { "data": "gender" },
         {
