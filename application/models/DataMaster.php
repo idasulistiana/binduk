@@ -36,41 +36,7 @@ class DataMaster extends CI_Model
     {
         return $this->db->get_where('kelas', ['nama_kelas' => $nama_kelas])->row();
     }
-    //kelola data kategori
-    public function insert_kategori($data)
-    {
-        $this->db->insert('kategori', $data);
-    }
-    public function select_kategori()
-    {
-        $this->db->select('*');
-        $this->db->from('kategori');
-        return $this->db->get()->result();
-    }
-    public function cek_no_induk($no_induk)
-    {
-        $this->db->where('no_induk', $no_induk);
-        $query = $this->db->get('siswa');
-        return $query->num_rows() > 0;
-    }
-
-    public function edit_kategori($id)
-    {
-        $this->db->select('*');
-        $this->db->from('kategori');
-        $this->db->where('id_kategori', $id);
-        return $this->db->get()->row();
-    }
-    public function update_kategori($id, $data)
-    {
-        $this->db->where('id_kategori', $id);
-        $this->db->update('kategori', $data);
-    }
-    public function delete_kategori($id)
-    {
-        $this->db->where('id_kategori', $id);
-        $this->db->delete('kategori');
-    }
+    
     // Ambil semua data siswa
    public function siswa_forklapper() {
         $this->db->select('
@@ -116,46 +82,6 @@ class DataMaster extends CI_Model
         return $query->result(); // hanya return data
     }
 
-    //kelola data produk
-    public function insert_produk($data)
-    {
-        $this->db->insert('produk', $data);
-    }
-    public function select_produk()
-    {
-        $this->db->select('*');
-        $this->db->from('produk');
-        $this->db->join('kategori', 'produk.id_kategori = kategori.id_kategori', 'left');
-        $this->db->join('supplier', 'produk.id_supplier = supplier.id_supplier', 'left');
-        $this->db->where('supplier.id_supplier', $this->session->userdata('id'));
-        return $this->db->get()->result();
-    }
-    public function select_produk_admin($supplier)
-    {
-        $this->db->select('*');
-        $this->db->from('produk');
-        $this->db->join('kategori', 'produk.id_kategori = kategori.id_kategori', 'left');
-        $this->db->join('supplier', 'produk.id_supplier = supplier.id_supplier', 'left');
-        $this->db->where('supplier.id_supplier', $supplier);
-        return $this->db->get()->result();
-    }
-    public function edit_produk($id)
-    {
-        $this->db->select('*');
-        $this->db->from('produk');
-        $this->db->where('id_produk', $id);
-        return $this->db->get()->row();
-    }
-    public function update_produk($id, $data)
-    {
-        $this->db->where('id_produk', $id);
-        $this->db->update('produk', $data);
-    }
-    public function delete_produk($id)
-    {
-        $this->db->where('id_produk', $id);
-        $this->db->delete('produk');
-    }
     
    public function get_siswa_forklapper($kelas_id = '') 
     {

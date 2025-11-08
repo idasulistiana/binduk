@@ -8,20 +8,32 @@ class Dashboard_model extends CI_Model
         return $this->db->count_all('siswa');
     }
 
-    public function get_siswa_laki()
+   public function get_siswa_laki()
     {
-        return $this->db->where('gender', 'Laki-laki')->from('siswa')->count_all_results();
+        return $this->db
+            ->where('gender', 'Laki-laki')
+            ->where('status', 'Aktif') // hanya yang aktif
+            ->from('siswa')
+            ->count_all_results();
     }
 
     public function get_siswa_perempuan()
     {
-        return $this->db->where('gender', 'Perempuan')->from('siswa')->count_all_results();
+        return $this->db
+            ->where('gender', 'Perempuan')
+            ->where('status', 'Aktif') // hanya yang aktif
+            ->from('siswa')
+            ->count_all_results();
     }
 
-    public function get_total_kelas()
+     public function get_total_kelas()
     {
-        return $this->db->count_all('kelas');
+        return $this->db
+            ->where('status', 1) // hanya yang status = 1
+            ->from('kelas')
+            ->count_all_results();
     }
+
 
     public function get_identitas_sekolah()
     {
