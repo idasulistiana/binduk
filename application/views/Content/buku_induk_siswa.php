@@ -5,7 +5,7 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Daftar Siswa</h1>
+            <h1>Daftar Buku Induk Siswa</h1>
         </div>
     </section>
 

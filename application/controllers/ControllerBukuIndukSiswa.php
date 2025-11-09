@@ -124,15 +124,15 @@ class ControllerBukuIndukSiswa extends CI_Controller {
      */
     private function get_deskripsi_capaian($nilai) {
        if ($nilai >= 90) {
-            return "<b>A (Sangat Baik/Istimewa)</b> - Peserta didik menunjukkan penguasaan materi yang komprehensif dan kemampuan aplikasi yang luar biasa. Hasil belajar jauh melebihi standar ketuntasan.";
+            return "A (Sangat Baik/Istimewa) - Peserta didik menunjukkan penguasaan materi yang komprehensif dan kemampuan aplikasi yang luar biasa. Hasil belajar jauh melebihi standar ketuntasan.";
         } elseif ($nilai >= 80) {
-            return "<b>B (Baik)</b> - Peserta didik menunjukkan penguasaan materi yang kuat dan mampu mengaplikasikannya dengan baik. Telah mencapai standar ketuntasan dengan hasil yang memuaskan.";
+            return "B (Baik) - Peserta didik menunjukkan penguasaan materi yang kuat dan mampu mengaplikasikannya dengan baik. Telah mencapai standar ketuntasan dengan hasil yang memuaskan.";
         } elseif ($nilai >= 70) {
-            return "<b>C (Cukup/Memuaskan)</b> - Peserta didik menunjukkan penguasaan materi yang memadai dan telah mencapai batas minimal standar ketuntasan. Mungkin masih memerlukan sedikit peningkatan di beberapa area.";
+            return "C (Cukup/Memuaskan) - Peserta didik menunjukkan penguasaan materi yang memadai dan telah mencapai batas minimal standar ketuntasan. Mungkin masih memerlukan sedikit peningkatan di beberapa area.";
         } elseif ($nilai >= 60) {
-            return "<b>D (Kurang)</b> - Peserta didik menunjukkan penguasaan materi yang belum memadai atau masih di bawah standar ketuntasan minimal. Diperlukan perbaikan dan dukungan belajar yang intensif.";
+            return "D (Kurang) - Peserta didik menunjukkan penguasaan materi yang belum memadai atau masih di bawah standar ketuntasan minimal. Diperlukan perbaikan dan dukungan belajar yang intensif.";
         } else {
-            return "<b>E (Sangat Kurang)</b> - Peserta didik belum menunjukkan penguasaan terhadap materi pelajaran. Membutuhkan bimbingan dan pendampingan yang lebih intensif untuk mencapai kompetensi dasar.";
+            return "E (Sangat Kurang)- Peserta didik belum menunjukkan penguasaan terhadap materi pelajaran. Membutuhkan bimbingan dan pendampingan yang lebih intensif untuk mencapai kompetensi dasar.";
         }
     }
     
@@ -281,15 +281,36 @@ class ControllerBukuIndukSiswa extends CI_Controller {
                     $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
                     if ($nilai !== null) { $total += $nilai; $count++; }
                     $deskripsi = $this->get_deskripsi_capaian($nilai);
-                    $is_mulok = ($n->kode_mapel == 'PLBJ' || ($n->kode_mapel == 'BING' && $kelas_number >= 3));
-                    if ($is_mulok) { $mulok_rows[] = ['nama' => $n->nama_mapel, 'nilai' => $nilai, 'deskripsi' => $deskripsi]; }
-                    if (!$is_mulok) {
+                    // Ambil angka awal dari nama_kelas
+                    preg_match('/^\d+/', $kelas['nama_kelas'], $matches);
+                    $kelas_digit = isset($matches[0]) ? intval($matches[0]) : 0;
+
+                    // Tentukan apakah mapel ini termasuk MULOK atau mapel khusus BING/IPADSI
+                    $is_mulok = ($n->kode_mapel == 'PLBJ');
+
+                    // Tambahan: BING & IPADSI hanya untuk kelas 3 ke atas
+                    if (in_array($n->kode_mapel, ['BING', 'IPADSI'])) {
+                        if ($kelas_digit >= 4) {
+                            $is_mulok = true; // dianggap MULOK untuk tampil di tabel MULOK
+                        } else {
+                            continue; // jika kelas 1 atau 2, langsung skip (tidak tampil & tidak dihitung)
+                        }
+                    }
+
+                    if ($is_mulok) { 
+                        $mulok_rows[] = [
+                            'nama' => $n->nama_mapel, 
+                            'nilai' => $nilai, 
+                            'deskripsi' => $deskripsi
+                        ]; 
+                    } else {
                         $mapel_table_html .= '<tr style="border:1px solid black; page-break-inside:avoid;" >
                             <td style="border:1px solid black;width:20%;">' . htmlspecialchars($n->nama_mapel) . '</td>
                             <td style="border:1px solid black;width:10%;">' . htmlspecialchars($nilai ?? '-') . '</td>
                             <td style="border:1px solid black;width:70%;">' . htmlspecialchars($deskripsi ?? '-') . '</td>
                         </tr>';
                     }
+
                 }
 
                 // MULOK
