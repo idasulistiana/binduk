@@ -163,6 +163,7 @@ class ControllerNilaiSiswa extends CI_Controller {
 
     // Ambil data siswa
     $data['siswa'] = $this->DataMaster->get_siswa_by_no_induk($no_induk);
+    $data['kelas'] = $this->Kelas_model->get_all_active_class();
 
     if (!$data['siswa']) {
         $this->session->set_flashdata('error', 'Data siswa tidak ditemukan');
