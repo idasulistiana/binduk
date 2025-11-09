@@ -2,12 +2,14 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/js/bootstrap.min.js"></script>
+
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
-    // Ambil session dari CodeIgniter
-    $CI =& get_instance();
-    $level_user = $CI->session->userdata('level_user');
+// Ambil session dari CodeIgniter
+$CI =& get_instance();
+$level_user = $CI->session->userdata('level_user');
 ?>
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -23,7 +25,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div>
             </div>
             
-             <?php if($this->session->flashdata('success')): ?>
+            <?php if($this->session->flashdata('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <?= $this->session->flashdata('success'); ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -49,9 +51,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </button>
                 </div>
             <?php endif; ?>
-            
         </div>
     </section>
+
     <section class="content">
         <div class="col-md-12">
             <div class="row">
@@ -90,7 +92,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                             <div class="form-group">
                                                                 <label for="file_csv">Pilih file CSV</label>
                                                                 <input type="file" class="form-control-file" id="file_csv" name="file_csv" accept=".csv" required>
-                                                                <small class="form-text text-muted">File CSV harus memiliki header: kelas 1, kelas 2, kelas 4, kelas 5,  kelas 6, Keterangan</small>
+                                                                <small class="form-text text-muted">File CSV harus memiliki header: kelas 1, kelas 2, kelas 3, kelas 4, kelas 5, kelas 6, Keterangan</small>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -98,11 +100,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                             <button type="submit" class="btn btn-primary">Upload CSV</button>
                                                         </div>
                                                     </form>
-
                                                 </div>
                                             </div>
                                         </div>
-
                                     </li>
                                 <?php endif; ?>
                                 <li class="nav-item">
@@ -110,7 +110,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <i class="fas fa-download"></i> Download
                                     </a>
                                 </li>
-                                </ul>
+                            </ul>
                         </div>
 
                         <div class="card-body">
@@ -124,13 +124,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <option value="lulus">Lulus</option>
                                 </select>
                             </div>
+
                             <div class="tab-content">
                                 <!-- Tab Daftar Klapper -->
                                 <div class="tab-pane active" id="tab_1">
                                     <div class="card-body">
                                         <table id="table-datakelas" class="table table-bordered table-striped">
                                             <thead>
-                                                <!-- Baris pertama: judul umum -->
                                                 <tr>
                                                     <th rowspan="2" class="text-center">No</th>
                                                     <th rowspan="2" class="text-center">No Induk</th>
@@ -143,7 +143,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                         <th rowspan="2" class="text-center">Action</th>
                                                     <?php endif; ?>
                                                 </tr>
-                                                <!-- Baris kedua: kelas 1-6 -->
                                                 <tr>
                                                     <th class="text-center">1</th>
                                                     <th class="text-center">2</th>
@@ -154,9 +153,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            <?php $no=1; foreach($klapper as $k): ?>
+                                                <?php $no=1; foreach($klapper as $k): ?>
                                                 <tr>
-                                                    
                                                     <td class="text-center"><?= $no++ ?></td>
                                                     <td class="text-center"><?= $k->no_induk ?></td>
                                                     <td class="text-center"><?= $k->nama_kelas ?></td>
@@ -171,7 +169,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                         }   
                                                     ?>
                                                     <td class="text-center"><?= $k->keterangan ?></td>
-                                                    <?php if ($level_user != 2): ?>
+                                                    <?php if ($level_user == 1): ?>
                                                         <td class="text-center">
                                                             <a href="<?= base_url('riwayatkelas/update_klapper/'.$k->no_induk) ?>" class="btn btn-success btn-sm"><i class="fa fa-edit"></i></a>
                                                             <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $k->no_induk ?>"><i class="fa fa-trash"></i></button>
@@ -196,8 +194,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                            <?php endforeach; ?>
+                                                <?php endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>
@@ -210,7 +207,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label>No Induk Siswa</label>
-                                                    <input type="number" name="no_induk" id="no_induk" max="9999" oninput="if(this.value.length > 4) this.value = this.value.slice(0,4);" class="form-control" placeholder="Ketik No Induk atau Nama Siswa" require>
+                                                    <input type="number" name="no_induk" id="no_induk" max="9999" oninput="if(this.value.length > 4) this.value = this.value.slice(0,4);" class="form-control" placeholder="Ketik No Induk atau Nama Siswa" required>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -220,17 +217,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <hr class="flex-grow-1 border-2 border-dark">
-                                            <span class="px-3 fw-bold text-secondary">Tambah Data Kelas Siswa</span>
-                                            <hr class="flex-grow-1 border-2 border-dark">
+                                                <span class="px-3 fw-bold text-secondary">Tambah Data Kelas Siswa</span>
+                                                <hr class="flex-grow-1 border-2 border-dark">
                                                 <div class="form-group">
                                                     <div id="kelasContainerUpdate">
                                                         <?php for ($i=1; $i<=6; $i++): 
                                                             $field = "kelas_" . $i; 
                                                             $value = !empty($klapper->$field) ? $klapper->$field : ""; 
-                                                            // buka row baru tiap kelipatan 3
                                                             if ($i % 3 == 1) echo '<div class="row mb-3">';
                                                         ?>
                                                             <div class="col-md-4">
@@ -244,7 +241,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                                 </div>
                                                             </div>
                                                         <?php 
-                                                            // tutup row tiap 3 input atau di akhir
                                                             if ($i % 3 == 0 || $i == 6) echo '</div>';
                                                         endfor; ?>
                                                     </div>
@@ -271,15 +267,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- DataTables -->
 <script>
 $(document).ready(function() {
+    var level_user = <?= $level_user ?>; // ambil level_user dari PHP
 
-    // --- Siapkan kolom DataTable ---
     var columns = [
         { "data": null }, // nomor urut
         { "data": "no_induk" },
         {
             "data": "nama_kelas",
             "render": function(data, type, row) {
-                // Jika status siswa 'Lulus', tampilkan 'Lulus'
                 if (row.status && row.status.toLowerCase() === 'lulus') {
                     return 'Lulus';
                 } else {
@@ -295,9 +290,11 @@ $(document).ready(function() {
         { "data": "kelas_4" },
         { "data": "kelas_5" },
         { "data": "kelas_6" },
-        { "data": "keterangan" },
-        
-        {
+        { "data": "keterangan" }
+    ];
+// Tambahkan kolom action hanya jika level_user == 1
+    if(level_user == 1){
+        columns.push({
             "data": null,
             "orderable": false,
             "render": function(data, type, row) {
@@ -316,15 +313,11 @@ $(document).ready(function() {
                     </div>
                 `;
             }
-        }
-     
-
-    ];
-
-    // --- Inisialisasi DataTable ---
+        });
+    }
     var table = $('#table-datakelas').DataTable({
         "processing": true,
-        "serverSide": false, // ubah ke true kalau ingin server-side
+        "serverSide": false,
         "ajax": {
             "url": "<?= site_url('ControllerKlapper/get_klapper') ?>",
             "type": "POST",
@@ -340,14 +333,13 @@ $(document).ready(function() {
             {
                 "targets": 0,
                 "render": function(data, type, row, meta) {
-                    return meta.row + 1; // nomor urut otomatis
+                    return meta.row + 1;
                 }
             },
             { "className": "text-center", "targets": "_all" }
         ]
     });
 
-    // --- Reload data ketika filter kelas berubah ---
     $('#filterKelas').change(function() {
         table.ajax.reload();
     });
