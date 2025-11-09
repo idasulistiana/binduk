@@ -57,6 +57,7 @@
                                 <?= !empty($nama_kelas) ? ' Kelas '.$nama_kelas : '' ?>
                                 <?= !empty($semester) ? ' - Semester '.$semester : '' ?>
                             </h4>
+                            
 
                             <!-- ==================== TABEL MATA PELAJARAN ==================== -->
                             <h5><strong>Nilai Mata Pelajaran</strong></h5>
@@ -69,13 +70,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php 
+                                    $kelas_digit = 0;
+                                    if (isset($kelas_spesifik->nama_kelas)) {
+                                        preg_match('/(\d+)/', $kelas_spesifik->nama_kelas, $matches);
+                                        $kelas_digit = isset($matches[1]) ? intval($matches[1]) : 0;
+                                    }
+
+                                    ?>
+                                    
                                     <?php foreach($nilai as $n): ?>
-                                        <?php if (!in_array($n->kode_mapel, ['PLBJ', 'BING'])): ?>
+                                        <?php 
+                                            // Kondisi mapel yang tidak ditampilkan
+                                            $skip_mapel = in_array($n->kode_mapel, ['PLBJ', 'BING']); 
+
+                                            // Kondisi IPADSI hanya untuk kelas 3
+                                            $show_ipadsi = ($n->kode_mapel == 'IPADSI' && $kelas_digit >= 3);
+                                        ?>
+                                        <?php if (!$skip_mapel && ($n->kode_mapel != 'IPADSI' || $show_ipadsi)): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($n->nama_mapel) ?></td>
                                                 <td><?= (empty($n->nilai_akhir) || floatval($n->nilai_akhir) == 0) ? '-' : htmlspecialchars($n->nilai_akhir) ?></td>
                                                 <td>
-                                                     <?php if (empty($n->id_nilai)): ?>
+                                                    <?php if (empty($n->id_nilai)): ?>
                                                         <!-- Belum ada nilai → tombol Tambah saja -->
                                                         <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#addModal<?= $n->id_mapel ?>">Tambah</button>
                                                     <?php else: ?>
@@ -87,6 +104,7 @@
                                             </tr>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
+
                                 </tbody>
                             </table>
 

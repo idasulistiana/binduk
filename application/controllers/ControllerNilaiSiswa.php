@@ -45,7 +45,9 @@ class ControllerNilaiSiswa extends CI_Controller {
         $semester = $this->input->post('semester') ?? $this->input->get('semester');
 
         $data['siswa']    = $this->DataMaster->get_siswa_by_no_induk($no_induk);
-        $data['kelas']    = $this->Kelas_model->get_all();
+        $data['kelas']    = $this->Kelas_model->get_all_active_class();
+        $kelas_row = $this->Kelas_model->get_by_id($id_kelas); // ini sudah single object
+        $data['kelas_spesifik'] = $kelas_row;
         $data['mapel']    = $this->Mapel_model->get_all();
         $data['ekskul']   = $this->Ekskul_model->get_all(); // ambil semua ekskul
         $data['id_kelas'] = $id_kelas;

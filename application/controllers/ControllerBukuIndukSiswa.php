@@ -289,12 +289,19 @@ class ControllerBukuIndukSiswa extends CI_Controller {
                     $is_mulok = ($n->kode_mapel == 'PLBJ');
 
                     // Tambahan: BING & IPADSI hanya untuk kelas 3 ke atas
-                    if (in_array($n->kode_mapel, ['BING', 'IPADSI'])) {
+                    if (in_array($n->kode_mapel, ['BING'])) {
                         if ($kelas_digit >= 4) {
                             $is_mulok = true; // dianggap MULOK untuk tampil di tabel MULOK
                         } else {
                             continue; // jika kelas 1 atau 2, langsung skip (tidak tampil & tidak dihitung)
                         }
+                    }
+                    // Tambahkan kondisi untuk IPADSI
+                    if ($n->kode_mapel === 'IPADSI') {
+                        if ($kelas_digit < 3) {
+                            continue; // kelas 1 atau 2, langsung skip
+                        }
+                        // untuk kelas 3 ke atas, tampilkan, tapi tidak dianggap MULOK
                     }
 
                     if ($is_mulok) { 
