@@ -67,64 +67,69 @@
         </tr>
     </thead>
     <tbody>
-        <?php 
-        $total_nilai = 0; 
-        $count_nilai = 0; 
-        $mulok_rows = [];
+      <tbody>
+<?php 
+$total_nilai = 0; 
+$count_nilai = 0; 
+$mulok_rows = [];
 
-        // Ambil angka dari nama kelas
-        preg_match('/\d+/', $k['nama_kelas'], $matches);
-        $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0; 
-        
+// Ambil angka dari nama kelas
+preg_match('/\d+/', $k['nama_kelas'], $matches);
+$kelas_number = isset($matches[0]) ? intval($matches[0]) : 0; 
 
-        foreach ($nilai_mapel as $n):
-            $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
+foreach ($nilai_mapel as $n):
+    $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
 
-            // Tentukan apakah mapel masuk MULOK
-            $is_mulok = false;
-            if ($n->kode_mapel == 'PLBJ' || ($n->kode_mapel == 'BING' && $kelas_number >= 3)) {
-                $is_mulok = true;
-                $mulok_rows[] = $n;
-            }
+    // Tentukan apakah mapel masuk MULOK
+    $is_mulok = false;
+    if ($n->kode_mapel == 'PLBJ' || 
+        ($n->kode_mapel == 'BING' && $kelas_number >= 3)) {
+        $is_mulok = true;
+        $mulok_rows[] = $n;
+    }
 
-            // Total & rata-rata dihitung semua nilai termasuk MULOK
-            if ($nilai !== null) { 
-                $total_nilai += $nilai; 
-                $count_nilai++; 
-            }
+    // Total & rata-rata dihitung semua nilai termasuk MULOK
+    if ($nilai !== null) { 
+        $total_nilai += $nilai; 
+        $count_nilai++; 
+    }
 
-            // Mapel biasa ditampilkan jika bukan MULOK, bukan BING, dan IPADSI hanya untuk kelas >=3
-            $show_mapel = false;
-            if (!$is_mulok) {
-                if ($n->kode_mapel == 'IPADSI' && $kelas_number >= 3) {
-                    $show_mapel = true;
-                } elseif ($n->kode_mapel != 'IPADSI') {
-                    $show_mapel = true;
-                }
-            }
+    // Mapel biasa ditampilkan jika bukan MULOK
+    $show_mapel = false;
+    if (!$is_mulok) {
+        if ($n->kode_mapel == 'IPADSI' && $kelas_number >= 3) {
+            $show_mapel = true;
+        } elseif ($n->kode_mapel != 'IPADSI' && $n->kode_mapel != 'BING') {
+            $show_mapel = true;
+        }
+    }
 
-            if ($show_mapel): ?>
-                <tr>
-                    <td><?= htmlspecialchars($n->nama_mapel) ?></td>
-                    <td class="text-center"><?= $nilai ?? '-' ?></td>
-                    <td><?= $n->deskripsi_capaian ?? '-' ?></td>
-                </tr>
-            <?php endif; 
-        endforeach;
+    if ($show_mapel): ?>
+        <tr>
+            <td><?= htmlspecialchars($n->nama_mapel) ?></td>
+            <td class="text-center"><?= $nilai ?? '-' ?></td>
+            <td><?= $n->deskripsi_capaian ?? '-' ?></td>
+        </tr>
+    <?php endif; 
+endforeach;
 
-        // Tampilkan MULOK
-        if (!empty($mulok_rows)): ?>
-            <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">MULOK</th></tr>
-            <?php foreach ($mulok_rows as $n):
-                $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
-            ?>
-                <tr>
-                    <td><?= htmlspecialchars($n->nama_mapel) ?></td>
-                    <td class="text-center"><?= $nilai ?? '-' ?></td>
-                    <td><?= $n->deskripsi_capaian ?? '-' ?></td>
-                </tr>
-            <?php endforeach; 
-        endif; ?>
+// Tampilkan bagian MULOK
+if (!empty($mulok_rows)): ?>
+    <tr class="table-secondary text-center" style="font-weight:bold;">
+        <th colspan="3">MULOK</th>
+    </tr>
+    <?php foreach ($mulok_rows as $n):
+        $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
+    ?>
+        <tr>
+            <td><?= htmlspecialchars($n->nama_mapel) ?></td>
+            <td class="text-center"><?= $nilai ?? '-' ?></td>
+            <td><?= $n->deskripsi_capaian ?? '-' ?></td>
+        </tr>
+    <?php endforeach; 
+endif; ?>
+</tbody>
+
                                                 <tr>
                                                     <th class="text-right bg-light text-dark">Jumlah Nilai</th>
                                                     <th class="text-center bg-light text-dark"><?= $total_nilai ?></th>
