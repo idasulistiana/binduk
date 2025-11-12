@@ -84,12 +84,14 @@ class ControllerRekapKehadiran extends CI_Controller {
 
             // Jika tidak ada previous_url, fallback ke halaman all_nilai_siswa dengan $no_induk
             if (!$previous_url) {
+                // Redirect
+                redirect($previous_url);
+            }else{
+              
                 $no_induk = $this->input->post('no_induk'); // ambil dari form
                 $previous_url = site_url("nilai/all_nilai_siswa/$no_induk");
             }
-
-            // Redirect
-            redirect($previous_url);
+            
 
 
         }
