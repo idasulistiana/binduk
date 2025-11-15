@@ -14,7 +14,18 @@ class DataMaster extends CI_Model
         $this->db->select('*');
         $this->db->from('user');
         return $this->db->get()->result();
+
     }
+    public function cek_no_induk($no_induk)
+    {
+        $this->db->where('no_induk', $no_induk);
+        $query = $this->db->get('siswa');
+
+        // TRUE = duplikat
+        // FALSE = belum ada
+        return $query->num_rows() > 0;
+    }
+
     public function edit_user($id)
     {
         $this->db->select('*');

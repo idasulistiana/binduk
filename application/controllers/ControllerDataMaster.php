@@ -48,6 +48,7 @@ class ControllerDataMaster extends CI_Controller
 		// Validasi input sesuai dengan name di form
 		$this->form_validation->set_rules('nisn', 'NISN Siswa', 'required');
 		$this->form_validation->set_rules('nama', 'Nama Siswa', 'required');
+		$this->form_validation->set_rules('status', 'Status', 'required');
 		$this->form_validation->set_rules('no_induk', 'Nomor Induk', 'required|numeric');
 		$this->form_validation->set_rules('gender', 'Jenis Kelamin', 'required');
 		$this->form_validation->set_rules('agama', 'Agama', 'required');
@@ -99,7 +100,8 @@ class ControllerDataMaster extends CI_Controller
 				'nama_ibu' => $this->input->post('nama_ibu'),
 				'nama_ayah' => $this->input->post('nama_ayah'),
 				'tgl_diterima' => $this->input->post('tgl_diterima'),
-				'kelas' => $this->input->post('kelas')
+				'kelas' => $this->input->post('kelas'),
+				'status' => $this->input->post('status')
 			);
 
 			$this->DataMaster->insert_siswa($data);
@@ -118,6 +120,7 @@ class ControllerDataMaster extends CI_Controller
 {
     // Validasi form
     $this->form_validation->set_rules('no_induk', 'No Induk Siswa', 'required|trim');
+	$this->form_validation->set_rules('status', 'Status', 'required');
     $this->form_validation->set_rules('nama', 'Nama Siswa', 'required|trim');
     $this->form_validation->set_rules('gender', 'Jenis Kelamin', 'required');
     $this->form_validation->set_rules('agama', 'Agama', 'required|trim');
@@ -152,7 +155,8 @@ class ControllerDataMaster extends CI_Controller
             'nama_ibu' => htmlspecialchars(trim($this->input->post('nama_ibu'))),
             'nama_ayah' => htmlspecialchars(trim($this->input->post('nama_ayah'))),
             'tgl_diterima' => $this->input->post('tgl_diterima'),
-            'kelas' => $this->input->post('kelas') // ini id_kelas
+            'kelas' => $this->input->post('kelas') ,// ini id_kelas
+			'status' => $this->input->post('status')
         );
 
         // Update data siswa

@@ -155,6 +155,17 @@
                                             <?= form_error('nama_ayah', '<small class="text-danger pl-3">', '</small>'); ?>
                                         </div>
                                     </div>
+                                   <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select name="status" class="form-select form-control" required>
+                                                <option value="">-- Status --</option>
+                                                <option value="aktif" <?= $siswa->status == 'aktif' ? 'selected' : '' ?>>Aktif</option>
+                                                <option value="lulus" <?= $siswa->status == 'lulus' ? 'selected' : '' ?>>Lulus</option>
+                                            </select>
+                                            <?= form_error('status', '<small class="text-danger pl-3">', '</small>'); ?>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Alamat</label>

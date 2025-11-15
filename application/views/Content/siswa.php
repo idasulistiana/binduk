@@ -233,8 +233,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 </div>
                             </div>
                             </div>
-
-                                                        <!-- /.tab-pane -->
+                            <!-- /.tab-pane -->
                                 <div class="tab-pane <?php if (form_error('nama') != '') {
                                                             echo 'active';
                                                         } ?>" id="tab_2">
@@ -255,7 +254,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="form-group">
@@ -276,6 +274,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 </div>
                                             </div>
                                         </div>
+
 
                                         <div class="row">
                                             <div class="col-sm-6">
@@ -334,13 +333,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label>Nama Ayah</label>
                                                     <input type="text" name="nama_ayah" value="<?= set_value('nama_ayah') ?>" class="form-control" placeholder="Masukkan Nama Ayah" required>
                                                     <?= form_error('nama_ayah', '<small class="text-danger pl-3">', '</small>'); ?>
+                                                </div>
+                                            </div>
+                                              <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label>Status</label>
+                                                    <select name="status" class="form-select form-control" required>
+                                                        <option value="">-- Status --</option>
+                                                        <option value="aktif" <?= set_value('status') == 'aktif' ? 'selected' : '' ?>>Aktif</option>
+                                                        <option value="lulus" <?= set_value('status') == 'lulus' ? 'selected' : '' ?>>Lulus</option>
+                                                    </select>
+                                                    <?= form_error('status', '<small class="text-danger pl-3">', '</small>'); ?>
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
@@ -352,7 +361,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             </div>
                                         </div>
 
-                                    
 
                                         <div class="card-footer text-end mt-3">
                                             <div class="d-flex justify-content-end">
