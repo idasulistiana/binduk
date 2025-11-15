@@ -70,7 +70,9 @@ $route['siswa/import_siswa'] = 'ControllerDataMaster/import_siswa';
 
 // 🔹 Data Alumni
 $route['alumni']     = 'ControllerAlumni';
- $route['alumni/update/(:num)'] = 'ControllerAlumni/update/$1';
+$route['alumni/update/(:num)'] = 'ControllerAlumni/update/$1';
+$route['alumni/update_alumni/(:num)'] = 'ControllerAlumni/update_alumni/$1';
+$route['alumni/delete_alumni/(:any)'] = 'ControllerAlumni/delete_alumni/$1';
 // $route['siswa/update_siswa/(:num)'] = 'ControllerDataMaster/update_siswa/$1';
 // $route['siswa/delete_siswa/(:any)'] = 'ControllerDataMaster/delete_siswa/$1';
 // $route['siswa/add_siswa'] = 'ControllerDataMaster/add_siswa'; 

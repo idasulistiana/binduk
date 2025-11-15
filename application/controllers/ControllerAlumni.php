@@ -42,8 +42,8 @@ class ControllerAlumni extends CI_Controller {
     }
 
      // Tampilkan form edit
-    public function update($nisn) {
-        $data['alumni'] = $this->Alumni_model->get_by_nisn($nisn);
+    public function update($no_induk) {
+        $data['alumni'] = $this->Alumni_model->get_by_no_induk($no_induk);
         if (!$data['alumni']) {
             show_404();
         }
@@ -57,21 +57,28 @@ class ControllerAlumni extends CI_Controller {
 
     // Proses update data alumni
     public function update_alumni() {
-        $nisn = $this->input->post('nisn');
-        $data = [
-            'no_induk'     => $this->input->post('no_induk'),
-            'nama_siswa'   => $this->input->post('nama_siswa'),
-            'gender'       => $this->input->post('gender'),
-            'tempat_lahir' => $this->input->post('tempat_lahir'),
-            'tgl_lahir'    => $this->input->post('tgl_lahir'),
-            'agama'        => $this->input->post('agama'),
-            'alamat'       => $this->input->post('alamat'),
-            'nama_ayah'    => $this->input->post('nama_ayah'),
-            'nama_ibu'     => $this->input->post('nama_ibu'),
-            'tahun_lulus'  => $this->input->post('tahun_lulus')
+        $no_induk = $this->input->post('no_induk');
+        $data_siswa = [
+            'nisn'      => $this->input->post('nisn'),
+            'nama_siswa'    => $this->input->post('nama_siswa'),
+            'gender'        => $this->input->post('gender'),
+            'tempat_lahir'  => $this->input->post('tempat_lahir'),
+            'tgl_lahir'     => $this->input->post('tgl_lahir'),
+            'agama'         => $this->input->post('agama'),
+            'alamat'        => $this->input->post('alamat'),
+            'nama_ayah'     => $this->input->post('nama_ayah'),
+            'nama_ibu'      => $this->input->post('nama_ibu'),
+            'status'        => $this->input->post('status')
         ];
 
-        $this->Alumni_model->update_alumni($nisn, $data);
+    $tahun_lulus = $this->input->post('tahun_lulus');
+
+    // update data siswa
+    $this->Alumni_model->update_alumni($no_induk, $data_siswa);
+
+    // update tahun lulus ke tabel klapper
+    $this->Alumni_model->save_tahun_lulus($no_induk, $tahun_lulus);
+
         $this->session->set_flashdata('success', 'Data alumni berhasil diperbarui.');
         redirect('alumni');
     }

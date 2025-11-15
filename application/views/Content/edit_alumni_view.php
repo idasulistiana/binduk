@@ -126,6 +126,17 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
+                                            <label>Status</label>
+                                            <select name="status" class="form-select form-control" required>
+                                                <option value="">-- Status --</option>
+                                                <option value="aktif" <?= $alumni->status == 'aktif' ? 'selected' : '' ?>>Aktif</option>
+                                                <option value="lulus" <?= $alumni->status == 'lulus' ? 'selected' : '' ?>>Lulus</option>
+                                            </select>
+                                            <?= form_error('status', '<small class="text-danger pl-3">', '</small>'); ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
                                             <label>Nama Ibu</label>
                                             <input type="text" name="nama_ibu" value="<?= $alumni->nama_ibu ?>" class="form-control" placeholder="Masukkan Nama Ibu">
                                         </div>

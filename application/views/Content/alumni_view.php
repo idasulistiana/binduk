@@ -66,10 +66,10 @@ $level_user = $CI->session->userdata('level_user');
                                 <?php if ($level_user != 2): ?>
                                     <td>
                                         <!-- Tombol Edit -->
-                                        <a href="<?= base_url('alumni/update/'.$a->nisn) ?>" class="btn btn-success btn-sm">
+                                        <a href="<?= base_url('alumni/update/'.$a->no_induk) ?>" class="btn btn-success btn-sm">
                                             <i class="fa fa-edit"></i>
                                         </a>
-                                        <a href="<?= site_url('alumni/delete/'.$a->nisn); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data alumni ini?')">
+                                        <a href="<?= site_url('alumni/delete/'.$a->no_induk); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data alumni ini?')">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </td>
