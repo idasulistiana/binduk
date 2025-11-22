@@ -46,7 +46,6 @@
         body.sidebar-collapse .content-wrapper,
         body.sidebar-collapse .main-header,
         body.sidebar-collapse .main-footer {
-        margin-left: 80px !important;
         transition: none !important;
         }
 
