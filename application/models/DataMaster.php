@@ -156,7 +156,7 @@ class DataMaster extends CI_Model
     }
     public function delete_siswa($id)
     {
-        $this->db->where('nisn', $id);
+        $this->db->where('no_induk', $id);
         $this->db->delete('siswa');
     }
     public function edit_siswa($id)

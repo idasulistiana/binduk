@@ -51,20 +51,6 @@
 <script>
 
     // Ketika tombol delete diklik
-    $('#tableSiswa').on('click', '.delete-siswa', function() {
-    let nisn = $(this).data('nisn');
-    let row = table.row($(this).parents('tr')).data(); // ambil data siswa
-    let namaSiswa = row.nama_siswa;
-
-    // Set nama siswa di modal
-    $('#namaSiswaHapus').text(namaSiswa);
-
-    // Set link hapus
-    $('#btnDeleteConfirm').attr('href', "<?= base_url('siswa/delete_siswa/') ?>" + nisn);
-
-    // Tampilkan modal
-    $('#deleteModal').modal('show');
-    });
 
 
 // ajax data table data siswa

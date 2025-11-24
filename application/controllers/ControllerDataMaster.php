@@ -110,12 +110,34 @@ class ControllerDataMaster extends CI_Controller
 		}
 	}
 
-	public function delete_siswa($id)
+	public function delete_siswa($no_induk)
 	{
-		$this->DataMaster->delete_siswa($id);
-		$this->session->set_flashdata('success', 'Data Siswa Berhasil Dihapus!');
-		redirect('siswa');
+		// daftar tabel yang dicek
+		$tabel_cek = ['rekap_kehadiran', 'klapper', 'nilai', 'nilai_ekskul'];
+		$terkait = false;
+
+		foreach ($tabel_cek as $tabel) {
+			$this->db->where('no_induk', $no_induk);
+			$cek = $this->db->get($tabel)->num_rows();
+			if ($cek > 0) {
+				$terkait = true;
+				break; // cukup 1 tabel ada data, hentikan pengecekan
+			}
+		}
+
+		if ($terkait) {
+			$this->session->set_flashdata('error', 'Data siswa tidak bisa dihapus karena masih memiliki data terkait di tabel lain.');
+			redirect('siswa'); // atau halaman sebelumnya
+		} else {
+			// hapus siswa
+			$this->db->where('no_induk', $no_induk);
+			$this->db->delete('siswa');
+			$this->session->set_flashdata('success', 'Data siswa berhasil dihapus.');
+			redirect('siswa');
+		}
 	}
+
+
 	public function update_siswa($id)
 {
     // Validasi form

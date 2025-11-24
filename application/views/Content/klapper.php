@@ -304,9 +304,8 @@ $(document).ready(function() {
                         class="btn btn-success btn-sm" title="Edit">
                             <i class="fa fa-edit"></i>
                         </a>
-                        <button class="btn btn-danger btn-sm delete-siswa" 
+                        <button class="btn btn-danger btn-sm delete-kelas" 
                                 data-no_induk="${row.no_induk}" 
-                                data-nama="${row.nama_siswa}" 
                                 title="Hapus">
                             <i class="fa fa-trash"></i>
                         </button>
@@ -344,12 +343,13 @@ $(document).ready(function() {
         table.ajax.reload();
     });
 
+$('#table-datakelas').on('click', '.delete-kelas', function() {
+    let no_induk = $(this).data('no_induk');
+    $('#deleteModal' + no_induk).find('.btn-delete-confirm').attr('href', "<?= base_url('ControllerKlapper/delete_klapper/') ?>" + no_induk);
+    $('#deleteModal' + no_induk).modal('show');
 });
 
-// --- Fungsi hapus data ---
-function hapusData(no_induk, nama) {
-    if (confirm("Apakah Anda yakin ingin menghapus data " + nama + "?")) {
-        window.location.href = "<?= base_url('ControllerKlapper/delete_klapper/') ?>" + no_induk;
-    }
-}
+
+});
+
 </script>

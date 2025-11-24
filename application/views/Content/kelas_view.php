@@ -94,6 +94,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $k->id_kelas ?>">
                                                                         <i class="fa fa-trash"></i>
                                                                     </button>
+                                                                      <!-- Modal Delete -->
+                                                                        <div class="modal fade" id="deleteModal<?= $k->id_kelas ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel<?= $k->id_kelas?>" aria-hidden="true">
+                                                                            <div class="modal-dialog" role="document">
+                                                                                <div class="modal-content">
+                                                                                    <div class="modal-header">
+                                                                                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                                    </div>
+                                                                                    <div class="modal-body">
+                                                                                        Apakah Anda yakin ingin menghapus kelas <strong><?= $k->nama_kelas ?></strong>?
+                                                                                    </div>
+                                                                                    <div class="modal-footer">
+                                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                                                        <a href="<?= base_url('kelas/delete_kelas/'.$k->id_kelas) ?>" class="btn btn-danger">Hapus</a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                 </td>
                                                             </tr>
                                                         <?php endforeach; ?>
@@ -108,24 +126,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                                 <td class="text-center"><?= $k->nama_kelas ?></td>
                                                             </tr>
 
-                                                    <!-- Modal Delete -->
-                                                    <div class="modal fade" id="deleteModal<?= $k->id_kelas ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel<?= $k->id_kelas?>" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Konfirmasi Hapus</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    Apakah Anda yakin ingin menghapus kelas <strong><?= $k->nama_kelas ?></strong>?
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                    <a href="<?= base_url('kelas/delete_kelas/'.$k->id_kelas) ?>" class="btn btn-danger">Hapus</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                  
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                                                                 

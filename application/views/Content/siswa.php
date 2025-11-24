@@ -183,7 +183,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                         <?php if ($level_user != 2): ?>
                                                             <td class="text-center">
                                                                 <!-- Tombol Delete -->
-                                                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $value->nisn ?>">
+                                                                <button class="btn btn-danger btn-sm delete-siswa" data-toggle="modal" data-target="#deleteModal<?= $value->no_induk ?>">
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
                                                                 <!-- Tombol Edit -->
@@ -389,7 +389,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  // Ambil nilai level_user dari PHP
  
 $(document).ready(function() {
-
+    
     // --- Siapkan kolom dasar (tanpa kolom aksi) ---
     var columns = [
         { "data": null }, // nomor urut
@@ -431,7 +431,7 @@ $(document).ready(function() {
                             <i class="fa fa-edit"></i>
                         </a>
                         <button class="btn btn-danger btn-sm delete-siswa" 
-                                data-nisn="${row.nisn}" 
+                                data-no_induk="${row.no_induk}" 
                                 data-nama="${row.nama_siswa}"
                                 title="Hapus">
                             <i class="fa fa-trash"></i>
@@ -493,5 +493,15 @@ $(document).ready(function() {
 
     // --- Load data pertama kali ---
     loadSiswa();
+    // delete 
+    $('#tableSiswa').on('click', '.delete-siswa', function() {
+        let no_induk = $(this).data('no_induk');
+        let namaSiswa = $(this).data('nama');
+
+        $('#namaSiswaHapus').text(namaSiswa);
+        $('#btnDeleteConfirm').attr('href', "<?= base_url('siswa/delete_siswa/') ?>" + no_induk);
+
+        $('#deleteModal').modal('show');
+    });
 });
 </script>

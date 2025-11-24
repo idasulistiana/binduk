@@ -27,19 +27,39 @@ class ControllerAlumni extends CI_Controller {
     // Get alumni via AJAX (filter by kelas)
     public function get_alumni() {
         $kelas_id = $this->input->post('kelas');
-        $data = $this->Model_alumni->get_all_alumni();
+        $data = $this->Alumni_model->get_all_alumni();
         echo json_encode(['data' => $data]);
     }
 
     // Hapus data alumni
-    public function delete($nisn) {
-        if ($this->Model_alumni->delete_alumni($nisn)) {
-            $this->session->set_flashdata('success', 'Data alumni berhasil dihapus.');
-        } else {
-            $this->session->set_flashdata('failed', 'Gagal menghapus data alumni.');
+    public function delete($no_induk)
+    {
+        // daftar tabel yang dicek
+        $tabel_cek = ['rekap_kehadiran', 'klapper', 'nilai', 'nilai_ekskul'];
+        $tabel_terkait = [];
+
+        foreach ($tabel_cek as $tabel) {
+            $this->db->where('no_induk', $no_induk);
+            $cek = $this->db->get($tabel)->num_rows();
+            if ($cek > 0) {
+                $tabel_terkait[] = $tabel;
+            }
         }
-        redirect('alumni');
+
+        if (!empty($tabel_terkait)) {
+            $nama_tabel = implode(', ', $tabel_terkait);
+            $this->session->set_flashdata('error', 'Data siswa tidak bisa dihapus karena masih memiliki data terkait di tabel: ' . $nama_tabel);
+            redirect('alumni');
+        } else {
+            // hapus siswa
+            $this->db->where('no_induk', $no_induk);
+            $this->db->delete('siswa');
+            $this->session->set_flashdata('success', 'Data siswa berhasil dihapus.');
+            redirect('alumni');
+        }
     }
+
+
 
      // Tampilkan form edit
     public function update($no_induk) {

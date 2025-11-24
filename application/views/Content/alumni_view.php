@@ -19,8 +19,31 @@ $level_user = $CI->session->userdata('level_user');
                 </div>
             </div>
 
-            <?php if($this->session->flashdata('success')): ?>
-                <div class="alert alert-success alert-dismissible fade show"><?= $this->session->flashdata('success'); ?></div>
+              <?php if($this->session->flashdata('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= $this->session->flashdata('success'); ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <?php endif; ?>
+
+            <?php if($this->session->flashdata('failed')): ?>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <?= $this->session->flashdata('failed'); ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <?php endif; ?>
+
+            <?php if($this->session->flashdata('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= $this->session->flashdata('error'); ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             <?php endif; ?>
         </div>
     </section>
@@ -69,10 +92,31 @@ $level_user = $CI->session->userdata('level_user');
                                         <a href="<?= base_url('alumni/update/'.$a->no_induk) ?>" class="btn btn-success btn-sm">
                                             <i class="fa fa-edit"></i>
                                         </a>
-                                        <a href="<?= site_url('alumni/delete/'.$a->no_induk); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data alumni ini?')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
+                                       
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $a->no_induk ?>">
+                                             <i class="fa fa-trash"></i>
+                                        </button>
+                                            <!-- Modal Konfirmasi Delete -->
+                                            <!-- Modal Delete -->
+                                                    <div class="modal fade" id="deleteModal<?= $a->no_induk ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel<?= $a->no_induk?>" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Konfirmasi Hapus</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    Apakah Anda yakin ingin menghapus siswa <strong><?= $a->nama_siswa ?></strong>?
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                                    <a href="<?= base_url('alumni/delete/'.$a->no_induk) ?>" class="btn btn-danger">Hapus</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                     </td>
+
                                 <?php endif; ?>
                             </tr>
                             <?php endforeach; ?>
