@@ -177,13 +177,15 @@
                                                                             <input type="hidden" name="semester" value="<?= $semester ?>">
                                                                             <div class="form-group">
                                                                                 <label>Nilai</label>
-                                                                               <input type="text" 
-                                                                                class="form-control" 
-                                                                                name="nilai" 
-                                                                                placeholder="Masukkan nilai (contoh: A, B, C)" 
-                                                                                maxlength="1"
-                                                                                required
-																				oninput="this.value = this.value.toUpperCase().replace(/[^ABC]/g, '');">
+                                                                              <input type="text" 
+                                                                                    class="form-control" 
+                                                                                    name="nilai" 
+                                                                                    placeholder="Masukkan nilai (contoh: SB, B, C, D)" 
+                                                                                    maxlength="2"
+                                                                                    required
+                                                                                    oninput="this.value = this.value.toUpperCase().replace(/^(SB|B|C|D)?$/, '') 
+                                                                                        || (['SB','B','C','D'].includes(this.value) ? this.value : this.value = this.value.slice(0, -1));">
+
                                                                             </div>
                                                                         </div>
 

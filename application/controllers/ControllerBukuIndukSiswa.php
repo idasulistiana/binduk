@@ -140,11 +140,11 @@ class ControllerBukuIndukSiswa extends CI_Controller {
     /**
  * Fungsi untuk menghasilkan deskripsi capaian pembelajaran EKSKUL
  */
-    private function get_deskripsi_ekskul($nilai) {
+     private function get_deskripsi_ekskul($nilai) {
         $nilai = strtoupper(trim($nilai)); // ubah ke huruf besar agar aman
 
         switch ($nilai) {
-            case 'A':
+            case 'SB':
                 return "Peserta didik sangat aktif dan menunjukkan prestasi tinggi dalam kegiatan ekstrakurikuler. Ia memiliki semangat, disiplin, dan kerja sama yang luar biasa.";
             case 'B':
                 return "Peserta didik aktif mengikuti kegiatan ekstrakurikuler dengan semangat dan tanggung jawab yang baik.";
@@ -156,6 +156,7 @@ class ControllerBukuIndukSiswa extends CI_Controller {
                 return "-";
         }
     }
+    
 
 // ====================== PRINT BUKU INDUK ======================
     public function download_data()
