@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/sdnj8935/public_html/
+    - export DEPLOYPATH="/home/sdnj8935/public_html/"
     - /bin/rsync -av --delete ./ $DEPLOYPATH
