@@ -1,5 +1,6 @@
+
 ---
 deployment:
-  tasks:
-    - export DEPLOYPATH=/home/sdnj8935/public_html/
-    - /bin/rsync -av --delete --exclude='.git' * $DEPLOYPATH
+tasks:
+- export DEPLOYPATH=/home/sdnj8935/public_html/
+- /bin/cp -r * $DEPLOYPATH
