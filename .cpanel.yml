@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/USERNAME/public_html/binduk/
+    - export DEPLOYPATH=/home/sdnj8935/public_html/binduk/
     - /bin/rsync -av --delete --exclude='.git' * $DEPLOYPATH
