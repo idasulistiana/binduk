@@ -103,9 +103,9 @@ if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
     $db['default'] = array(
         'dsn'	=> '',
         'hostname' => '127.0.0.1',
-        'username' => 'u796341745_buku_induk04',
+        'username' => 'sdnj8935_db_buku_induk',
         'password' => 'IdaSulistiana27@',
-        'database' => 'u796341745_buku_induk04',
+        'database' => 'sdnj8935_db_buku_induk',
         'dbdriver' => 'mysqli',
         'dbprefix' => '',
         'pconnect' => FALSE,
