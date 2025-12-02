@@ -102,34 +102,25 @@ class Rekap_kehadiran_model extends CI_Model {
         return $this->db->get('siswa')->result();
     }
 
-    public function update_or_insert_kehadiran($no_induk, $id_kelas, $semester, $kehadiran)
+    public function update_or_insert_kehadiran($no_induk, $id_kelas, $semester, $data)
     {
-        $data = [
-            'no_induk'           => $no_induk,
-            'id_kelas'           => $id_kelas,
-            'semester'           => $semester,
-            'sakit'              => $kehadiran['sakit'],
-            'izin'               => $kehadiran['izin'],
-            'tanpa_keterangan'   => $kehadiran['tanpa_keterangan'],
-            'tahun_ajaran'       => $kehadiran['tahun_ajaran']
-        ];
-
-        // Cek apakah data sudah ada
-        $cek = $this->db->get_where('rekap_kehadiran', [
+        // Ambil data kehadiran siswa
+        $existing = $this->db->get_where('rekap_kehadiran', [
             'no_induk' => $no_induk,
             'id_kelas' => $id_kelas,
             'semester' => $semester
         ])->row();
 
-        if ($cek) {
-            // Update jika sudah ada
-            $this->db->where('id_rekap', $cek->id);
+        if ($existing) {
+            // Pastikan properti sesuai nama kolom
+            // Misal di table kolom primary key namanya 'id_rekap'
+            $this->db->where('id_rekap', $existing->id_rekap);
             $this->db->update('rekap_kehadiran', $data);
         } else {
-            // Insert jika belum ada
             $this->db->insert('rekap_kehadiran', $data);
         }
     }
+
     public function get_rekap_by_kelas_semester($kelas, $semester)
     {
         $this->db->select('rekap_kehadiran.*, siswa.nama_siswa, kelas.nama_kelas');

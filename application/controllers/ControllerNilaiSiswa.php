@@ -429,195 +429,174 @@ class ControllerNilaiSiswa extends CI_Controller {
     }
     public function import_nilai()
 {
-    if (isset($_FILES['file_csv']['name'])) {
-        $file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
-
-        if (in_array($_FILES['file_csv']['type'], $file_mimes)) {
-            $file = $_FILES['file_csv']['tmp_name'];
-
-            if (($handle = fopen($file, "r")) !== FALSE) {
-                $row = 0;
-                $failed_no_induk = [];
-                $success_count = 0;
-
-                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-
-                    if ($row == 0) { 
-                        $row++;
-                        continue; // skip header
-                    }
-
-                    $no_induk = trim($data[0]);
-                    $nama_kelas = trim($data[1]);
-                    $semester = trim($data[2]);
-
-                    // Cari id_kelas
-                    $kelas = $this->DataMaster->get_kelas_by_nama($nama_kelas);
-                    if (!$kelas) {
-                        $failed_kelas[] = $nama_kelas . " (tidak ditemukan)";
-                        $row++;
-                        continue;
-                    }
-                    $id_kelas = $kelas->id_kelas;
-
-                    // Cek siswa valid
-                    if (!$this->DataMaster->get_siswa_by_no_induk($no_induk)) {
-                        $failed_no_induk[] = $no_induk . " (tidak ditemukan)";
-                        $row++;
-                        continue;
-                    }
-
-                    // ==================== MAPEL ====================
-                    $mapel_nilai = [
-                        ['kode_mapel' => 'PAIDBP', 'nilai_akhir' => $data[3]  ?? null],
-                        ['kode_mapel' => 'PPDK',   'nilai_akhir' => $data[4] ?? null],
-                        ['kode_mapel' => 'BI',     'nilai_akhir' => $data[5]  ?? null],
-                        ['kode_mapel' => 'MTK',    'nilai_akhir' => $data[6]  ?? null],
-                        ['kode_mapel' => 'IPADSI', 'nilai_akhir' => $data[7]  ?? null],
-                        ['kode_mapel' => 'PJODK',  'nilai_akhir' => $data[8] ?? null],
-                        ['kode_mapel' => 'SnMs',   'nilai_akhir' => $data[9]  ?? null],
-                        ['kode_mapel' => 'BING',   'nilai_akhir' => $data[10]  ?? null],
-                        ['kode_mapel' => 'PLBJ',   'nilai_akhir' => $data[11]  ?? null],
-                    ];
-
-                    foreach ($mapel_nilai as $n) {
-                        if (empty($n['nilai_akhir'])) continue;
-                        $mapel = $this->Nilai_model->get_mapel_by_kode($n['kode_mapel']);
-                        if (!$mapel) continue;
-                        $id_mapel = $mapel->id_mapel;
-
-                        $nilai_exist = $this->Nilai_model->get_nilai_by_mapel($no_induk, $id_kelas, $semester, $id_mapel);
-
-                        $data_nilai = [
-                            'no_induk'    => $no_induk,
-                            'id_kelas'    => $id_kelas,
-                            'semester'    => $semester,
-                            'id_mapel'    => $id_mapel,
-                            'nilai_akhir' => $n['nilai_akhir']
-                        ];
-
-                        if ($nilai_exist) {
-                            $this->Nilai_model->update_nilai($no_induk, $id_kelas, $semester, $id_mapel, $data_nilai);
-                        } else {
-                            $this->Nilai_model->insert_nilai($data_nilai);
-                        }
-                    }
-
-                    // ==================== EKSKUL ====================
-                    $nilai_ekskul = [
-                        ['kode_ekskul' => 'PRMK', 'nilai' => $data[16] ?? null],
-                        ['kode_ekskul' => 'PSKB', 'nilai' => $data[17] ?? null],
-                        ['kode_ekskul' => 'KRTE', 'nilai' => $data[18] ?? null],
-                        ['kode_ekskul' => 'SNTR', 'nilai' => $data[19] ?? null],
-                        ['kode_ekskul' => 'VOLI', 'nilai' => $data[20] ?? null],
-                        ['kode_ekskul' => 'FTSL', 'nilai' => $data[21] ?? null],
-                        ['kode_ekskul' => 'HDRH', 'nilai' => $data[22] ?? null],
-                    ];
-
-                    foreach ($nilai_ekskul as $e) {
-                        $ekskul = $this->Ekskul_model->get_by_kode($e['kode_ekskul']);
-                        if (!$ekskul) continue;
-
-                        $id_ekskul = $ekskul->id_ekskul;
-                        $ekskul_exist = $this->Ekskul_model->get_nilai_ekskul_siswa_withID(
-                            $no_induk, $id_kelas, $semester, $id_ekskul
-                        );
-                        $nilai_final = trim($e['nilai']) === '' ? '-' : $e['nilai'];
-
-                        $data_ekskul = [
-                            'no_induk'  => $no_induk,
-                            'id_kelas'  => $id_kelas,
-                            'semester'  => $semester,
-                            'id_ekskul' => $id_ekskul,
-                            'nilai'     => $nilai_final
-                        ];
-
-                        if ($ekskul_exist) {
-                            $this->Ekskul_model->update_nilai_ekskul_by_id($ekskul_exist->id_nilai_ekskul, $data_ekskul);
-                        } else {
-                            $this->Ekskul_model->insert_nilai_ekskul($data_ekskul);
-                        }
-                    }
-
-                    // ==================== KEHADIRAN ====================
-                    $kehadiran = [
-                        'sakit'             => $data[12] ?? 0,
-                        'izin'              => $data[13] ?? 0,
-                        'tanpa_keterangan'  => $data[14] ?? 0,
-                        'tahun_ajaran'      => $data[15] ?? 0
-                    ];
-
-                    $this->Rekap_kehadiran_model->update_or_insert_kehadiran($no_induk, $id_kelas, $semester, $kehadiran);
-
-                   // ==================== KLAPPER ====================
-                        if ($semester == 2) {
-                        // Tahun ajaran dari CSV
-                        $tahun_ajaran_terakhir = $data[15] ?? null;
-                        // Keterangan dari CSV untuk kelas ini
-                        $keterangan_per_kelas   = $data[23] ?? null;
-
-                        if ($tahun_ajaran_terakhir) {
-                            // Tentukan nomor kelas dari nama_kelas
-                            preg_match('/\d+/', $nama_kelas, $matches);
-                            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 1;
-                            $field_kelas  = 'kelas_' . $kelas_number;
-
-                            // Ambil data klapper yang sudah ada
-                            $existing_klapper = $this->Klapper_model->get_klapper_by_no_induk($no_induk);
-
-                            if ($existing_klapper) {
-                                // Jika sudah ada row, update kolom tahun ajaran kelas ini
-                                $update_data = [];
-
-                                // Jika kolom kelas kosong, isi tahun ajaran
-                                if (empty($existing_klapper->$field_kelas)) {
-                                    $update_data[$field_kelas] = $tahun_ajaran_terakhir;
-                                }
-
-                                // Selalu replace keterangan dari CSV
-                                if ($keterangan_per_kelas) {
-                                    $update_data['keterangan'] = $keterangan_per_kelas;
-                                }
-
-                                if (!empty($update_data)) {
-                                    $this->Klapper_model->update_klapper($no_induk, $update_data);
-                                }
-                            } else {
-                                // Insert baru
-                                $insert_data = [
-                                    'no_induk'   => $no_induk,
-                                    $field_kelas => $tahun_ajaran_terakhir,
-                                    'keterangan' => $keterangan_per_kelas
-                                ];
-                                $this->Klapper_model->insert_or_update_klapper($insert_data);
-                            }
-                        }
-                    }
-
-                    $success_count++;
-                    $row++;
-                }
-
-                fclose($handle);
-
-                if (!empty($failed_no_induk)) {
-                    $this->session->set_flashdata('failed', 'Beberapa No Induk gagal diimpor: '.implode(', ', $failed_no_induk));
-                }
-
-                if ($success_count > 0) {
-                    $this->session->set_flashdata('success', "Data Nilai Berhasil Diimpor ($success_count Data Nilai)!");
-                }
-
-                redirect('nilai');
-            }
-        } else {
-            $this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
-            redirect('nilai');
-        }
-    } else {
+    if (empty($_FILES['file_csv']['name'])) {
         $this->session->set_flashdata('error', 'File CSV belum diunggah!');
         redirect('nilai');
     }
+
+    $file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
+    if (!in_array($_FILES['file_csv']['type'], $file_mimes)) {
+        $this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
+        redirect('nilai');
+    }
+
+    $file = $_FILES['file_csv']['tmp_name'];
+    if (($handle = fopen($file, "r")) === FALSE) {
+        $this->session->set_flashdata('error', 'Gagal membuka file CSV!');
+        redirect('nilai');
+    }
+
+    $row = 0;
+    $failed_no_induk = [];
+    $failed_kelas = [];
+    $success_count = 0;
+
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        if ($row++ == 0) continue; // skip header
+
+        $no_induk = trim($data[0]);
+        $nama_kelas = trim($data[1]);
+        $semester = trim($data[2]);
+
+        // Cek kelas
+        $kelas = $this->DataMaster->get_kelas_by_nama($nama_kelas);
+        if (!$kelas) {
+            $failed_kelas[] = $nama_kelas . " (tidak ditemukan)";
+            continue;
+        }
+        $id_kelas = $kelas->id_kelas;
+
+        // Cek siswa
+        if (!$this->DataMaster->get_siswa_by_no_induk($no_induk)) {
+            $failed_no_induk[] = $no_induk . " (tidak ditemukan)";
+            continue;
+        }
+
+        // ==================== MAPEL ====================
+        $mapel_nilai = [
+            'PAIDBP' => $data[3] ?? null,
+            'PPDK'   => $data[4] ?? null,
+            'BI'     => $data[5] ?? null,
+            'MTK'    => $data[6] ?? null,
+            'IPADSI' => $data[7] ?? null,
+            'PJODK'  => $data[8] ?? null,
+            'SnMs'   => $data[9] ?? null,
+            'BING'   => $data[10] ?? null,
+            'PLBJ'   => $data[11] ?? null,
+        ];
+
+        foreach ($mapel_nilai as $kode_mapel => $nilai_akhir) {
+            if (empty($nilai_akhir)) continue;
+
+            $mapel = $this->Nilai_model->get_mapel_by_kode($kode_mapel);
+            if (!$mapel) continue;
+
+            $data_nilai = [
+                'no_induk'    => $no_induk,
+                'id_kelas'    => $id_kelas,
+                'semester'    => $semester,
+                'id_mapel'    => $mapel->id_mapel,
+                'nilai_akhir' => $nilai_akhir
+            ];
+
+            $nilai_exist = $this->Nilai_model->get_nilai_by_mapel($no_induk, $id_kelas, $semester, $mapel->id_mapel);
+            if ($nilai_exist) {
+                $this->Nilai_model->update_nilai($no_induk, $id_kelas, $semester, $mapel->id_mapel, $data_nilai);
+            } else {
+                $this->Nilai_model->insert_nilai($data_nilai);
+            }
+        }
+
+        // ==================== EKSKUL ====================
+        $nilai_ekskul = [
+            'PRMK' => $data[16] ?? null,
+            'PSKB' => $data[17] ?? null,
+            'KRTE' => $data[18] ?? null,
+            'SNTR' => $data[19] ?? null,
+            'VOLI' => $data[20] ?? null,
+            'FTSL' => $data[21] ?? null,
+            'HDRH' => $data[22] ?? null,
+        ];
+
+        foreach ($nilai_ekskul as $kode_ekskul => $nilai) {
+            $ekskul = $this->Ekskul_model->get_by_kode($kode_ekskul);
+            if (!$ekskul) continue;
+
+            $nilai_final = trim($nilai) === '' ? '-' : $nilai;
+
+            $ekskul_exist = $this->Ekskul_model->get_nilai_ekskul_siswa_withID(
+                $no_induk, $id_kelas, $semester, $ekskul->id_ekskul
+            );
+
+            $data_ekskul = [
+                'no_induk'  => $no_induk,
+                'id_kelas'  => $id_kelas,
+                'semester'  => $semester,
+                'id_ekskul' => $ekskul->id_ekskul,
+                'nilai'     => $nilai_final
+            ];
+
+            if ($ekskul_exist) {
+                $this->Ekskul_model->update_nilai_ekskul_by_id($ekskul_exist->id_nilai_ekskul, $data_ekskul);
+            } else {
+                $this->Ekskul_model->insert_nilai_ekskul($data_ekskul);
+            }
+        }
+
+        // ==================== KEHADIRAN ====================
+        $kehadiran = [
+            'sakit'            => $data[12] ?? 0,
+            'izin'             => $data[13] ?? 0,
+            'tanpa_keterangan' => $data[14] ?? 0,
+            'tahun_ajaran'     => $data[15] ?? 0
+        ];
+        $this->Rekap_kehadiran_model->update_or_insert_kehadiran($no_induk, $id_kelas, $semester, $kehadiran);
+
+        // ==================== KLAPPER ====================
+        if ($semester == 2) {
+            $tahun_ajaran = $data[15] ?? null;
+            $keterangan   = $data[23] ?? null;
+
+            if ($tahun_ajaran) {
+                preg_match('/\d+/', $nama_kelas, $matches);
+                $kelas_number = isset($matches[0]) ? intval($matches[0]) : 1;
+                $field_kelas = 'kelas_' . $kelas_number;
+
+                $existing_klapper = $this->Klapper_model->get_klapper_by_no_induk($no_induk);
+
+                if ($existing_klapper) {
+                    $update_data = [];
+                    if (empty($existing_klapper->$field_kelas)) $update_data[$field_kelas] = $tahun_ajaran;
+                    if ($keterangan) $update_data['keterangan'] = $keterangan;
+
+                    if (!empty($update_data)) $this->Klapper_model->update_klapper($no_induk, $update_data);
+                } else {
+                    $insert_data = [
+                        'no_induk'   => $no_induk,
+                        $field_kelas => $tahun_ajaran,
+                        'keterangan' => $keterangan
+                    ];
+                    $this->Klapper_model->insert_or_update_klapper($insert_data);
+                }
+            }
+        }
+
+        $success_count++;
+    }
+
+    fclose($handle);
+
+    if (!empty($failed_no_induk)) {
+        $this->session->set_flashdata('failed', 'Beberapa No Induk gagal diimpor: '.implode(', ', $failed_no_induk));
+    }
+    if (!empty($failed_kelas)) {
+        $this->session->set_flashdata('failed', 'Beberapa Kelas gagal diimpor: '.implode(', ', $failed_kelas));
+    }
+    if ($success_count > 0) {
+        $this->session->set_flashdata('success', "Data Nilai Berhasil Diimpor ($success_count Data)!");
+    }
+
+    redirect('nilai');
 }
 
 
