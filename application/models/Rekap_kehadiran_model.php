@@ -112,14 +112,21 @@ class Rekap_kehadiran_model extends CI_Model {
         ])->row();
 
         if ($existing) {
-            // Pastikan properti sesuai nama kolom
-            // Misal di table kolom primary key namanya 'id_rekap'
+
             $this->db->where('id_rekap', $existing->id_rekap);
             $this->db->update('rekap_kehadiran', $data);
+
         } else {
+
+            // Tambahkan foreign key yang wajib
+            $data['no_induk'] = $no_induk;
+            $data['id_kelas'] = $id_kelas;
+            $data['semester'] = $semester;
+
             $this->db->insert('rekap_kehadiran', $data);
         }
     }
+
 
     public function get_rekap_by_kelas_semester($kelas, $semester)
     {
