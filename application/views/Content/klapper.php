@@ -129,7 +129,7 @@ $level_user = $CI->session->userdata('level_user');
                                 <!-- Tab Daftar Klapper -->
                                 <div class="tab-pane active" id="tab_1">
                                     <div class="card-body">
-                                        <table id="table-datakelas" class="table table-bordered table-striped">
+                                        <table id="table-datakelas" class="table table-bordered table-striped" style="width:100% !important">
                                             <thead>
                                                 <tr>
                                                     <th rowspan="2" class="text-center">No</th>
