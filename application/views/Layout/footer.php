@@ -147,7 +147,7 @@ $(document).on('expanded.lte.pushmenu collapsed.lte.pushmenu', function (e) {
 </script>
 <script>
     window.setTimeout(function() {
-        $(".alert").fadeTo(500, 0).slideUp(500, function() {
+        $(".alert:not(.no-autoclose)").fadeTo(500, 0).slideUp(500, function() {
             $(this).remove();
         });
     }, 3000)

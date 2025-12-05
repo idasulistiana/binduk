@@ -157,7 +157,7 @@ class ControllerNilaiSiswa extends CI_Controller {
         }
     }
 
-    public function all_nilai_siswa($no_induk)
+   public function all_nilai_siswa($no_induk)
 {
     $this->session->set_userdata('previous_url', $_SERVER['HTTP_REFERER'] ?? '');
 
@@ -183,51 +183,51 @@ class ControllerNilaiSiswa extends CI_Controller {
         $semester_data = [];
         $kelas_memiliki_nilai = false;
 
-        // Loop untuk semester 1 dan 2
+        // Loop semester 1 dan 2
         for ($sem = 1; $sem <= 2; $sem++) {
 
             // Ambil nilai mapel
-            $nilai_mapel = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $k->id_kelas, $sem);
+            $nilai_mapel_raw = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $k->id_kelas, $sem);
 
-            // Tambahkan deskripsi capaian pembelajaran (mapel)
-            foreach ($nilai_mapel as &$n) {
+            // Filter mapel yang memiliki nilai
+            $nilai_mapel = [];
+            foreach ($nilai_mapel_raw as $n) {
                 if (!empty($n->nilai_akhir)) {
                     $n->deskripsi_capaian = $this->get_deskripsi_capaian($n->nilai_akhir);
-                    $kelas_memiliki_nilai = true; // ada nilai mapel
-                } else {
-                    $n->deskripsi_capaian = "-";
+                    $nilai_mapel[] = $n; // hanya masukkan mapel bernilai
+                    $kelas_memiliki_nilai = true;
                 }
             }
 
             // Ambil nilai ekskul
-            $nilai_ekskul = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $k->id_kelas, $sem);
+            $nilai_ekskul_raw = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $k->id_kelas, $sem);
 
-            // Tambahkan deskripsi capaian pembelajaran (ekskul)
-            foreach ($nilai_ekskul as &$e) {
+            // Filter ekskul yang memiliki nilai
+            $nilai_ekskul = [];
+            foreach ($nilai_ekskul_raw as $e) {
                 if (!empty($e->nilai)) {
                     $e->deskripsi_ekskul = $this->get_deskripsi_ekskul($e->nilai);
-                    $kelas_memiliki_nilai = true; // ada nilai ekskul
-                } else {
-                    $e->deskripsi_ekskul = "-";
+                    $nilai_ekskul[] = $e; // masukkan hanya ekskul bernilai
+                    $kelas_memiliki_nilai = true;
                 }
             }
 
-            // Ambil rekap kehadiran
+            // Ambil kehadiran
             $rekap_kehadiran = $this->Rekap_kehadiran_model->get_rekap_kehadiran($no_induk, $k->id_kelas, $sem);
 
             // Ambil data klapper
             $data_klapper = $this->Klapper_model->get_by_id($no_induk);
 
-            // Simpan semua data semester
+            // Simpan semester
             $semester_data[$sem] = [
-                'mapel'      => $nilai_mapel,
-                'ekskul'     => $nilai_ekskul,
+                'mapel'      => $nilai_mapel,      // sudah difilter
+                'ekskul'     => $nilai_ekskul,     // sudah difilter
                 'kehadiran'  => $rekap_kehadiran,
                 'klapper'    => $data_klapper
             ];
         }
 
-        // Simpan hanya kelas yang memiliki minimal 1 nilai (mapel/ekskul)
+        // Masukkan hanya kelas yang punya nilai
         if ($kelas_memiliki_nilai) {
             $kelas_nilai[$k->id_kelas] = [
                 'nama_kelas' => $k->nama_kelas,
@@ -236,7 +236,6 @@ class ControllerNilaiSiswa extends CI_Controller {
         }
     }
 
-    // Kirim ke view
     $data['kelas_nilai'] = $kelas_nilai;
     $data['klapper'] = $this->Klapper_model->get_by_no_induk($no_induk);
 
@@ -247,6 +246,7 @@ class ControllerNilaiSiswa extends CI_Controller {
     $this->load->view('Content/nilai_siswa_detail', $data);
     $this->load->view('Layout/footer', $data);
 }
+
 
 
     /**
@@ -427,179 +427,188 @@ class ControllerNilaiSiswa extends CI_Controller {
         $this->session->set_flashdata('success', 'Nilai MULOK berhasil diperbarui.');
         redirect('nilai/edit_siswa/'.$no_induk);
     }
-    public function import_nilai()
-{
-    if (empty($_FILES['file_csv']['name'])) {
-        $this->session->set_flashdata('error', 'File CSV belum diunggah!');
-        redirect('nilai');
-    }
-
-    $file_mimes = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
-    if (!in_array($_FILES['file_csv']['type'], $file_mimes)) {
-        $this->session->set_flashdata('error', 'File yang diunggah bukan CSV!');
-        redirect('nilai');
-    }
-
-    $file = $_FILES['file_csv']['tmp_name'];
-    if (($handle = fopen($file, "r")) === FALSE) {
-        $this->session->set_flashdata('error', 'Gagal membuka file CSV!');
-        redirect('nilai');
-    }
-
-    $row = 0;
-    $failed_no_induk = [];
-    $failed_kelas = [];
-    $success_count = 0;
-
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        if ($row++ == 0) continue; // skip header
-
-        $no_induk = trim($data[0]);
-        $nama_kelas = trim($data[1]);
-        $semester = trim($data[2]);
-
-        // Cek kelas
-        $kelas = $this->DataMaster->get_kelas_by_nama($nama_kelas);
-        if (!$kelas) {
-            $failed_kelas[] = $nama_kelas . " (tidak ditemukan)";
-            continue;
-        }
-        $id_kelas = $kelas->id_kelas;
-
-        // Cek siswa
-        if (!$this->DataMaster->get_siswa_by_no_induk($no_induk)) {
-            $failed_no_induk[] = $no_induk . " (tidak ditemukan)";
-            continue;
+   
+   public function import_nilai()
+    {
+        if (empty($_FILES['file_csv']['name'])) {
+            $this->session->set_flashdata('error', 'File CSV belum diunggah!');
+            redirect('nilai');
         }
 
-        // ==================== MAPEL ====================
-        $mapel_nilai = [
-            'PAIDBP' => $data[3] ?? null,
-            'PPDK'   => $data[4] ?? null,
-            'BI'     => $data[5] ?? null,
-            'MTK'    => $data[6] ?? null,
-            'IPADSI' => $data[7] ?? null,
-            'PJODK'  => $data[8] ?? null,
-            'SnMs'   => $data[9] ?? null,
-            'BING'   => $data[10] ?? null,
-            'PLBJ'   => $data[11] ?? null,
+        $file_mimes = [
+            'text/csv',
+            'application/csv',
+            'text/plain',
+            'application/octet-stream',
+            'application/vnd.ms-excel'
         ];
 
-        foreach ($mapel_nilai as $kode_mapel => $nilai_akhir) {
-            if (empty($nilai_akhir)) continue;
+        if (!in_array($_FILES['file_csv']['type'], $file_mimes)) {
+            $this->session->set_flashdata('error', 'File bukan format CSV!');
+            redirect('nilai');
+        }
 
-            $mapel = $this->Nilai_model->get_mapel_by_kode($kode_mapel);
-            if (!$mapel) continue;
+        $file = $_FILES['file_csv']['tmp_name'];
+        if (($handle = fopen($file, "r")) === FALSE) {
+            $this->session->set_flashdata('error', 'Gagal membuka file CSV!');
+            redirect('nilai');
+        }
 
-            $data_nilai = [
-                'no_induk'    => $no_induk,
-                'id_kelas'    => $id_kelas,
-                'semester'    => $semester,
-                'id_mapel'    => $mapel->id_mapel,
-                'nilai_akhir' => $nilai_akhir
+        $row = 0;
+        $header = [];
+        $index  = [];
+
+        $success_count = 0;
+        $failed_no_induk = [];
+        $failed_kelas = [];
+
+        while (($data = fgetcsv($handle, 2500, ",")) !== FALSE) {
+
+            // Skip baris judul
+            if ($row == 0) {
+                $row++;
+                continue;
+            }
+
+            // Baris header
+            if ($row == 1) {
+                $header = array_map('trim', $data);
+                $index = array_flip($header);
+                $row++;
+                continue;
+            }
+
+            // Data utama
+            $no_induk   = $data[$index['no_induk']]   ?? '';
+            $nama_kelas = $data[$index['nama_kelas']] ?? '';
+            $semester   = $data[$index['semester']]   ?? '';
+
+            // Validasi kelas
+            $kelas = $this->DataMaster->get_kelas_by_nama($nama_kelas);
+            if (!$kelas) {
+                $failed_kelas[] = $nama_kelas;
+                continue;
+            }
+            $id_kelas = $kelas->id_kelas;
+
+            // Validasi siswa
+            $siswa = $this->DataMaster->get_siswa_by_no_induk($no_induk);
+            if (!$siswa) {
+                $failed_no_induk[] = $no_induk;
+                continue;
+            }
+
+            // MAPEL dinamis
+            $list_mapel = ['PAIDBP','PAKDBP','PPDK','BI','MTK','IPADSI','PJODK','SNMS','BING','PLBJ'];
+
+            foreach ($list_mapel as $mp) {
+
+                if (!isset($index[$mp])) continue;
+
+                $nilai_akhir = $data[$index[$mp]] ?? null;
+                if ($nilai_akhir === null || $nilai_akhir === '') continue;
+
+                $mapel = $this->Nilai_model->get_mapel_by_kode($mp);
+                if (!$mapel) continue;
+
+                $data_nilai = [
+                    'no_induk'    => $no_induk,
+                    'id_kelas'    => $id_kelas,
+                    'semester'    => $semester,
+                    'id_mapel'    => $mapel->id_mapel,
+                    'nilai_akhir' => $nilai_akhir
+                ];
+
+                $exist = $this->Nilai_model->get_nilai_by_mapel($no_induk, $id_kelas, $semester, $mapel->id_mapel);
+
+                if ($exist)
+                    $this->Nilai_model->update_nilai($no_induk, $id_kelas, $semester, $mapel->id_mapel, $data_nilai);
+                else
+                    $this->Nilai_model->insert_nilai($data_nilai);
+            }
+
+            // Kehadiran
+            $kehadiran = [
+                'sakit'            => isset($index['sakit']) ? ($data[$index['sakit']] ?? 0) : 0,
+                'izin'             => isset($index['izin']) ? ($data[$index['izin']] ?? 0) : 0,
+                'tanpa_keterangan' => isset($index['tanpa_keterangan']) ? ($data[$index['tanpa_keterangan']] ?? 0) : 0,
+                'tahun_ajaran'     => isset($index['tahun_ajaran']) ? ($data[$index['tahun_ajaran']] ?? 0) : 0,
             ];
 
-            $nilai_exist = $this->Nilai_model->get_nilai_by_mapel($no_induk, $id_kelas, $semester, $mapel->id_mapel);
-            if ($nilai_exist) {
-                $this->Nilai_model->update_nilai($no_induk, $id_kelas, $semester, $mapel->id_mapel, $data_nilai);
-            } else {
-                $this->Nilai_model->insert_nilai($data_nilai);
-            }
-        }
-
-        // ==================== EKSKUL ====================
-        $nilai_ekskul = [
-            'PRMK' => $data[16] ?? null,
-            'PSKB' => $data[17] ?? null,
-            'KRTE' => $data[18] ?? null,
-            'SNTR' => $data[19] ?? null,
-            'VOLI' => $data[20] ?? null,
-            'FTSL' => $data[21] ?? null,
-            'HDRH' => $data[22] ?? null,
-        ];
-
-        foreach ($nilai_ekskul as $kode_ekskul => $nilai) {
-            $ekskul = $this->Ekskul_model->get_by_kode($kode_ekskul);
-            if (!$ekskul) continue;
-
-            $nilai_final = trim($nilai) === '' ? '-' : $nilai;
-
-            $ekskul_exist = $this->Ekskul_model->get_nilai_ekskul_siswa_withID(
-                $no_induk, $id_kelas, $semester, $ekskul->id_ekskul
+            $this->Rekap_kehadiran_model->update_or_insert_kehadiran(
+                $no_induk, $id_kelas, $semester, $kehadiran
             );
 
-            $data_ekskul = [
-                'no_induk'  => $no_induk,
-                'id_kelas'  => $id_kelas,
-                'semester'  => $semester,
-                'id_ekskul' => $ekskul->id_ekskul,
-                'nilai'     => $nilai_final
-            ];
+            // Ekskul
+            $list_ekskul = ['PRMK','PSKB','KRTE','SNTR','VOLI','FTSL','HDRH'];
 
-            if ($ekskul_exist) {
-                $this->Ekskul_model->update_nilai_ekskul_by_id($ekskul_exist->id_nilai_ekskul, $data_ekskul);
-            } else {
-                $this->Ekskul_model->insert_nilai_ekskul($data_ekskul);
+            foreach ($list_ekskul as $kode) {
+
+                if (!isset($index[$kode])) continue;
+
+                $nilai = $data[$index[$kode]] ?? null;
+                $ekskul = $this->Ekskul_model->get_by_kode($kode);
+                if (!$ekskul) continue;
+
+                $nilai_final = ($nilai === '' || $nilai === null) ? '-' : $nilai;
+
+                $exist = $this->Ekskul_model->get_nilai_ekskul_siswa_withID(
+                    $no_induk, $id_kelas, $semester, $ekskul->id_ekskul
+                );
+
+                $dataE = [
+                    'no_induk'  => $no_induk,
+                    'id_kelas'  => $id_kelas,
+                    'semester'  => $semester,
+                    'id_ekskul' => $ekskul->id_ekskul,
+                    'nilai'     => $nilai_final
+                ];
+
+                if ($exist)
+                    $this->Ekskul_model->update_nilai_ekskul_by_id($exist->id_nilai_ekskul, $dataE);
+                else
+                    $this->Ekskul_model->insert_nilai_ekskul($dataE);
             }
-        }
 
-        // ==================== KEHADIRAN ====================
-        $kehadiran = [
-            'sakit'            => $data[12] ?? 0,
-            'izin'             => $data[13] ?? 0,
-            'tanpa_keterangan' => $data[14] ?? 0,
-            'tahun_ajaran'     => $data[15] ?? 0
-        ];
-        $this->Rekap_kehadiran_model->update_or_insert_kehadiran($no_induk, $id_kelas, $semester, $kehadiran);
+            // Klapper
+            if ($semester == 2) {
 
-        // ==================== KLAPPER ====================
-        if ($semester == 2) {
-            $tahun_ajaran = $data[15] ?? null;
-            $keterangan   = $data[23] ?? null;
+                $tahun_ajaran = $kehadiran['tahun_ajaran'];
+                $keterangan   = isset($index['Keterangan']) ? ($data[$index['Keterangan']] ?? null) : null;
 
-            if ($tahun_ajaran) {
-                preg_match('/\d+/', $nama_kelas, $matches);
-                $kelas_number = isset($matches[0]) ? intval($matches[0]) : 1;
-                $field_kelas = 'kelas_' . $kelas_number;
+                preg_match('/\d+/', $nama_kelas, $match);
+                $kelas_no = $match[0] ?? 1;
+                $field_kelas = "kelas_$kelas_no";
 
-                $existing_klapper = $this->Klapper_model->get_klapper_by_no_induk($no_induk);
+                $exist = $this->Klapper_model->get_klapper_by_no_induk($no_induk);
 
-                if ($existing_klapper) {
-                    $update_data = [];
-                    if (empty($existing_klapper->$field_kelas)) $update_data[$field_kelas] = $tahun_ajaran;
-                    if ($keterangan) $update_data['keterangan'] = $keterangan;
+                if ($exist) {
+                    $update = [];
+                    if (empty($exist->$field_kelas)) $update[$field_kelas] = $tahun_ajaran;
+                    if ($keterangan) $update['keterangan'] = $keterangan;
 
-                    if (!empty($update_data)) $this->Klapper_model->update_klapper($no_induk, $update_data);
+                    if ($update) $this->Klapper_model->update_klapper($no_induk, $update);
                 } else {
-                    $insert_data = [
+                    $this->Klapper_model->insert_or_update_klapper([
                         'no_induk'   => $no_induk,
                         $field_kelas => $tahun_ajaran,
                         'keterangan' => $keterangan
-                    ];
-                    $this->Klapper_model->insert_or_update_klapper($insert_data);
+                    ]);
                 }
             }
+
+            $success_count++;
+            $row++;
         }
 
-        $success_count++;
+        fclose($handle);
+
+        $this->session->set_flashdata('success',
+            "Import selesai! Total sukses: $success_count"
+        );
+
+        redirect('nilai');
     }
 
-    fclose($handle);
-
-    if (!empty($failed_no_induk)) {
-        $this->session->set_flashdata('failed', 'Beberapa No Induk gagal diimpor: '.implode(', ', $failed_no_induk));
-    }
-    if (!empty($failed_kelas)) {
-        $this->session->set_flashdata('failed', 'Beberapa Kelas gagal diimpor: '.implode(', ', $failed_kelas));
-    }
-    if ($success_count > 0) {
-        $this->session->set_flashdata('success', "Data Nilai Berhasil Diimpor ($success_count Data)!");
-    }
-
-    redirect('nilai');
-}
-
-
-    
 
 }

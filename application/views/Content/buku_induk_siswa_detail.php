@@ -116,43 +116,72 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php 
-                                            $total_nilai = 0; 
-                                            $count_nilai = 0; 
-                                            $mulok_rows = [];
+                                       <?php 
+                                        $total_nilai = 0; 
+                                        $count_nilai = 0; 
+                                        $mulok_rows = [];
 
-                                            preg_match('/\d+/', $k['nama_kelas'], $matches);
-                                            $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
+                                        preg_match('/\d+/', $k['nama_kelas'], $matches);
+                                        $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
 
-                                            foreach ($nilai_mapel as $n):
-                                                $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
+                                       foreach ($nilai_mapel as $n):
 
-                                                // Tentukan apakah mapel masuk MULOK
-                                                $is_mulok = false;
-                                                if ($n->kode_mapel == 'PLBJ' || ($n->kode_mapel == 'BING' && $kelas_number >= 3)) {
-                                                    $is_mulok = true;
-                                                    $mulok_rows[] = $n;
-                                                }
+    // Ambil nilai
+    $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
 
-                                                // Total & rata-rata dihitung semua nilai termasuk MULOK
-                                                if ($nilai !== null) { 
-                                                    $total_nilai += $nilai; 
-                                                    $count_nilai++; 
-                                                }
+    // Skip mapel tanpa nilai (NULL / kosong)
+    if ($nilai === null || $nilai === '') {
+        continue;
+    }
 
-                                                // Mapel biasa ditampilkan jika bukan MULOK dan bukan BING
-                                                if (
-                                                    !$is_mulok &&
-                                                    $n->kode_mapel != 'BING' &&
-                                                    !($n->kode_mapel == 'IPADSI' && in_array($kelas_number, [1, 2, 3, 4]))
-                                                ): ?>
-                                                    <tr>
-                                                        <td><?= $n->nama_mapel ?></td>
-                                                        <td class="text-center"><?= $nilai ?? '-' ?></td>
-                                                        <td><?= $n->deskripsi_capaian ?? '-' ?></td>
-                                                    </tr>
-                                                <?php endif; 
-                                            endforeach;
+    // Default bukan MULOK
+    $is_mulok = false;
+
+    // PLBJ selalu MULOK
+    if ($n->kode_mapel == 'PLBJ') {
+        $is_mulok = true;
+    }
+
+    // BING mulai tampil kelas 3 dan masuk MULOK
+    if ($n->kode_mapel == 'BING') {
+        if ($kelas_number >= 3) {
+            $is_mulok = true; // masuk MULOK
+        } else {
+            continue; // kelas 1–2 skip
+        }
+    }
+
+    // IPADSI mulai tampil kelas 3 (mapel utama, bukan mulok)
+    if ($n->kode_mapel == 'IPADSI') {
+        if ($kelas_number < 3) {
+            continue; // kelas 1–2 skip
+        }
+        // kelas 3 ke atas → mapel utama (jangan tandai mulok)
+    }
+
+    // Jika MULOK, masukkan ke array MULOK
+    if ($is_mulok) {
+        $mulok_rows[] = $n;
+    }
+
+    // Hitung total nilai
+    $total_nilai += $nilai;
+    $count_nilai++;
+
+    // Jika bukan MULOK → tampilkan di tabel utama
+    if (!$is_mulok):
+?>
+        <tr>
+            <td><?= $n->nama_mapel ?></td>
+            <td class="text-center"><?= $nilai ?></td>
+            <td><?= $n->deskripsi_capaian ?? '-' ?></td>
+        </tr>
+<?php 
+    endif;
+
+endforeach;
+
+
                                         // Tampilkan MULOK
                                         if (!empty($mulok_rows)): ?>
                                             <tr class="table-secondary text-center" style="font-weight:bold;"><th colspan="3">MULOK</th></tr>
@@ -348,7 +377,7 @@
                             </tbody>
                         </table>
                     <?php else: ?>
-                        <div class="alert alert-warning">Data tahun kenaikan belum tersedia.</div>
+                        <div class="alert alert-warning  no-autoclose">Data tahun kenaikan belum tersedia.</div>
                     <?php endif; ?>
                 </div>
             </div>

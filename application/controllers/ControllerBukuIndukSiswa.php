@@ -159,86 +159,101 @@ class ControllerBukuIndukSiswa extends CI_Controller {
     
 
 // ====================== PRINT BUKU INDUK ======================
-    public function download_data()
-    {
-        if (ob_get_length()) { ob_end_clean(); }
-        ob_start();
-        error_reporting(0);
-        ini_set('display_errors', 0);
-        header_remove();
 
-        $this->load->library('tcpdf');
-        $selected = $this->input->post('data') ?? [];
-        $no_induk = $this->input->post('no_induk');
+ public function download_data()
+{
+    // ==========================
+    // BERSIHKAN OUTPUT BUFFER
+    // ==========================
+    while (ob_get_level()) { ob_end_clean(); }
+    ob_start();
 
-        if (empty($selected) || !$no_induk) {
-            ob_end_clean();
-            $this->session->set_flashdata('error', 'Pilih data yang ingin diunduh.');
-            redirect('bukuinduk/detail/' . $no_induk);
-            exit;
-        }
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    header_remove();
 
-        $siswa = $this->Buku_induk_siswa_model->get_siswa_by_no_induk($no_induk);
-        if (!$siswa) {
+    $this->load->library('tcpdf');
+
+    $selected = $this->input->post('data') ?? [];
+    $no_induk = $this->input->post('no_induk');
+
+    if (empty($selected) || !$no_induk) {
+        // Bersihkan output CI dengan aman
+        $this->output->set_output('');
+
+        // Simpan pesan error
+        $this->session->set_flashdata('error', 'Pilih data yang ingin diunduh.');
+
+        // Kembali ke halaman sebelumnya
+        redirect('bukuinduk/detail/' . $no_induk);
+        exit;
+
+    }
+
+    $siswa = $this->Buku_induk_siswa_model->get_siswa_by_no_induk($no_induk);
+    if (!$siswa) {
+          // Bersihkan output CI tanpa merusak buffer PHP
+            $this->output->set_output('');
+
             $this->session->set_flashdata('error', 'Data siswa tidak ditemukan.');
             redirect('bukuinduk');
             exit;
-        }
+    }
 
-        $kelas_all = $this->Kelas_model->get_all();
-        $klapper = $this->Klapper_model->get_by_no_induk($no_induk);
+    $kelas_all = $this->Kelas_model->get_all();
+    $klapper = $this->Klapper_model->get_by_no_induk($no_induk);
 
-        $content = '<h2 style="text-align:center;">BUKU INDUK SISWA <br>SD NEGERI TEGAL ALUR 04 PAGI</h2><hr>';
+    $content = '<h2 style="text-align:center;">BUKU INDUK SISWA <br>SD NEGERI TEGAL ALUR 04 PAGI</h2><hr>';
 
-        // ---------- BIODATA ----------
-        if (in_array('biodata', $selected)) {
-            $content .= '<h3>Biodata Siswa</h3>
-            <table border="1" cellpadding="6" cellspacing="0" width="100%" style="border-collapse:collapse;">
-                <tr><td style="border:1px solid black;"><b>No Induk</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->no_induk ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Nama Siswa</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->nama_siswa ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Gender</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->gender ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Tempat, Tanggal Lahir</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->tempat_lahir ?? '-') . ', ' . htmlspecialchars(!empty($siswa->tgl_lahir) ? date('d-m-Y', strtotime($siswa->tgl_lahir)) : '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Agama</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->agama ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Alamat</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->alamat ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Nama Ayah</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->nama_ayah ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Nama Ibu</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->nama_ibu ?? '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Tanggal Diterima</b></td><td style="border:1px solid black;">' . htmlspecialchars(!empty($siswa->tgl_diterima) ? date('d-m-Y', strtotime($siswa->tgl_diterima)) : '-') . '</td></tr>
-                <tr><td style="border:1px solid black;"><b>Sekolah Asal</b></td><td style="border:1px solid black;">' . htmlspecialchars($siswa->sekolah_asal ?? '-') . '</td></tr>
-            </table><br>';
-        }
+    // ---------- BIODATA ----------
+    if (in_array('biodata', $selected)) {
+        $content .= '<h3>Biodata Siswa</h3>
+        <table border="1" cellpadding="6" cellspacing="0" width="100%" style="border-collapse:collapse;">
+            <tr><td><b>No Induk</b></td><td>' . htmlspecialchars($siswa->no_induk ?? '-') . '</td></tr>
+            <tr><td><b>Nama Siswa</b></td><td>' . htmlspecialchars($siswa->nama_siswa ?? '-') . '</td></tr>
+            <tr><td><b>Gender</b></td><td>' . htmlspecialchars($siswa->gender ?? '-') . '</td></tr>
+            <tr><td><b>Tempat, Tanggal Lahir</b></td><td>' . htmlspecialchars($siswa->tempat_lahir ?? '-') . ', ' . htmlspecialchars(!empty($siswa->tgl_lahir) ? date('d-m-Y', strtotime($siswa->tgl_lahir)) : '-') . '</td></tr>
+            <tr><td><b>Agama</b></td><td>' . htmlspecialchars($siswa->agama ?? '-') . '</td></tr>
+            <tr><td><b>Alamat</b></td><td>' . htmlspecialchars($siswa->alamat ?? '-') . '</td></tr>
+            <tr><td><b>Nama Ayah</b></td><td>' . htmlspecialchars($siswa->nama_ayah ?? '-') . '</td></tr>
+            <tr><td><b>Nama Ibu</b></td><td>' . htmlspecialchars($siswa->nama_ibu ?? '-') . '</td></tr>
+            <tr><td><b>Tanggal Diterima</b></td><td>' . htmlspecialchars(!empty($siswa->tgl_diterima) ? date('d-m-Y', strtotime($siswa->tgl_diterima)) : '-') . '</td></tr>
+        </table><br>';
+    }
 
-        // ---------- NILAI RAPOT ----------
-        $kelas_nilai = [];
-        foreach ($kelas_all as $k) {
-            $semester_data = [];
-            $kelas_punya_nilai_mapel = false;
+    // ---------- NILAI RAPOT ----------
+    $kelas_nilai = [];
+    foreach ($kelas_all as $k) {
+        $semester_data = [];
+        $kelas_punya_nilai_mapel = false;
 
-            for ($sem = 1; $sem <= 2; $sem++) {
-                $nilai_mapel = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $k->id_kelas, $sem);
-                $nilai_ekskul = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $k->id_kelas, $sem);
-                $rekap_kehadiran = $this->Rekap_kehadiran_model->get_rekap_kehadiran($no_induk, $k->id_kelas, $sem);
+        for ($sem = 1; $sem <= 2; $sem++) {
+            $nilai_mapel = $this->Nilai_model->get_all_mapel_with_nilai($no_induk, $k->id_kelas, $sem);
+            $nilai_ekskul = $this->Ekskul_model->get_nilai_ekskul_siswa($no_induk, $k->id_kelas, $sem);
+            $rekap_kehadiran = $this->Rekap_kehadiran_model->get_rekap_kehadiran($no_induk, $k->id_kelas, $sem);
 
-                $semester_data[$sem] = [
-                    'mapel'     => $nilai_mapel,
-                    'ekskul'    => $nilai_ekskul,
-                    'kehadiran' => $rekap_kehadiran
-                ];
+            $semester_data[$sem] = [
+                'mapel'     => $nilai_mapel,
+                'ekskul'    => $nilai_ekskul,
+                'kehadiran' => $rekap_kehadiran
+            ];
 
-                if (!empty($nilai_mapel)) {
-                    $kelas_punya_nilai_mapel = true;
-                }
-            }
-
-            if ($kelas_punya_nilai_mapel) {
-                $kelas_nilai[$k->id_kelas] = [
-                    'nama_kelas' => $k->nama_kelas,
-                    'semester'   => $semester_data
-                ];
+            if (!empty($nilai_mapel)) {
+                $kelas_punya_nilai_mapel = true;
             }
         }
 
-        // ---------- GENERATE TABEL NILAI PER KELAS ----------
-        foreach ($kelas_nilai as $id_kelas => $kelas) {
+        if ($kelas_punya_nilai_mapel) {
+            $kelas_nilai[$k->id_kelas] = [
+                'nama_kelas' => $k->nama_kelas,
+                'semester'   => $semester_data
+            ];
+        }
+    }
+
+    // ---------- GENERATE TABEL NILAI PER KELAS ----------
+
+   foreach ($kelas_nilai as $id_kelas => $kelas) {
             $kelas_checkbox = 'kelas_' . $id_kelas;
             if (!in_array('checkall', $selected) && !in_array($kelas_checkbox, $selected)) {
                 continue;
@@ -246,6 +261,10 @@ class ControllerBukuIndukSiswa extends CI_Controller {
 
             $kelas_html = '';
             $ada_nilai_kelas = false;
+
+
+
+            
 
             foreach ($kelas['semester'] as $sem => $data_sem) {
                 $nilai_mapel = $data_sem['mapel'] ?? [];
@@ -263,7 +282,14 @@ class ControllerBukuIndukSiswa extends CI_Controller {
                 preg_match('/\d+/', $kelas['nama_kelas'], $matches);
                 $kelas_number = isset($matches[0]) ? intval($matches[0]) : 0;
 
-                $kelas_html .= '<h4>Semester ' . ($sem == 1 ? 'Ganjil' : 'Genap') . '</h4>';
+                // Judul semester
+if ($sem == 2) {
+    // Jika semester GENAP → mulai halaman baru
+    $kelas_html .= '<div style="page-break-after: always;"></div>';
+}
+
+$kelas_html .= '<h4>Semester ' . ($sem == 1 ? 'Ganjil' : 'Genap') . '</h4>';
+
 
                 // ---------- TABEL MAPEL ----------
                 $mapel_table_html = '<table border="1" cellpadding="5" cellspacing="0" width="100%" style="border-collapse:collapse;">
@@ -278,74 +304,116 @@ class ControllerBukuIndukSiswa extends CI_Controller {
 
                 $total = 0; $count = 0; $mulok_rows = [];
 
-                foreach ($nilai_mapel as $n) {
-                    $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
-                    if ($nilai !== null) { $total += $nilai; $count++; }
-                    $deskripsi = $this->get_deskripsi_capaian($nilai);
-                    // Ambil angka awal dari nama_kelas
-                    preg_match('/^\d+/', $kelas['nama_kelas'], $matches);
-                    $kelas_digit = isset($matches[0]) ? intval($matches[0]) : 0;
+             foreach ($nilai_mapel as $n) {
 
-                    // Tentukan apakah mapel ini termasuk MULOK atau mapel khusus BING/IPADSI
-                    $is_mulok = ($n->kode_mapel == 'PLBJ');
+    // Ambil nilai
+    $nilai = $n->nilai_akhir ?? $n->nilai ?? null;
 
-                    // Tambahan: BING & IPADSI hanya untuk kelas 3 ke atas
-                    if (in_array($n->kode_mapel, ['BING'])) {
-                        if ($kelas_digit >= 4) {
-                            $is_mulok = true; // dianggap MULOK untuk tampil di tabel MULOK
-                        } else {
-                            continue; // jika kelas 1 atau 2, langsung skip (tidak tampil & tidak dihitung)
-                        }
-                    }
-                    // Tambahkan kondisi untuk IPADSI
-                    if ($n->kode_mapel === 'IPADSI') {
-                        if ($kelas_digit < 3) {
-                            continue; // kelas 1 atau 2, langsung skip
-                        }
-                        // untuk kelas 3 ke atas, tampilkan, tapi tidak dianggap MULOK
-                    }
+    // Ambil angka kelas dari nama_kelas
+    preg_match('/^\d+/', $kelas['nama_kelas'], $matches);
+    $kelas_digit = isset($matches[0]) ? intval($matches[0]) : 0;
 
-                    if ($is_mulok) { 
-                        $mulok_rows[] = [
-                            'nama' => $n->nama_mapel, 
-                            'nilai' => $nilai, 
-                            'deskripsi' => $deskripsi
-                        ]; 
-                    } else {
-                        $mapel_table_html .= '<tr style="border:1px solid black; page-break-inside:avoid;" >
-                            <td style="border:1px solid black;width:20%;">' . htmlspecialchars($n->nama_mapel) . '</td>
-                            <td style="border:1px solid black;width:10%;">' . htmlspecialchars($nilai ?? '-') . '</td>
-                            <td style="border:1px solid black;width:70%;">' . htmlspecialchars($deskripsi ?? '-') . '</td>
-                        </tr>';
-                    }
+    // Skip jika nilai kosong
+    if ($nilai === null || $nilai === '') {
+        continue;
+    }
 
-                }
+    // Default bukan MULOK
+    $is_mulok = false;
 
-                // MULOK
-                if (!empty($mulok_rows)) {
-                    $mapel_table_html .= '<tr style="font-weight:bold; text-align:center; background-color:#f2f2f2; border:1px solid black; page-break-inside:avoid;">
-                        <th colspan="3" style="border:1px solid black;">MULOK</th>
-                    </tr>';
-                    foreach ($mulok_rows as $m) {
-                        $mapel_table_html .= '<tr>
-                            <td style="border:1px solid black;width:20%;">' . htmlspecialchars($m['nama']) . '</td>
-                            <td style="border:1px solid black;width:10%;">' . htmlspecialchars($m['nilai'] ?? '-') . '</td>
-                            <td style="border:1px solid black;width:70%;">' . htmlspecialchars($m['deskripsi'] ?? '-') . '</td>
-                        </tr>';
-                    }
-                }
+    // PLBJ selalu MULOK
+    if ($n->kode_mapel === 'PLBJ') {
+        $is_mulok = true;
+    }
 
-                $mapel_table_html .= '<tr>
-                    <th  style="border:1px solid black;">Jumlah Nilai</th>
-                    <th style="border:1px solid black;">' . $total . '</th>
-                </tr>
-                <tr style="border:1px solid black; page-break-inside:avoid;">
-                    <th  style="border:1px solid black;">Rata-rata Nilai</th>
-                    <th style="border:1px solid black;">' . ($count > 0 ? round($total / $count, 2) : 0) . '</th>
-                </tr>
-                </tbody></table><br>';
+    // BING → mulok mulai kelas 3
+    if ($n->kode_mapel === 'BING') {
+        if ($kelas_digit >= 3) {
+            $is_mulok = true;
+        } else {
+            continue;
+        }
+    }
 
-                $kelas_html .= $mapel_table_html;
+    // IPADSI → hanya muncul kelas 3 ke atas
+    if ($n->kode_mapel === 'IPADSI' && $kelas_digit < 3) {
+        continue;
+    }
+
+    // Hitung total
+    $total += $nilai;
+    $count++;
+
+    // Deskripsi
+    $deskripsi = $this->get_deskripsi_capaian($nilai);
+
+    // Pisahkan mulok / mapel utama
+    if ($is_mulok) {
+
+        $mulok_rows[] = [
+            'nama' => $n->nama_mapel,
+            'nilai' => $nilai,
+            'deskripsi' => $deskripsi
+        ];
+
+    } else {
+        // MAPEL UTAMA langsung masuk tabel
+        $mapel_table_html .= '
+        <tr>
+            <td style="border:1px solid black;width:20%;">' . htmlspecialchars($n->nama_mapel) . '</td>
+            <td style="border:1px solid black;width:10%;">' . htmlspecialchars($nilai) . '</td>
+            <td style="border:1px solid black;width:70%;">' . htmlspecialchars($deskripsi ?? '-') . '</td>
+        </tr>';
+    }
+}
+
+// ===============================
+// MASUKKAN MULOK DALAM TABEL YANG SAMA
+// ===============================
+if (!empty($mulok_rows)) {
+
+    // Baris judul MULOK dalam tabel yang sama
+    $mapel_table_html .= '
+        <tr style="background-color:#f2f2f2;font-weight:bold;text-align:center;">
+            <td colspan="3" style="border:1px solid black;">MULOK</td>
+        </tr>';
+
+    // Isi baris MULOK
+    foreach ($mulok_rows as $m) {
+        $mapel_table_html .= '
+        <tr>
+            <td style="border:1px solid black;width:20%;">' . htmlspecialchars($m['nama']) . '</td>
+            <td style="border:1px solid black;width:10%;">' . htmlspecialchars($m['nilai']) . '</td>
+            <td style="border:1px solid black;width:70%;">' . htmlspecialchars($m['deskripsi']) . '</td>
+        </tr>';
+    }
+}
+
+// Tutup tabel mapel + mulok
+$mapel_table_html .= '
+</tbody>
+</table><br>';
+
+$kelas_html .= $mapel_table_html;
+
+
+// ===============================
+// JUMLAH & RATA-RATA (tetap tabel terpisah)
+// ===============================
+$kelas_html .= '
+<table border="1" cellpadding="5" cellspacing="0" width="100%" style="border-collapse:collapse;">
+    <tr>
+        <th style="border:1px solid black;width:20%;">Jumlah Nilai</th>
+        <td style="border:1px solid black;width:10%;">' . $total . '</td>
+        <td style="border:1px solid black;width:70%;"></td>
+    </tr>
+    <tr>
+        <th style="border:1px solid black;">Rata-rata Nilai</th>
+        <td style="border:1px solid black;">' . ($count > 0 ? round($total / $count, 2) : 0) . '</td>
+        <td style="border:1px solid black;"></td>
+    </tr>
+</table><br>';
+
 
                 // ---------- EKSTRAKURIKULER ----------
                 $ekskul_exist = array_filter($nilai_ekskul, function($e) { 
@@ -413,43 +481,32 @@ class ControllerBukuIndukSiswa extends CI_Controller {
     $pdf->setPrintHeader(false);
     $pdf->setPrintFooter(false);
 
-    // ====== CSS Tambahan untuk mencegah tabel terpotong ======
     $style = '
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            page-break-inside: avoid;
-        }
+        table { border-collapse: collapse; width: 100%; page-break-inside: avoid; }
         thead { display: table-header-group; }
-        tfoot { display: table-row-group; }
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto;
-        }
-        td, th {
-            border: 1px solid black;
-            padding: 5px;
-            vertical-align: top;
-        }
-        h2, h3, h4, h5 {
-            page-break-after: avoid;
-        }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        td, th { border:1px solid black; padding:5px; vertical-align:top; }
+        h2,h3,h4,h5 { page-break-after: avoid; }
     </style>
     ';
-
-    // ====== Gabungkan CSS + konten utama ======
     $html = $style . $content;
 
-    // ====== Cetak ke PDF dengan writeHTMLCell (lebih stabil dari writeHTML) ======
     $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
-    // ====== Output PDF ======
-    ob_end_clean();
+    
+
+    // ====== OUTPUT PDF ======
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+
     $filename = 'Buku_Induk_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $siswa->nama_siswa) . '.pdf';
+
     $pdf->Output($filename, 'D');
     exit;
-    }
+}
+
 
 
 
