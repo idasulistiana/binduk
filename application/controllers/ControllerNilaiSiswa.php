@@ -508,7 +508,9 @@ public function import_nilai()
 
         $id_kelas = $kelas->id_kelas;
 
-        // Mapel
+        // ======================
+        //     MAPEL
+        // ======================
         $list_mapel = ['PAIDBP','PAKDBP','PPDK','BI','MTK','IPADSI','PJODK','SNMS','BING','PLBJ'];
 
         foreach ($list_mapel as $mp) {
@@ -543,6 +545,52 @@ public function import_nilai()
                 $this->Nilai_model->insert_nilai($data_nilai);
             }
         }
+
+
+        // ======================
+        //        EKSKUL
+        // ======================
+        $list_ekskul = ['PRMK','PSKB','KRTE','SNTR','VOLI','FTSL','HDRH'];
+
+        foreach ($list_ekskul as $kode) {
+
+            // Kolom tidak ada → skip
+            if (!isset($index[$kode])) continue;
+
+            // Ambil nilai ekskul
+            $nilai = isset($data[$index[$kode]]) ? trim($data[$index[$kode]]) : '';
+
+            // Ambil ekskul dari DB
+            $ekskul = $this->Ekskul_model->get_by_kode($kode);
+            if (!$ekskul) continue;
+
+            // Nilai kosong → beri "-"
+            if ($nilai === '' || $nilai === null) $nilai = '-';
+
+            // Cek apakah sudah ada datanya
+            $exist = $this->Ekskul_model->get_nilai_ekskul_siswa_withID(
+                $no_induk,
+                $id_kelas,
+                $semester,
+                $ekskul->id_ekskul
+            );
+
+            $dataEkskul = [
+                'no_induk'  => $no_induk,
+                'id_kelas'  => $id_kelas,
+                'semester'  => $semester,
+                'id_ekskul' => $ekskul->id_ekskul,
+                'nilai'     => $nilai
+            ];
+
+            // Update / insert
+            if ($exist) {
+                $this->Ekskul_model->update_nilai_ekskul_by_id($exist->id_nilai_ekskul, $dataEkskul);
+            } else {
+                $this->Ekskul_model->insert_nilai_ekskul($dataEkskul);
+            }
+        }
+
 
         $success_count++;
         $row++;
