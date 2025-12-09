@@ -574,7 +574,12 @@ class ControllerNilaiSiswa extends CI_Controller {
             if ($semester == 2) {
 
                 $tahun_ajaran = $kehadiran['tahun_ajaran'];
-                $keterangan   = isset($index['Keterangan']) ? ($data[$index['Keterangan']] ?? null) : null;
+             
+                $keterangan = isset($index['Keterangan']) ? ($data[$index['Keterangan']] ?? '') : '';
+
+                if ($keterangan === null || $keterangan === '') {
+                    $keterangan = "-"; // default agar tidak NULL
+                }
 
                 preg_match('/\d+/', $nama_kelas, $match);
                 $kelas_no = $match[0] ?? 1;
