@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/sdnj8935/public_html/
-    - /bin/cp -R binduk $DEPLOYPATH
+    - /bin/cp -R . $DEPLOYPATH
