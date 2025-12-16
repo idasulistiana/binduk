@@ -78,7 +78,7 @@
         <img src="<?= base_url('asset/images/logo_sekolah.png') ?>" class="logo" alt="Logo DKI">
         <h4 class="login-title">
             Sistem Buku Induk Siswa<br>
-            SD Negeri Tegal Alur 04 PG Test
+            SD Negeri Tegal Alur 04 PG 
         </h4>
 
         <?php if ($this->session->userdata('error')): ?>
