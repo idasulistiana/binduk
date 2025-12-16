@@ -77,7 +77,7 @@
     <div class="login-container justify-content-center align-items-center vh-100">
         <img src="<?= base_url('asset/images/logo_sekolah.png') ?>" class="logo" alt="Logo DKI">
         <h4 class="login-title">
-            Sistem Buku Induk Siswa<br>
+            Sistem Buku Induk Siswa Testing<br>
             SD Negeri Tegal Alur 04 PG 
         </h4>
 
