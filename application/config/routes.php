@@ -133,6 +133,7 @@ $route['kehadiran/import_rekap_kehadiran'] = 'ControllerRekapKehadiran/import_re
 // 🔹 Buku Induk
 $route['bukuinduk'] = 'ControllerBukuIndukSiswa';
 $route['bukuinduk/detail/(:any)'] = 'ControllerBukuIndukSiswa/detail/$1';
+$route['bukuinduk/download'] = 'ControllerBukuIndukSiswa/download_data';
 
 
 // 🔹 Error & default setting
