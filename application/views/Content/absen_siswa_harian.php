@@ -61,7 +61,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </head>
 <body style="background-color:#f4f6f9">
     <div class="content-wrapper">
-        <section class="content-header" style="box-shadow: 2px 2px 5px #00000040">
+        <section class="content-header" style="box-shadow: 2px 2px 5px #00000040; background-color: #ffffff">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-12">
@@ -118,43 +118,72 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <label class="d-block d-md-inline-flex align-items-center font-medium">
                         Tanggal :
                         <input id="tanggal"
+                            neme="tanggal"
                             type="date"
                             class="ml-md-2 mt-2 mt-md-0 text-center rounded-xl border-slate-300 pointer-events-none"
                             readonly>
                     </label>
                     <div class="bg-white rounded-2xl shadow p-4 mb-4">
-                        <div class="row">
-                            <div class="col-12 mb-2">
-                                <label>Pilih Kelas</label>
-                                <select id="kelasSelect" class="form-control"></select>
+                        <form role="form" action="<?= base_url('absensi/store') ?>" method="POST">
+                            <input type="hidden" name="id_kelas" id="idKelasHidden">
+                            <input type="hidden" name="detail[0][id_siswa]" id="idSiswaHidden">
+                            <input type="hidden" name="detail[0][keterangan]" id="ketHidden">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <label>Pilih Kelas</label>
+                                    <select id="kelasSelect" class="form-control" ></select>
+                                </div>
+                            
+                                <div class="col-12 mb-2">
+                                    <label>Status Kehadiran Kelas</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                            type="radio" 
+                                            name="status_kelas" 
+                                            id="status_hadir"
+                                            value="1"
+                                            checked>
+                                        <label class="form-check-label" for="status_hadir">
+                                            Semua siswa hadir
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                            type="radio" 
+                                            name="status_kelas" 
+                                            id="status_tidak_hadir"
+                                            value="0">
+                                        <label class="form-check-label" for="status_tidak_hadir">
+                                            Ada siswa tidak hadir
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="content-name" style="width:100%; display:none">
+                                    <div class="col-12 mb-2">
+                                        <label>Nama Siswa</label>
+                                        <select id="namaInput" class="form-control select2" disabled>
+                                            <option value="">-- Pilih Siswa --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-2">
+                                        <label>Keterangan</label>
+                                        <select class="form-control" id="keteranganSelect" disabled>
+                                            <option value="">-- Pilih Keterangan --</option>
+                                            <option value="1">Sakit</option>
+                                            <option value="2">Izin</option>
+                                            <option value="3">Alfa</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="col-12 mb-2">
-                                <label>Nama Siswa</label>
-                                <select id="namaInput" class="form-control select2" disabled>
-                                    <option value="">-- Pilih Siswa --</option>
-                                </select>
+                            <div class="row mt-3">
+                                <div class="col-12 col-lg-auto ml-lg-auto text-right">
+                                    <button id="tambahBtn" class="btn btn-primary w-100">
+                                        submit
+                                    </button>
+                                </div>
                             </div>
-
-                            <div class="col-12 mb-2">
-                                <label>Keterangan</label>
-                                <select class="form-control" id="keteranganSelect" disabled>
-                                    <option value="">-- Pilih Keterangan --</option>
-                                    <option value="1">Sakit</option>
-                                    <option value="2">Izin</option>
-                                    <option value="3">Alfa</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-12 col-lg-auto ml-lg-auto text-right">
-                                <button id="tambahBtn" class="btn btn-primary w-100">
-                                    Tambah
-                                </button>
-                            </div>
-                        </div>
-
+                        </form>
                     </div>
                 </div>
 
@@ -183,6 +212,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         </section>
     </div>
+    <pre>
+<?php print_r($kelas ?? 'kelas kosong'); ?>
+<?php print_r($siswa ?? 'siswa kosong'); ?>
+</pre>
 </body>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -204,7 +237,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     const kelasSelect = document.getElementById('kelasSelect');
     const namaInput = document.getElementById('namaInput');
     const listAbsen = document.getElementById('listAbsen');
-    
+
+    // when user click status kehadiran kelas
+    $('#status_tidak_hadir').on('click', function () {
+        $('.content-name').show();
+    });
+
+    $('#status_hadir').on('click', function () {
+        $('.content-name').hide();
+    });
 
     // Saat siswa dipilih
     namaInput.addEventListener('change', function () {

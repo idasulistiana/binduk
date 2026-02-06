@@ -1,87 +1,42 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class ControllerDailyAbsen extends CI_Controller {
+class Absensi extends CI_Controller {
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
-        $this->load->model('DataMaster');	
-		$this->load->library('form_validation'); // ← ini wajib	
-		$this->load->library('pdf');
-	  	$this->load->library('session');
-        $this->load->helper(['url', 'form']);
-		$this->load->model('Kelas_model'); // Model Rekap Kehadiran
         $this->load->model('Absensi_model');
         $this->load->model('Absensi_detail_model');
+        $this->load->database();
     }
 
-    public function index() {
-        $data['siswa'] = $this->DataMaster->get_all_siswa();
-		$data['kelas'] = $this->Kelas_model->get_all_active_class();
-       // $this->load->view('Layout/head');
-      //  $this->load->view('Layout/navbar');
-        //$this->load->view('Layout/aside');
-        $this->load->view('Content/absen_siswa_harian', $data);
-       // $this->load->view('Layout/footer', $data);
-    }
-    
     // ================= CREATE =================
     public function store()
     {
-        
-        $this->form_validation->set_rules('tanggal', 'Tanggal', 'required');
-        $this->form_validation->set_rules('id_kelas', 'Kelas', 'required');
+        $this->db->trans_begin();
 
-        if ($this->form_validation->run() == FALSE) {
+        try {
+            $status_kelas = $this->input->post('status_kelas');
 
-            $data = [
-                'kelas' =>  $this->Kelas_model->get_all_active_class(),
-                 'siswa' => $this->DataMaster->get_all_siswa()
-            ];
-
-            $this->load->view('Content/absen_siswa_harian', $data); 
-
-        } else {
-
-            $this->db->trans_start();
-
-            $detail = $this->input->post('detail');
-
-            // 🔥 LOGIKA PENENTU STATUS KELAS
-            $status_kelas = empty($detail) ? 1 : 0;
-
-            // insert absensi
-            $absensi = [
+            $id_absensi = $this->Absensi_model->insert([
                 'tanggal'      => $this->input->post('tanggal'),
                 'id_kelas'     => $this->input->post('id_kelas'),
-                'status_kelas' => $status_kelas
-            ];
+                'status_kelas' => $status_kelas,
+                'semester'     => $this->input->post('semester'),
+                'tahun_ajaran' => $this->input->post('tahun_ajaran')
+            ]);
 
-            $id_absensi = $this->Absensi_model->insert($absensi);
-
-            // insert detail jika ada siswa tidak hadir
-            if (!empty($detail)) {
-                foreach ($detail as $d) {
-                    $this->Absensi_detail_model->insert([
-                        'id_absensi' => $id_absensi,
-                        'no_induk'   => $d['no_induk'],
-                        'keterangan' => $d['keterangan'] // sakit/izin/alfa
-                    ]);
-                }
+            if ($status_kelas == 0) {
+                $this->_save_detail($id_absensi);
             }
 
-            $this->db->trans_complete();
+            $this->_commit();
 
-            if ($this->db->trans_status() === FALSE) {
-                $this->session->set_flashdata('error', 'Gagal menyimpan absensi');
-            } else {
-                $this->session->set_flashdata('success', 'Absensi berhasil disimpan');
-            }
-
-            redirect('absensi');
+        } catch (Exception $e) {
+            $this->_rollback($e->getMessage());
         }
     }
-
 
     // ================= READ =================
     public function edit($id_absensi)
@@ -185,4 +140,3 @@ class ControllerDailyAbsen extends CI_Controller {
         exit;
     }
 }
-

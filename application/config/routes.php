@@ -140,5 +140,6 @@ $route['bukuinduk/download'] = 'ControllerBukuIndukSiswa/download_data';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-
-
+//absensi harian
+$route['absensi'] = 'ControllerDailyAbsen';
+$route['absensi/store'] = 'ControllerDailyAbsen/store';
