@@ -2,6 +2,11 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <style>
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        display: block !important;
+        width: 100% !important;
+    }
+
     .brand-link .brand-image{
         max-height: 80px !important;
     }
@@ -43,13 +48,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     }
 </style>
 <head>
- <link rel="preload" href="<?= base_url('asset/AdminLTE/dist/css/adminlte.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <script src="<?= base_url('asset/AdminLTE/plugins/jquery/jquery.min.js') ?>"></script>
+    <link rel="preload" href="<?= base_url('asset/AdminLTE/dist/css/adminlte.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="<?= base_url('asset/AdminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="<?= base_url('asset/AdminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="preload" href="<?= base_url('asset/AdminLTE/plugins/select2/css/select2.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="<?= base_url('asset/AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <!-- ================= Stylesheet tambahan ================= -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <link rel="stylesheet" href="<?= base_url('asset/AdminLTE/plugins/fontawesome-free/css/all.min.css') ?>">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="<?= base_url('asset/AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') ?>">
@@ -111,163 +118,139 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
                 <?php endif; ?>
             </div>
+            <form id="absenForm" role="form" action="<?= base_url('absensi/store') ?>" method="POST">
+                <div class="row g-3">
+                    <!-- Kiri -->
+                    <div class="col-12 col-lg-8 mt-3">
+                        <label class="d-block d-md-inline-flex align-items-center font-medium">
+                            Tanggal :
+                            <input id="tanggal"
+                                neme="tanggal"
+                                type="date"
+                                class="ml-md-2 mt-2 mt-md-0 text-center rounded-xl border-slate-300 pointer-events-none"
+                                readonly>
+                        </label>
+                        <div class="bg-white rounded-2xl shadow p-4 mb-4">
+                        
+                                <input type="hidden" name="id_kelas" id="idKelasHidden">
 
-            <div class="row g-3">
-                <!-- Kiri -->
-                <div class="col-12 col-lg-8 mt-3">
-                    <label class="d-block d-md-inline-flex align-items-center font-medium">
-                        Tanggal :
-                        <input id="tanggal"
-                            neme="tanggal"
-                            type="date"
-                            class="ml-md-2 mt-2 mt-md-0 text-center rounded-xl border-slate-300 pointer-events-none"
-                            readonly>
-                    </label>
-                    <div class="bg-white rounded-2xl shadow p-4 mb-4">
-                        <form role="form" action="<?= base_url('absensi/store') ?>" method="POST">
-                            <input type="hidden" name="id_kelas" id="idKelasHidden">
-                            <input type="hidden" name="detail[0][id_siswa]" id="idSiswaHidden">
-                            <input type="hidden" name="detail[0][keterangan]" id="ketHidden">
-                            <div class="row">
-                                <div class="col-12 mb-2">
-                                    <label>Pilih Kelas</label>
-                                    <select id="kelasSelect" class="form-control" ></select>
-                                </div>
-                            
-                                <div class="col-12 mb-2">
-                                    <label>Status Kehadiran Kelas</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" 
-                                            type="radio" 
-                                            name="status_kelas" 
-                                            id="status_hadir"
-                                            value="1"
-                                            checked>
-                                        <label class="form-check-label" for="status_hadir">
-                                            Semua siswa hadir
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" 
-                                            type="radio" 
-                                            name="status_kelas" 
-                                            id="status_tidak_hadir"
-                                            value="0">
-                                        <label class="form-check-label" for="status_tidak_hadir">
-                                            Ada siswa tidak hadir
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="content-name" style="width:100%; display:none">
+                                <div class="row">
                                     <div class="col-12 mb-2">
-                                        <label>Nama Siswa</label>
-                                        <select id="namaInput" class="form-control select2" disabled>
-                                            <option value="">-- Pilih Siswa --</option>
-                                        </select>
+                                        <label>Pilih Kelas</label>
+                                        <select id="kelasSelect" class="form-control" ></select>
                                     </div>
                                     <div class="col-12 mb-2">
-                                        <label>Keterangan</label>
-                                        <select class="form-control" id="keteranganSelect" disabled>
-                                            <option value="">-- Pilih Keterangan --</option>
-                                            <option value="1">Sakit</option>
-                                            <option value="2">Izin</option>
-                                            <option value="3">Alfa</option>
-                                        </select>
+                                        <label>Status Kehadiran Kelas</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                type="radio" 
+                                                name="status_kelas" 
+                                                id="status_hadir"
+                                                value="1"
+                                                checked>
+                                            <label class="form-check-label" for="status_hadir">
+                                                Semua siswa hadir
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                type="radio" 
+                                                name="status_kelas" 
+                                                id="status_tidak_hadir"
+                                                value="0">
+                                            <label class="form-check-label" for="status_tidak_hadir">
+                                                Ada siswa tidak hadir
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="content-name" style="width:100%; display:none">
+                                        <div class="col-12 mb-2">
+                                            <label>Nama Siswa</label>
+                                            <select id="namaInput" class="form-control select2" disabled>
+                                                <option value="">-- Pilih Siswa --</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mb-2">
+                                            <label>Keterangan</label>
+                                            <select class="form-control" id="keteranganSelect" disabled>
+                                                <option value="">-- Pilih Keterangan --</option>
+                                                <option value="1">Sakit</option>
+                                                <option value="2">Izin</option>
+                                                <option value="3">Alfa</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-12 col-lg-auto ml-lg-auto text-right">
-                                    <button id="tambahBtn" class="btn btn-primary w-100">
-                                        submit
-                                    </button>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-lg-auto ml-lg-auto text-right">
+                                    <button type="button" id="tambahBtn" class="btn btn-primary w-100">
+                                            Tambah
+                                        </button>
+                                    </div>
                                 </div>
+                        </div>
+                    </div>
+
+                    <!-- Kanan -->
+                    <div class="col-12 col-lg-4 mt-desktop-50">
+                        <div class="bg-white rounded-2xl shadow p-4">
+                            <h2 class="h4 fw-semibold mb-3">
+                                Daftar Siswa Tidak Masuk
+                            </h2>
+                            <ul id="listAbsen" class="list-unstyled"></ul>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12 col-lg-auto ml-lg-auto text-right">
+                                <button id="simpanBtn" type="button" class="btn btn-success w-100">
+                                    Simpan
+                                </button>
                             </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Kanan -->
-                <div class="col-12 col-lg-4 mt-desktop-50">
-                    <div class="bg-white rounded-2xl shadow p-4">
-                        <h2 class="h4 fw-semibold mb-3">
-                            Daftar Siswa Tidak Masuk
-                        </h2>
-                        <ul id="listAbsen" class="list-unstyled"></ul>
-                    </div>
-
-                    <div class="row mt-3">
-                        <div class="col-12 col-lg-auto ml-lg-auto text-right">
-                            <button id="simpanBtn" class="btn btn-success w-100">
-                                Simpan
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-
+            </form>
         </div>
     </div>
 </div>
-
         </section>
     </div>
-    <pre>
-<?php print_r($kelas ?? 'kelas kosong'); ?>
-<?php print_r($siswa ?? 'siswa kosong'); ?>
-</pre>
 </body>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="<?= base_url('asset/AdminLTE/plugins/jquery/jquery.min.js') ?>"></script>
+
 <script src="<?= base_url('asset/AdminLTE/plugins/select2/js/select2.full.min.js') ?>"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // get tanggal sekarang
-    const input = document.getElementById("tanggal");
-    const today = new Date().toISOString().split("T")[0];
-    input.value = today;
+/* ===================== TANGGAL ===================== */
+const inputTanggal = document.getElementById("tanggal");
+inputTanggal.value = new Date().toISOString().split("T")[0];
 
-        
-    const KELAS = <?= json_encode($kelas); ?>;   // [{id_kelas, nama_kelas}]
-    const SISWA = <?= json_encode($siswa); ?>;   // [{no_induk, nama_siswa, id_kelas}]
-    const ketSelect = document.getElementById('keteranganSelect');
-    const kelasSelect = document.getElementById('kelasSelect');
-    const namaInput = document.getElementById('namaInput');
-    const listAbsen = document.getElementById('listAbsen');
+/* ===================== DATA ===================== */
+const KELAS = <?= json_encode($kelas); ?>;
+const SISWA = <?= json_encode($siswa); ?>;
 
-    // when user click status kehadiran kelas
-    $('#status_tidak_hadir').on('click', function () {
-        $('.content-name').show();
-    });
+const kelasSelect = document.getElementById('kelasSelect');
+const namaInput   = $('#namaInput'); // pakai jQuery
+const ketSelect   = document.getElementById('keteranganSelect');
+const listAbsen   = document.getElementById('listAbsen');
 
-    $('#status_hadir').on('click', function () {
-        $('.content-name').hide();
-    });
+/* ===================== STATUS KELAS ===================== */
+$('#status_tidak_hadir').on('click', () => $('.content-name').show());
+$('#status_hadir').on('click', () => $('.content-name').hide());
 
-    // Saat siswa dipilih
-    namaInput.addEventListener('change', function () {
-        if (this.value) {
-            ketSelect.disabled = false;   // aktifkan keterangan
-        } else {
-            ketSelect.disabled = true;    // nonaktifkan lagi jika siswa dikosongkan
-            ketSelect.value = '';
-        }
-    });
+/* ===================== INIT SELECT2 ===================== */
+$(function () {
+    namaInput.select2({
+        placeholder: '-- Pilih Siswa --',
+        allowClear: true,
+        width: '100%'
 
+    }).prop('disabled', true);
+});
 
- // aktifkan select2 SETELAH jQuery ada
-    $(document).ready(function () {
-        $('#namaInput').select2({
-            placeholder: '-- Pilih Siswa --',
-            allowClear: true,
-            width: '100%'
-        });
-        $('#namaInput').prop('disabled', true);
-    });
-
+/* ===================== ISI KELAS ===================== */
 kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
 KELAS.forEach(k => {
     const opt = document.createElement('option');
@@ -276,109 +259,110 @@ KELAS.forEach(k => {
     kelasSelect.appendChild(opt);
 });
 
-// saat kelas berubah, isi siswa sesuai id_kelas
-kelasSelect.addEventListener('change', function () {
-    updateSiswaByKelas();
-    
-});
-
+/* ===================== KELAS BERUBAH ===================== */
+kelasSelect.addEventListener('change', updateSiswaByKelas);
 
 function updateSiswaByKelas() {
     const idKelas = kelasSelect.value;
 
-    // reset select siswa
-    namaInput.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+    namaInput.empty().append('<option value=""></option>');
+    ketSelect.disabled = true;
 
     if (!idKelas) {
-        // jika kelas belum dipilih, disable lagi
-        $('#namaInput').prop('disabled', true);
+        namaInput.prop('disabled', true).trigger('change.select2');
         return;
     }
-
-    // aktifkan select siswa
-    $('#namaInput').prop('disabled', false);
 
     SISWA
-        .filter(s => String(s.kelas) === String(idKelas))
+        .filter(s => String(s.id_kelas || s.kelas) === String(idKelas))
         .forEach(s => {
-            const opt = new Option(s.nama_siswa, s.no_induk, false, false);
-            $('#namaInput').append(opt);
+            namaInput.append(
+                new Option(s.nama_siswa, s.no_induk, false, false)
+            );
         });
-     // refresh select2
-    $('#namaInput').trigger('change');
+
+    namaInput.prop('disabled', false).trigger('change.select2');
 }
+/* ===================== SISWA DIPILIH ===================== */
+namaInput.on('change', function () {
+    ketSelect.disabled = !this.value;
+    if (!this.value) ketSelect.value = '';
+});
 
+/* ===================== TAMBAH DATA ===================== */
 document.getElementById('tambahBtn').addEventListener('click', () => {
+
+    const statusKelas = document.querySelector('input[name="status_kelas"]:checked').value;
+
+    /* ================== JIKA SEMUA HADIR ================== */
+    if (statusKelas === '1') {
+
+        // kosongkan list dulu
+        listAbsen.innerHTML = `
+            <li class="bg-slate-50 p-3 rounded-xl mb-1 text-center font-medium">
+                Semua siswa hadir
+            </li>
+        `;
+
+        // bersihkan data siswa (kalau sebelumnya ada)
+        namaInput.val(null).trigger('change.select2');
+        ketSelect.value = '';
+
+        return; // STOP di sini, tidak lanjut tambah siswa
+    }
+
+    /* ================== JIKA ADA YANG TIDAK HADIR ================== */
     const idKelas = kelasSelect.value;
-    const kelasText = kelasSelect.options[kelasSelect.selectedIndex].text;
+    const kelasText = kelasSelect.options[kelasSelect.selectedIndex]?.text;
 
-    const siswaSelect = document.getElementById('namaInput');
-    const ketSelect = document.getElementById('keteranganSelect');
+    const no_induk = namaInput.val();
+    const namaSiswa = namaInput.find(':selected').text();
 
-    const idSiswa = siswaSelect.value;
-    const namaSiswa = siswaSelect.options[siswaSelect.selectedIndex]?.text;
-    const idKeterangan = ketSelect.value;
-    const textKeterangan = ketSelect.options[ketSelect.selectedIndex]?.text;
+    const idKet = ketSelect.value;
+    const textKet = ketSelect.options[ketSelect.selectedIndex]?.text;
 
-    if (!idKelas) {
-        showNotif('failed', 'Pilih kelas terlebih dahulu');
-        return;
-    }
-    if (!idSiswa) {
-        showNotif('failed', 'Pilih siswa terlebih dahulu');
-        return;
-    }
+    if (!idKelas) return showNotif('failed', 'Pilih kelas terlebih dahulu');
+    if (!no_induk) return showNotif('failed', 'Pilih siswa terlebih dahulu');
+    if (!idKet)   return showNotif('failed', 'Pilih keterangan terlebih dahulu');
 
-    if (!idKeterangan) {
-        showNotif('failed', 'Pilih keterangan terlebih dahulu');
-        return;
-    }
-
-    // Cegah siswa yang sama ditambahkan dua kali
-    if (listAbsen.querySelector(`input[value="${idSiswa}"]`)) {
-        showNotif('error', 'Siswa sudah ditambahkan');
-        return;
+    if (listAbsen.querySelector(`input[value="${no_induk}"]`)) {
+        return showNotif('error', 'Siswa sudah ditambahkan');
     }
 
     const li = document.createElement('li');
-    li.className = 'bg-slate-50 p-3 rounded-xl';
-    li.style.marginBottom = "5px";
+    li.className = 'bg-slate-50 p-3 rounded-xl mb-1';
     li.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-            <div class="md:col-span-2 font-medium">
-                ${kelasText} - ${namaSiswa}
-            </div>
-            <div class="text-sm text-slate-600">
-                <b>${textKeterangan}</b>
-            </div>
+            <div class="md:col-span-2 font-medium">${kelasText} - ${namaSiswa}</div>
+            <div class="text-sm text-slate-600"><b>${textKet}</b></div>
             <div class="text-right">
                 <button type="button" class="text-red-500">Hapus</button>
             </div>
         </div>
 
-        <input type="hidden" name="id_siswa[]" value="${idSiswa}" />
-        <input type="hidden" name="id_kelas[]" value="${idKelas}" />
-        <input type="hidden" name="keterangan[]" value="${idKeterangan}" />
+        <input type="hidden" name="no_induk[]" value="${no_induk}">
+        <input type="hidden" name="id_kelas[]" value="${idKelas}">
+        <input type="hidden" name="keterangan[]" value="${idKet}">
     `;
 
     li.querySelector('button').onclick = () => li.remove();
     listAbsen.appendChild(li);
 
-    // reset pilihan
-    siswaSelect.value = '';
+    namaInput.val(null).trigger('change.select2');
     ketSelect.value = '';
 });
-   function showNotif(type, message, duration = 3000) {
-    const notifArea = document.getElementById('notifArea');
 
-    const classMap = {
+/* ===================== NOTIF ===================== */
+function showNotif(type, message, duration = 3000) {
+    const notifArea = document.getElementById('notifArea');
+    const map = {
         success: 'alert-success',
         failed: 'alert-warning',
         error: 'alert-danger'
     };
 
     notifArea.innerHTML = `
-        <div class="alert ${classMap[type]} alert-dismissible fade show" role="alert">
+        <div class="alert ${map[type]} alert-dismissible fade show">
             ${message}
             <button type="button" class="close" data-dismiss="alert">
                 <span>&times;</span>
@@ -386,20 +370,34 @@ document.getElementById('tambahBtn').addEventListener('click', () => {
         </div>
     `;
 
-    const alertEl = notifArea.querySelector('.alert');
-
-    // Auto close pakai Bootstrap 4
-    setTimeout(() => {
-        if (window.jQuery) {
-            $(alertEl).alert('close');
-        } else {
-            // fallback kalau jQuery tidak ada
-            alertEl.remove();
-        }
-    }, duration);
+    setTimeout(() => $('.alert').alert('close'), duration);
 }
 
+/* ===================== SUBMIT FORMNYA ===================== */
+document.getElementById('simpanBtn').addEventListener('click', function () {
 
+    const statusKelas = document.querySelector('input[name="status_kelas"]:checked').value;
+    const jumlahList = document.querySelectorAll('#listAbsen li').length;
+
+    const idKelas = kelasSelect.value;
+
+    if (!idKelas) {
+        showNotif('failed', 'Pilih kelas terlebih dahulu');
+        return;
+    }
+
+    // set hidden id_kelas
+    document.getElementById('idKelasHidden').value = idKelas;
+
+    // Jika ada siswa tidak hadir tapi belum ditambahkan
+    if (statusKelas === '0' && jumlahList === 0) {
+        showNotif('failed', 'Tambahkan minimal 1 siswa tidak hadir');
+        return;
+    }
+
+    document.getElementById('absenForm').submit();
+});
 
 
 </script>
+
