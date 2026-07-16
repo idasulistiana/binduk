@@ -238,7 +238,16 @@ const listAbsen   = document.getElementById('listAbsen');
 
 /* ===================== STATUS KELAS ===================== */
 $('#status_tidak_hadir').on('click', () => $('.content-name').show());
-$('#status_hadir').on('click', () => $('.content-name').hide());
+$('#status_hadir').on('click', () => {
+
+    $('.content-name').hide();
+
+    listAbsen.innerHTML = `
+        <li class="bg-slate-50 p-3 rounded-xl mb-1 text-center font-medium">
+            Semua siswa hadir
+        </li>
+    `;
+});
 
 /* ===================== INIT SELECT2 ===================== */
 $(function () {
@@ -292,66 +301,79 @@ namaInput.on('change', function () {
 /* ===================== TAMBAH DATA ===================== */
 document.getElementById('tambahBtn').addEventListener('click', () => {
 
-    const statusKelas = document.querySelector('input[name="status_kelas"]:checked').value;
+    const statusKelas = document.querySelector(
+        'input[name="status_kelas"]:checked'
+    ).value;
 
-    /* ================== JIKA SEMUA HADIR ================== */
     if (statusKelas === '1') {
 
-        // kosongkan list dulu
         listAbsen.innerHTML = `
             <li class="bg-slate-50 p-3 rounded-xl mb-1 text-center font-medium">
                 Semua siswa hadir
             </li>
         `;
 
-        // bersihkan data siswa (kalau sebelumnya ada)
         namaInput.val(null).trigger('change.select2');
         ketSelect.value = '';
 
-        return; // STOP di sini, tidak lanjut tambah siswa
+        return;
     }
 
-    /* ================== JIKA ADA YANG TIDAK HADIR ================== */
-    const idKelas = kelasSelect.value;
+    const idKelas   = kelasSelect.value;
     const kelasText = kelasSelect.options[kelasSelect.selectedIndex]?.text;
 
-    const no_induk = namaInput.val();
+    const no_induk  = namaInput.val();
     const namaSiswa = namaInput.find(':selected').text();
 
-    const idKet = ketSelect.value;
-    const textKet = ketSelect.options[ketSelect.selectedIndex]?.text;
+    const idKet     = ketSelect.value;
+    const textKet   = ketSelect.options[ketSelect.selectedIndex]?.text;
 
-    if (!idKelas) return showNotif('failed', 'Pilih kelas terlebih dahulu');
-    if (!no_induk) return showNotif('failed', 'Pilih siswa terlebih dahulu');
-    if (!idKet)   return showNotif('failed', 'Pilih keterangan terlebih dahulu');
+    if (!idKelas)
+        return showNotif('failed', 'Pilih kelas terlebih dahulu');
 
-    if (listAbsen.querySelector(`input[value="${no_induk}"]`)) {
+    if (!no_induk)
+        return showNotif('failed', 'Pilih siswa terlebih dahulu');
+
+    if (!idKet)
+        return showNotif('failed', 'Pilih keterangan terlebih dahulu');
+
+    if (listAbsen.querySelector(`input[value="${no_induk}"]`))
         return showNotif('error', 'Siswa sudah ditambahkan');
-    }
 
     const li = document.createElement('li');
+
     li.className = 'bg-slate-50 p-3 rounded-xl mb-1';
+
     li.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-            <div class="md:col-span-2 font-medium">${kelasText} - ${namaSiswa}</div>
-            <div class="text-sm text-slate-600"><b>${textKet}</b></div>
-            <div class="text-right">
-                <button type="button" class="text-red-500">Hapus</button>
+
+            <div class="md:col-span-2 font-medium">
+                ${kelasText} - ${namaSiswa}
             </div>
+
+            <div class="text-sm text-slate-600">
+                <b>${textKet}</b>
+            </div>
+
+            <div class="text-right">
+                <button type="button" class="text-red-500">
+                    Hapus
+                </button>
+            </div>
+
         </div>
 
         <input type="hidden" name="no_induk[]" value="${no_induk}">
-        <input type="hidden" name="id_kelas[]" value="${idKelas}">
         <input type="hidden" name="keterangan[]" value="${idKet}">
     `;
 
     li.querySelector('button').onclick = () => li.remove();
+
     listAbsen.appendChild(li);
 
     namaInput.val(null).trigger('change.select2');
     ketSelect.value = '';
 });
-
 /* ===================== NOTIF ===================== */
 function showNotif(type, message, duration = 3000) {
     const notifArea = document.getElementById('notifArea');
@@ -376,28 +398,39 @@ function showNotif(type, message, duration = 3000) {
 /* ===================== SUBMIT FORMNYA ===================== */
 document.getElementById('simpanBtn').addEventListener('click', function () {
 
-    const statusKelas = document.querySelector('input[name="status_kelas"]:checked').value;
-    const jumlahList = document.querySelectorAll('#listAbsen li').length;
-
     const idKelas = kelasSelect.value;
 
+    const statusKelas = document.querySelector(
+        'input[name="status_kelas"]:checked'
+    ).value;
+
+    const jumlahList =
+        document.querySelectorAll('#listAbsen li').length;
+
     if (!idKelas) {
-        showNotif('failed', 'Pilih kelas terlebih dahulu');
+
+        showNotif(
+            'failed',
+            'Pilih kelas terlebih dahulu'
+        );
+
         return;
     }
 
-    // set hidden id_kelas
-    document.getElementById('idKelasHidden').value = idKelas;
-
-    // Jika ada siswa tidak hadir tapi belum ditambahkan
     if (statusKelas === '0' && jumlahList === 0) {
-        showNotif('failed', 'Tambahkan minimal 1 siswa tidak hadir');
+
+        showNotif(
+            'failed',
+            'Tambahkan minimal 1 siswa tidak hadir'
+        );
+
         return;
     }
+
+    document.getElementById('idKelasHidden').value = idKelas;
 
     document.getElementById('absenForm').submit();
 });
-
 
 </script>
 

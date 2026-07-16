@@ -31,6 +31,7 @@ class ControllerDailyAbsen extends CI_Controller {
     public function store()
     {
 
+
         // Validasi hanya kelas
         $this->form_validation->set_rules('id_kelas', 'Kelas', 'required');
 
@@ -45,85 +46,79 @@ class ControllerDailyAbsen extends CI_Controller {
 
         } else {
 
-            $this->db->trans_start();
+    $this->db->trans_start();
 
-            // ================= DATA POST =================
-            $id_kelas   = $this->input->post('id_kelas');   
-            if (is_array($id_kelas)) {
-                $id_kelas = $id_kelas[0];
-            }
-            $no_induk   = $this->input->post('no_induk');      // array
-            $keterangan = $this->input->post('keterangan');   // array
+    $id_kelas     = $this->input->post('id_kelas');
+    $status_kelas = $this->input->post('status_kelas');
 
-            // ================= AUTO SYSTEM =================
-            $tanggal = date('Y-m-d');
+    $no_induk     = $this->input->post('no_induk') ?: [];
+    $keterangan   = $this->input->post('keterangan') ?: [];
 
-            // Logika semester otomatis
-            $bulan = date('m');
-            $semester = ($bulan >= 7) ? 1 : 2;
+    $tanggal = date('Y-m-d');
 
-            // Tahun ajaran otomatis
-            if ($bulan >= 7) {
-                $tahun_ajaran = date('Y') . '/' . (date('Y') + 1);
-            } else {
-                $tahun_ajaran = (date('Y') - 1) . '/' . date('Y');
-            }
+    $bulan = date('m');
 
-            // Status kelas otomatis
-            $status_kelas = empty($no_induk) || empty($no_induk[0]) ? 1 : 0;
+    $semester = ($bulan >= 7) ? 1 : 2;
 
-            // ================= INSERT ABSENSI =================
-            $absensi = [
-                'tgl'           => $tanggal,
-                'id_kelas'      => $id_kelas,
-                'status_kelas'  => $status_kelas,
-                'semester'      => $semester,
-                'tahun_ajaran'  => $tahun_ajaran,
-                'created'       => date('Y-m-d H:i:s')
-            ];
+    if ($bulan >= 7) {
+        $tahun_ajaran = date('Y') . '/' . (date('Y') + 1);
+    } else {
+        $tahun_ajaran = (date('Y') - 1) . '/' . date('Y');
+    }
 
-            // DEBUG
-echo "<pre>";
-var_dump($absensi);
-echo "</pre>";
-die;
-            $id_absensi = $this->Absensi_model->insert($absensi);
+    $absensi = [
+        'tgl'           => $tanggal,
+        'id_kelas'      => $id_kelas,
+        'status_kelas'  => $status_kelas,
+        'semester'      => $semester,
+        'tahun_ajaran'  => $tahun_ajaran,
+        'created_at'    => date('Y-m-d H:i:s')
+    ];
 
+    $id_absensi = $this->Absensi_model->insert($absensi);
 
-            // ================= INSERT DETAIL =================
-            if ($status_kelas == 0) {
+    // jika ada siswa tidak hadir
+    if ($status_kelas == 0) {
 
-                foreach ($no_induk as $i => $ni) {
+        foreach ($no_induk as $i => $ni) {
 
-                    if (!empty($ni)) {
-
-                        // Cari id_siswa dari no_induk
-                        $siswa = $this->DataMaster->get_by_no_induk($ni);
-
-                        if ($siswa) {
-
-                            $this->Absensi_detail_model->insert([
-                                'id_absensi' => $id_absensi,
-                                'id_siswa'   => $siswa->id_siswa,
-                                'keterangan' => $keterangan[$i]
-                            ]);
-
-                        }
-                    }
-                }
+            if (empty($ni)) {
+                continue;
             }
 
-            $this->db->trans_complete();
+            $siswa = $this->DataMaster->get_by_no_induk($ni);
 
-            // ================= RESULT =================
-            if ($this->db->trans_status() === FALSE) {
-                $this->session->set_flashdata('error', 'Gagal menyimpan absensi');
-            } else {
-                $this->session->set_flashdata('success', 'Absensi berhasil disimpan');
+            if (!$siswa) {
+                continue;
             }
 
-            redirect('absensi');
+            $this->Absensi_detail_model->insert([
+                'id_absensi' => $id_absensi,
+                'id_siswa'   => $siswa->id_siswa,
+                'keterangan' => $keterangan[$i]
+            ]);
         }
+    }
+
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
+
+        $this->session->set_flashdata(
+            'error',
+            'Gagal menyimpan absensi'
+        );
+
+    } else {
+
+        $this->session->set_flashdata(
+            'success',
+            'Absensi berhasil disimpan'
+        );
+    }
+
+    redirect('absensi');
+}
     }
 
     // ================= READ =================
