@@ -131,8 +131,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 readonly>
                         </label>
                         <div class="bg-white rounded-2xl shadow p-4 mb-4">
-                        
-                                <input type="hidden" name="id_kelas" id="idKelasHidden">
+                    
 
                                 <div class="row">
                                     <div class="col-12 mb-2">
@@ -179,6 +178,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                                 <option value="3">Alfa</option>
                                             </select>
                                         </div>
+                                         <div class="col-12 mb-2">
+                                            <label>Catatan</label>
+                                            <textarea
+                                                class="form-control"
+                                                id="catatan"
+                                                name="catatan[]"
+                                                rows="3"
+                                                placeholder="Masukkan catatan..."
+                                                ></textarea>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -192,7 +201,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <!-- Kanan -->
-                    <div class="col-12 col-lg-4 mt-desktop-50">
+                    <div id="list-siswa" class="col-12 col-lg-4 mt-desktop-50" style="display:none">
                         <div class="bg-white rounded-2xl shadow p-4">
                             <h2 class="h4 fw-semibold mb-3">
                                 Daftar Siswa Tidak Masuk
@@ -235,18 +244,46 @@ const kelasSelect = document.getElementById('kelasSelect');
 const namaInput   = $('#namaInput'); // pakai jQuery
 const ketSelect   = document.getElementById('keteranganSelect');
 const listAbsen   = document.getElementById('listAbsen');
+const catatan   = document.getElementById('catatan');
+/* ===================== RESET CATATAN ===================== */
+namaInput.val(null).trigger('change.select2');
+ketSelect.value = '';
+document.getElementById('catatan').value = '';
 
+$(document).ready(function () {
+    setTimeout(function () {
+        $('.alert').alert('close');
+    }, 3000);
+});
 /* ===================== STATUS KELAS ===================== */
-$('#status_tidak_hadir').on('click', () => $('.content-name').show());
+$('#status_tidak_hadir').on('click', () => {
+    $('.content-name').show();
+
+    // Reset daftar siswa
+    listAbsen.innerHTML = '';
+
+    // Sembunyikan list sampai klik Tambah
+    $('#list-siswa').hide();
+
+    // Reset input
+    namaInput.val(null).trigger('change');
+    ketSelect.value = '';
+    catatan.value = '';
+});
 $('#status_hadir').on('click', () => {
 
     $('.content-name').hide();
 
-    listAbsen.innerHTML = `
-        <li class="bg-slate-50 p-3 rounded-xl mb-1 text-center font-medium">
-            Semua siswa hadir
-        </li>
-    `;
+    // Reset daftar
+    listAbsen.innerHTML = '';
+
+    // Sembunyikan list
+    $('#list-siswa').hide();
+
+    // Reset input
+    namaInput.val(null).trigger('change');
+    ketSelect.value = '';
+    catatan.value = '';
 });
 
 /* ===================== INIT SELECT2 ===================== */
@@ -300,7 +337,9 @@ namaInput.on('change', function () {
 
 /* ===================== TAMBAH DATA ===================== */
 document.getElementById('tambahBtn').addEventListener('click', () => {
-
+    document.getElementById('list-siswa').style.display = 'block';
+    console.log(document.getElementById('list-siswa'));
+        
     const statusKelas = document.querySelector(
         'input[name="status_kelas"]:checked'
     ).value;
@@ -337,12 +376,31 @@ document.getElementById('tambahBtn').addEventListener('click', () => {
     if (!idKet)
         return showNotif('failed', 'Pilih keterangan terlebih dahulu');
 
-    if (listAbsen.querySelector(`input[value="${no_induk}"]`))
-        return showNotif('error', 'Siswa sudah ditambahkan');
+  // Cek apakah siswa sudah ada di daftar
+    const existing = listAbsen.querySelector(`li[data-no-induk="${no_induk}"]`);
+
+    if (existing) {
+        existing.querySelector('.ket-text').innerHTML = `<b>${textKet}</b>`;
+
+        existing.querySelector('input[name="keterangan[]"]').value = idKet;
+
+        existing.querySelector('input[name="catatan[]"]').value =
+            document.getElementById('catatan').value;
+
+        showNotif('success', 'Data siswa berhasil diperbarui');
+
+        namaInput.val(null).trigger('change.select2');
+        ketSelect.value = '';
+        document.getElementById('catatan').value = '';
+
+        return;
+}
 
     const li = document.createElement('li');
 
     li.className = 'bg-slate-50 p-3 rounded-xl mb-1';
+
+    li.dataset.noInduk = no_induk;
 
     li.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
@@ -351,8 +409,12 @@ document.getElementById('tambahBtn').addEventListener('click', () => {
                 ${kelasText} - ${namaSiswa}
             </div>
 
-            <div class="text-sm text-slate-600">
+            <div class="text-sm text-slate-600 ket-text">
                 <b>${textKet}</b>
+            </div>
+
+            <div class="text-sm text-slate-600">
+                ${document.getElementById('catatan').value}
             </div>
 
             <div class="text-right">
@@ -362,17 +424,20 @@ document.getElementById('tambahBtn').addEventListener('click', () => {
             </div>
 
         </div>
-
+        <input type="hidden" name="id_kelas[]" value="${idKelas}">
         <input type="hidden" name="no_induk[]" value="${no_induk}">
         <input type="hidden" name="keterangan[]" value="${idKet}">
+        <input type="hidden" name="catatan[]" value="${document.getElementById('catatan').value}">
     `;
 
     li.querySelector('button').onclick = () => li.remove();
 
     listAbsen.appendChild(li);
-
+    
     namaInput.val(null).trigger('change.select2');
     ketSelect.value = '';
+    catatan.value = '';
+
 });
 /* ===================== NOTIF ===================== */
 function showNotif(type, message, duration = 3000) {
@@ -426,11 +491,22 @@ document.getElementById('simpanBtn').addEventListener('click', function () {
 
         return;
     }
+    if (statusKelas === '1') {
 
-    document.getElementById('idKelasHidden').value = idKelas;
+        document.querySelectorAll('.kelas-submit').forEach(e => e.remove());
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'id_kelas[]';
+        input.value = idKelas;
+        input.className = 'kelas-submit';
+
+        document.getElementById('absenForm').appendChild(input);
+    }
 
     document.getElementById('absenForm').submit();
-});
+
+    });
 
 </script>
 

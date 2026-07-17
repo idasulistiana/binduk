@@ -25,6 +25,13 @@ class DataMaster extends CI_Model
         // FALSE = belum ada
         return $query->num_rows() > 0;
     }
+    public function get_by_no_induk($no_induk)
+    {
+        return $this->db
+            ->where('no_induk', $no_induk)
+            ->get('siswa')
+            ->row();
+    }
 
     public function edit_user($id)
     {

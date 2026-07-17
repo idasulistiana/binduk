@@ -28,36 +28,32 @@ class ControllerDailyAbsen extends CI_Controller {
     
    // ================= CREATE =================
 
-    public function store()
-    {
+public function store()
+{
+    $this->form_validation->set_rules('id_kelas[]', 'Kelas', 'required');
 
+    if ($this->form_validation->run() == FALSE) {
 
-        // Validasi hanya kelas
-        $this->form_validation->set_rules('id_kelas', 'Kelas', 'required');
+        $data = [
+            'kelas' => $this->Kelas_model->get_all_active_class(),
+            'siswa' => $this->DataMaster->get_all_siswa()
+        ];
 
-        if ($this->form_validation->run() == FALSE) {
-
-            $data = [
-                'kelas' =>  $this->Kelas_model->get_all_active_class(),
-                'siswa' =>  $this->DataMaster->get_all_siswa()
-            ];
-
-            $this->load->view('Content/absen_siswa_harian', $data);
-
-        } else {
+        $this->load->view('Content/absen_siswa_harian', $data);
+        return;
+    }
 
     $this->db->trans_start();
 
-    $id_kelas     = $this->input->post('id_kelas');
+    $no_induk   = $this->input->post('no_induk') ?: [];
+    $keterangan = $this->input->post('keterangan') ?: [];
+    $catatan    = $this->input->post('catatan') ?: [];
     $status_kelas = $this->input->post('status_kelas');
-
-    $no_induk     = $this->input->post('no_induk') ?: [];
-    $keterangan   = $this->input->post('keterangan') ?: [];
+    $id_kelas = $this->input->post('id_kelas') ?: [];
 
     $tanggal = date('Y-m-d');
 
     $bulan = date('m');
-
     $semester = ($bulan >= 7) ? 1 : 2;
 
     if ($bulan >= 7) {
@@ -66,60 +62,101 @@ class ControllerDailyAbsen extends CI_Controller {
         $tahun_ajaran = (date('Y') - 1) . '/' . date('Y');
     }
 
-    $absensi = [
-        'tgl'           => $tanggal,
-        'id_kelas'      => $id_kelas,
-        'status_kelas'  => $status_kelas,
-        'semester'      => $semester,
-        'tahun_ajaran'  => $tahun_ajaran,
-        'created_at'    => date('Y-m-d H:i:s')
-    ];
+    // Kelompokkan siswa berdasarkan kelas
 
-    $id_absensi = $this->Absensi_model->insert($absensi);
+    $kelasData = [];
 
-    // jika ada siswa tidak hadir
-    if ($status_kelas == 0) {
+    if ($status_kelas == 1) {
 
+        // Semua siswa hadir
+        foreach ($id_kelas as $kelas) {
+            if (!empty($kelas)) {
+                $kelasData[$kelas] = [];
+            }
+        }
+
+    } else {
+
+        // Ada siswa tidak hadir
         foreach ($no_induk as $i => $ni) {
 
-            if (empty($ni)) {
+            if (empty($ni) || empty($id_kelas[$i])) {
                 continue;
             }
 
-            $siswa = $this->DataMaster->get_by_no_induk($ni);
+            $kelasData[$id_kelas[$i]][] = [
+                'no_induk'   => $ni,
+                'keterangan' => $keterangan[$i] ?? '',
+                'catatan'    => $catatan[$i] ?? ''
+            ];
+        }
+    }
 
-            if (!$siswa) {
-                continue;
+    foreach ($kelasData as $kelas => $detailSiswa) {
+
+        $absensi = [
+            'tgl'           => $tanggal,
+            'id_kelas'      => $kelas,
+            'status_kelas'  => $status_kelas,
+            'semester'      => $semester,
+            'tahun_ajaran'  => $tahun_ajaran,
+            'created_at'    => date('Y-m-d H:i:s')
+        ];
+
+        // Cek header absensi
+        $cek = $this->db
+            ->where('tgl', $tanggal)
+            ->where('id_kelas', $kelas)
+            ->get('absensi')
+            ->row();
+
+        if ($cek) {
+
+            $this->db->where('id_absensi', $cek->id_absensi);
+            $this->db->update('absensi', $absensi);
+
+            $id_absensi = $cek->id_absensi;
+
+            $this->db->where('id_absensi', $id_absensi);
+            $this->db->delete('absensi_detail');
+
+        } else {
+
+            $this->db->insert('absensi', $absensi);
+            $id_absensi = $this->db->insert_id();
+        }
+
+        if ($status_kelas == 0) {
+
+            foreach ($detailSiswa as $row) {
+
+                $siswa = $this->DataMaster->get_by_no_induk($row['no_induk']);
+
+                if (!$siswa) {
+                    continue;
+                }
+
+                $this->db->insert('absensi_detail', [
+                    'id_absensi' => $id_absensi,
+                    'no_induk'   => $siswa->no_induk,
+                    'keterangan' => $row['keterangan'],
+                    'catatan'    => $row['catatan']
+                ]);
             }
-
-            $this->Absensi_detail_model->insert([
-                'id_absensi' => $id_absensi,
-                'id_siswa'   => $siswa->id_siswa,
-                'keterangan' => $keterangan[$i]
-            ]);
         }
     }
 
     $this->db->trans_complete();
 
     if ($this->db->trans_status() === FALSE) {
-
-        $this->session->set_flashdata(
-            'error',
-            'Gagal menyimpan absensi'
-        );
-
+        $this->session->set_flashdata('error', 'Gagal menyimpan absensi.');
     } else {
-
-        $this->session->set_flashdata(
-            'success',
-            'Absensi berhasil disimpan'
-        );
+        $this->session->set_flashdata('success', 'Absensi berhasil disimpan.');
     }
 
     redirect('absensi');
 }
-    }
+
 
     // ================= READ =================
     public function edit($id_absensi)
