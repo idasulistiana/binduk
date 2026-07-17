@@ -55,11 +55,7 @@
                         </li>
                     </ul>
                 </li>
-
-
-                <!-- Pembantu Induk -->
-                
-
+ 
                  <!-- Data Klapper -->
                 <li class="nav-item">
                    <a href="<?= base_url('riwayatkelas') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'riwayatkelas') ? 'active' : '' ?>">
@@ -68,11 +64,39 @@
                     </a>
                 </li>
                  <!-- Data Kehadiran -->
-                <li class="nav-item">
-                   <a href="<?= base_url('kehadiran') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'kehadiran') ? 'active' : '' ?>">
-                        <i class="nav-icon fas fa-barcode"></i>
-                        <p>Data Kehadiran siswa</p>
+                 <?php
+                    $submenu_absensi = [
+                        'absensi',
+                        'data_absensi'
+                    ];
+                ?>
+                <li class="nav-item has-treeview <?= in_array($segment1, $submenu_absensi) ? 'menu-open' : '' ?>">
+                    <a href="#" class="nav-link <?= in_array($segment1, $submenu_absensi) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-calendar-check"></i>
+
+                        <p>
+                            Absensi Siswa
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                             <a href="<?= base_url('data_absensi_daily') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'data_absensi_daily') ? 'active' : '' ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>
+                                   Absensi Harian
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                             <a href="<?= base_url('kehadiran') ?>" class="nav-link <?= (strtolower($this->uri->segment(1)) == 'kehadiran') ? 'active' : '' ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>
+                                    Rekap Kehadiran Siswa
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <!-- Data Akademik-->
                 <?php

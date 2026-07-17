@@ -135,7 +135,6 @@ $route['bukuinduk'] = 'ControllerBukuIndukSiswa';
 $route['bukuinduk/detail/(:any)'] = 'ControllerBukuIndukSiswa/detail/$1';
 $route['bukuinduk/download'] = 'ControllerBukuIndukSiswa/download_data';
 
-
 // 🔹 Error & default setting
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
@@ -143,3 +142,7 @@ $route['translate_uri_dashes'] = FALSE;
 //absensi harian
 $route['absensi'] = 'ControllerDailyAbsen';
 $route['absensi/store'] = 'ControllerDailyAbsen/store';
+$route['data_absensi_daily']='ControllerDataAbsen';
+$route['absensi_detail']='ControllerDataAbsen/detail';
+$route['data_absensi/delete/(:any)'] = 'ControllerDataAbsen/delete/$1';
+$route['data_absensi/edit/(:num)'] = 'ControllerDataAbsen/delete/$1';
